@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand: #6849e1;
+  --color-brand-light: rgba(124, 122, 234, 0.1);
+  --color-brand-shadow: rgba(31, 81, 218, 0.3);
+  --color-stat: #7c7aea;
+  --color-icon-bg: #00bfff;
+
+  --color-text-main: #1a1a1a;
+  --color-text-muted: rgba(26, 26, 26, 0.65);
+  --color-text-card-tag: rgba(255, 255, 255, 0.65);
+  --color-text-white: #ffffff;
+  --color-nav-link: #57575a;
+  --color-btn-secondary-text: #383838;
+  --color-footer-muted: #7d7d7d;
+
+  --color-bg-main: #ffffff;
+  --color-nav-outer: #f6f6fd;
+  --color-pill-bg: rgba(26, 26, 26, 0.05);
+  --color-divider: rgba(0, 0, 0, 0.05);
+
+  --color-badge-blue: #2979fa;
+  --color-badge-red: #f5284b;
+  --color-badge-orange: #f56628;
+  --color-badge-green: #49c420;
+
+  --shadow-nav: 0px 3px 10px rgba(0, 0, 0, 0.05);
+  --shadow-card: 0px 16px 48px -4px rgba(26, 26, 26, 0.2);
+  --shadow-badge: 0px 12px 10px rgba(26, 26, 26, 0.1);
+  --shadow-logo: 0px 5px 14px rgba(0, 0, 0, 0.15);
+  --shadow-cta-btn: 0px 10px 20px rgba(31, 81, 218, 0.3);
+  --shadow-icon: 0px 12px 10px rgba(26, 26, 26, 0.1);
+
+  --font-display: "Anton", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-nav: "Inter", sans-serif;
+
+  --radius-pill: 999px;
+  --radius-card: 32px;
+  --radius-btn: 100px;
+  --radius-icon: 24px;
+}
