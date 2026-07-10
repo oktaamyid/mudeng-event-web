@@ -1,32 +1,10 @@
 import Link from "next/link";
+import { getEvents } from "../lib/actions/events";
 
-export default function Events() {
-  const events = [
-    {
-      id: "01",
-      slug: "ui-craft",
-      title: "UI Craft",
-      desc: "Kelas intensif pembuatan desain antarmuka aplikasi dan website modern yang berfokus pada kemudahan pengguna.",
-      image:
-        "https://images.unsplash.com/photo-1535223289827-42f1e9919769?w=1440&h=650&fit=crop",
-    },
-    {
-      id: "02",
-      slug: "creative-craft",
-      title: "Creative Craft",
-      desc: "Pelatihan pembuatan konten visual kreatif digital yang menarik perhatian dan berdampak luas di media sosial.",
-      image:
-        "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1440&h=650&fit=crop",
-    },
-    {
-      id: "03",
-      slug: "mucrex",
-      title: "MUCREX",
-      desc: "Wadah pameran karya multimedia gabungan sekaligus pelatihan tingkat lanjut untuk menghasilkan portofolio siap kerja.",
-      image:
-        "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=1440&h=650&fit=crop",
-    },
-  ];
+export default async function Events() {
+  const { data } = await getEvents();
+  const events = data || [];
+
 
   return (
     <section className="py-[160px]" id="events">
@@ -52,7 +30,7 @@ export default function Events() {
             >
               <img
                 className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                src={evt.image}
+                src={evt.imageUrl || ""}
                 alt={evt.title}
               />
 
@@ -73,14 +51,14 @@ export default function Events() {
               <div className="absolute top-[24px] left-[24px] z-30 max-w-[450px] md:top-[36px] md:left-[36px]">
                 <div className="mb-5 flex items-center gap-2.5">
                   <span className="font-body text-[39px] leading-[44px] font-medium text-white/60">
-                    {evt.id}
+                    {idx < 9 ? `0${idx + 1}` : idx + 1}
                   </span>
                   <h3 className="font-body text-[32px] leading-[34.56px] font-semibold text-white">
                     {evt.title}
                   </h3>
                 </div>
                 <p className="font-body mb-5 max-w-[440px] text-[15px] leading-[23.2px] font-medium text-white/85">
-                  {evt.desc}
+                  {evt.description}
                 </p>
                 <Link
                   href={`/events/${evt.slug}`}
@@ -96,7 +74,7 @@ export default function Events() {
                     Timeline
                   </span>
                   <span className="font-body text-right text-[15px] leading-[27px] font-medium text-white md:text-[17px]">
-                    4 Minggu
+                    {evt.timeline}
                   </span>
                 </div>
                 <div className="h-[1px] w-full bg-white/15"></div>
@@ -105,7 +83,7 @@ export default function Events() {
                     Service
                   </span>
                   <span className="font-body text-right text-[15px] leading-[27px] font-medium text-white md:text-[17px]">
-                    UI/UX Design
+                    {evt.service}
                   </span>
                 </div>
                 <div className="h-[1px] w-full bg-white/15"></div>
@@ -114,7 +92,7 @@ export default function Events() {
                     Project Kickoff
                   </span>
                   <span className="font-body text-right text-[15px] leading-[27px] font-medium text-white md:text-[17px]">
-                    Juli 2025
+                    {evt.kickoffDate}
                   </span>
                 </div>
               </div>

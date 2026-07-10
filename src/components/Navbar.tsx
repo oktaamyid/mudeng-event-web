@@ -1,3 +1,6 @@
+import { SignInButton, SignUpButton, Show, UserButton } from '@clerk/nextjs';
+import Link from "next/link";
+
 export default function Navbar() {
   return (
     <nav
@@ -6,7 +9,7 @@ export default function Navbar() {
     >
       <div className="rounded-pill bg-white/75 p-1 backdrop-blur-md">
         <div className="bg-bg-main rounded-pill shadow-nav flex h-[53px] items-center gap-10 p-[5px_5px_5px_10px]">
-          <a href="/" className="flex items-center gap-2.5">
+          <Link href="/" className="flex items-center gap-2.5">
             <img
               className="h-[42px] w-[42px] rounded-full object-contain"
               src="/assets/Navbar-logo.png"
@@ -20,41 +23,47 @@ export default function Navbar() {
               alt="MUDENG"
               height="14"
             />
-          </a>
+          </Link>
 
           <div className="hidden items-center gap-6 md:flex">
-            <a
+            <Link
               href="/#about"
               className="font-nav text-nav-link hover:text-text-main text-sm font-medium transition-colors duration-300"
             >
               About
-            </a>
-            <a
+            </Link>
+            <Link
               href="/#services"
               className="font-nav text-nav-link hover:text-text-main text-sm font-medium transition-colors duration-300"
             >
               Services
-            </a>
-            <a
+            </Link>
+            <Link
               href="/#system"
               className="font-nav text-nav-link hover:text-text-main text-sm font-medium transition-colors duration-300"
             >
               Process
-            </a>
-            <a
+            </Link>
+            <Link
               href="/#events"
               className="font-nav text-nav-link hover:text-text-main text-sm font-medium transition-colors duration-300"
             >
               Event
-            </a>
+            </Link>
           </div>
 
-          <a
-            href="/#cta"
-            className="bg-text-main text-bg-main rounded-pill font-nav shadow-nav hidden px-6 py-3 text-sm font-semibold whitespace-nowrap transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg md:block"
-          >
-            Daftar Sekarang
-          </a>
+          <div className="hidden items-center gap-4 md:flex">
+            <Show when="signed-out">
+              <SignInButton>
+                <button className="bg-stat text-white rounded-pill font-nav shadow-nav px-6 py-3 text-sm font-medium whitespace-nowrap transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:bg-brand">
+                  Daftar Sekarang
+                </button>
+              </SignInButton>
+            </Show>
+            <Show when="signed-in">
+              <UserButton />
+            </Show>
+          </div>
 
           {/* Mobile Hamburger */}
           <button
@@ -62,9 +71,9 @@ export default function Navbar() {
             id="hamburgerBtn"
             aria-label="Menu"
           >
-            <span className="bg-text-main block h-[2px] w-full rounded-full"></span>
-            <span className="bg-text-main block h-[2px] w-full rounded-full"></span>
-            <span className="bg-text-main block h-[2px] w-full rounded-full"></span>
+            <span className="bg-text-main block h-0.5 w-full rounded-full"></span>
+            <span className="bg-text-main block h-0.5 w-full rounded-full"></span>
+            <span className="bg-text-main block h-0.5 w-full rounded-full"></span>
           </button>
         </div>
       </div>
@@ -74,36 +83,44 @@ export default function Navbar() {
         className="bg-bg-main shadow-card border-divider absolute top-full right-4 left-4 mt-2 hidden flex-col gap-4 rounded-2xl border p-4"
         id="mobileMenu"
       >
-        <a
+        <Link
           href="/#about"
           className="font-nav text-nav-link text-sm font-medium"
         >
           About
-        </a>
-        <a
+        </Link>
+        <Link
           href="/#services"
           className="font-nav text-nav-link text-sm font-medium"
         >
           Services
-        </a>
-        <a
+        </Link>
+        <Link
           href="/#system"
           className="font-nav text-nav-link text-sm font-medium"
         >
           Process
-        </a>
-        <a
+        </Link>
+        <Link
           href="/#events"
           className="font-nav text-nav-link text-sm font-medium"
         >
           Event
-        </a>
-        <a
-          href="/#cta"
-          className="bg-text-main text-bg-main rounded-pill font-nav mt-2 px-6 py-3 text-center text-sm font-semibold"
-        >
-          Daftar Sekarang
-        </a>
+        </Link>
+        <Show when="signed-out">
+          <div className="flex flex-col gap-2 mt-2">
+            <SignInButton>
+              <button className="bg-stat text-white rounded-pill font-nav px-6 py-3 text-center text-sm font-medium transition-colors hover:bg-brand">
+                Daftar Sekarang
+              </button>
+            </SignInButton>
+          </div>
+        </Show>
+        <Show when="signed-in">
+          <div className="mt-2 flex justify-center">
+            <UserButton />
+          </div>
+        </Show>
       </div>
     </nav>
   );
