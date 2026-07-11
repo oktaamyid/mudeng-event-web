@@ -7,18 +7,12 @@ export default async function Events() {
 
 
   return (
-    <section className="py-[160px]" id="events">
-      <div className="mx-auto max-w-360 px-6">
-        <div className="mb-12 flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
-          <h2 className="font-display text-brand text-[32px] leading-[34px] font-normal tracking-[-2px] uppercase md:text-[40px] md:leading-[42px] lg:text-[72px] lg:leading-[72px]">
-            SELECTED EVENTS
-            <br />
-            CRAFTED WITH PURPOSE
-          </h2>
-          <p className="font-body text-text-muted max-w-[672px] text-left text-[24px] leading-[29.76px] font-medium md:text-right">
-            Ini adalah beberapa hasil nyata dari para peserta
-            <br className="hidden md:block" />
-            yang telah mengikuti program kami sebelumnya.
+    <section className="events section-spacing" id="events">
+      <div className="container">
+        <div className="events__header">
+          <h2 className="events__heading">SELECTED EVENTS<br />CRAFTED WITH PURPOSE</h2>
+          <p className="events__subtitle">
+            Ini adalah beberapa hasil nyata dari para peserta<br />yang telah mengikuti program kami sebelumnya.
           </p>
         </div>
 
@@ -101,5 +95,5 @@ export default async function Events() {
         </div>
       </div>
     </section>
-  );
+  )
 }
