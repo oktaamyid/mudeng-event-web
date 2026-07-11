@@ -94,7 +94,7 @@ export default function Navbar() {
 
     return (
         <nav
-            className="fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 transition-all duration-500 ease-in-out"
+            className="fixed top-4 left-1/2 z-50 -translate-x-1/2 px-4 transition-all duration-500 ease-in-out"
             style={{
                 width:
                     typeof window !== "undefined" && window.innerWidth < 768
@@ -106,7 +106,7 @@ export default function Navbar() {
             }}
         >
             <div
-                className="grid items-center px-6 py-3 rounded-full border border-white/10 backdrop-blur-xl transition-all duration-500"
+                className="grid items-center rounded-full border border-white/10 px-6 py-3 backdrop-blur-xl transition-all duration-500"
                 style={{
                     ...pillStyle,
                     gridTemplateColumns: isCompact ? "1fr" : "auto 1fr auto",
@@ -115,7 +115,7 @@ export default function Navbar() {
                 <img
                     src={logoMain}
                     alt="MUDENG"
-                    className="object-contain shrink-0"
+                    className="shrink-0 object-contain"
                     style={{
                         height: "20px",
                         width: "auto",
@@ -125,7 +125,7 @@ export default function Navbar() {
 
                 <div className="flex items-center justify-center">
                     <div
-                        className="flex items-center gap-3 transition-all duration-300 overflow-hidden"
+                        className="flex items-center gap-3 overflow-hidden transition-all duration-300"
                         style={{
                             opacity: isCompact ? 1 : 0,
                             maxWidth: isCompact
@@ -140,7 +140,7 @@ export default function Navbar() {
                                 : "flex-start",
                         }}
                     >
-                        <div className="flex items-center gap-3 shrink-0">
+                        <div className="flex shrink-0 items-center gap-3">
                             <img
                                 src={logoMain}
                                 alt="MUDENG"
@@ -150,14 +150,14 @@ export default function Navbar() {
                                     flexShrink: 0,
                                 }}
                             />
-                            <span className="flex items-center gap-2 min-w-0">
-                                <span className="w-px h-4 bg-[#434655]/30 shrink-0" />
+                            <span className="flex min-w-0 items-center gap-2">
+                                <span className="h-4 w-px shrink-0 bg-[#434655]/30" />
                                 <span className="text-nav-link text-sm font-semibold tracking-wide whitespace-nowrap">
                                     {activeSection}
                                 </span>
                                 <span className="relative flex h-2 w-2 shrink-0">
-                                    <span className="animate-ping absolute h-full w-full rounded-full bg-brand opacity-80" />
-                                    <span className="relative h-2 w-2 rounded-full bg-brand" />
+                                    <span className="bg-brand absolute h-full w-full animate-ping rounded-full opacity-80" />
+                                    <span className="bg-brand relative h-2 w-2 rounded-full" />
                                 </span>
                             </span>
                         </div>
@@ -172,7 +172,7 @@ export default function Navbar() {
                     </div>
 
                     <div
-                        className="hidden md:flex items-center gap-6 transition-all duration-300 overflow-hidden"
+                        className="hidden items-center gap-6 overflow-hidden transition-all duration-300 md:flex"
                         style={{
                             opacity: isCompact ? 0 : 1,
                             maxWidth: isCompact ? "0px" : "600px",
@@ -183,15 +183,15 @@ export default function Navbar() {
                             <Link
                                 key={link.label}
                                 href={link.href}
-                                className={`relative text-base pb-1 whitespace-nowrap transition-colors duration-300 ease-out group ${
+                                className={`group relative pb-1 text-base whitespace-nowrap transition-colors duration-300 ease-out ${
                                     activeSection === link.label
                                         ? "!text-brand font-bold"
-                                        : "!text-nav-link font-medium hover:!text-brand"
+                                        : "!text-nav-link hover:!text-brand font-medium"
                                 }`}
                             >
                                 {link.label}
                                 <span
-                                    className={`absolute bottom-0 left-0 w-full h-[2px] bg-brand origin-center transition-transform duration-300 ease-out ${
+                                    className={`bg-brand absolute bottom-0 left-0 h-[2px] w-full origin-center transition-transform duration-300 ease-out ${
                                         activeSection === link.label
                                             ? "scale-x-100"
                                             : "scale-x-0 group-hover:scale-x-100"
@@ -210,7 +210,7 @@ export default function Navbar() {
                 >
                     <Link
                         href={ctaLink}
-                        className={`hidden md:flex items-center justify-center px-8 py-2.5 rounded-full !text-white text-xs font-bold tracking-[1.2px] whitespace-nowrap relative overflow-hidden transition-all duration-300 border border-[#6667E4] group z-10 hover:border-[#0082FF] ${isCompact ? "hidden" : ""}`}
+                        className={`group relative z-10 hidden items-center justify-center overflow-hidden rounded-full border border-[#6667E4] px-8 py-2.5 text-xs font-bold tracking-[1.2px] whitespace-nowrap !text-white transition-all duration-300 hover:border-[#0082FF] md:flex ${isCompact ? "hidden" : ""}`}
                         style={{
                             ...contactBtnStyle,
                             background: isCompact
@@ -218,7 +218,7 @@ export default function Navbar() {
                                 : contactBtnStyle.background,
                         }}
                     >
-                        <span className="absolute inset-0 bg-[#0082FF] rounded-full origin-bottom scale-y-0 group-hover:scale-y-100 transition-all duration-300 ease-out -z-10 group-hover:shadow-[0_0_30px_rgba(0,130,255,0.8),_inset_0_0_15px_rgba(255,255,255,0.4)]" />
+                        <span className="absolute inset-0 -z-10 origin-bottom scale-y-0 rounded-full bg-[#0082FF] transition-all duration-300 ease-out group-hover:scale-y-100 group-hover:shadow-[0_0_30px_rgba(0,130,255,0.8),_inset_0_0_15px_rgba(255,255,255,0.4)]" />
                         <span className="transition-colors duration-300 group-hover:text-white group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]">
                             DAFTAR SEKARANG
                         </span>
@@ -228,7 +228,7 @@ export default function Navbar() {
 
             {isOpen && (
                 <div
-                    className="md:hidden mt-2 rounded-2xl border border-white/40 backdrop-blur-xl p-4"
+                    className="mt-2 rounded-2xl border border-white/40 p-4 backdrop-blur-xl md:hidden"
                     style={{
                         background:
                             "linear-gradient(160deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.4) 100%)",
@@ -247,7 +247,7 @@ export default function Navbar() {
                     ))}
                     <Link
                         href={ctaLink}
-                        className="block mt-3 px-6 py-2.5 rounded-full !text-white text-xs font-bold tracking-[1.2px] text-center"
+                        className="mt-3 block rounded-full px-6 py-2.5 text-center text-xs font-bold tracking-[1.2px] !text-white"
                         style={contactBtnStyle}
                         onClick={() => setIsOpen(false)}
                     >

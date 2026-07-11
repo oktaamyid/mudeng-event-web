@@ -9,38 +9,38 @@ import EventFAQ from "@/components/event-detail/EventFAQ";
 import EventCTA from "@/components/event-detail/EventCTA";
 
 export async function generateStaticParams() {
-  const res = await getEvents();
-  if (!res.success || !res.data) return [];
-  return res.data.map((event) => ({
-    slug: event.slug,
-  }));
+    const res = await getEvents();
+    if (!res.success || !res.data) return [];
+    return res.data.map((event) => ({
+        slug: event.slug,
+    }));
 }
 
 export default async function EventDetail({
-  params,
+    params,
 }: {
-  params: Promise<{ slug: string }>;
+    params: Promise<{ slug: string }>;
 }) {
-  const resolvedParams = await params;
-  const res = await getEventBySlug(resolvedParams.slug);
+    const resolvedParams = await params;
+    const res = await getEventBySlug(resolvedParams.slug);
 
-  if (!res.success || !res.data || res.data.status !== "PUBLISHED") {
-    notFound();
-  }
+    if (!res.success || !res.data || res.data.status !== "PUBLISHED") {
+        notFound();
+    }
 
-  const event = res.data;
+    const event = res.data;
 
-  return (
-    <div className="flex min-h-screen flex-col">
-      <Navbar />
-      <main className="flex-1">
-        <EventHero event={event as any} />
-        <EventOverview event={event as any} />
-        <EventGallery event={event as any} />
-        <EventFAQ faqs={(event.faqs as any) || []} />
-        <EventCTA event={event as any} />
-      </main>
-      <Footer />
-    </div>
-  );
+    return (
+        <div className="flex min-h-screen flex-col">
+            <Navbar />
+            <main className="flex-1">
+                <EventHero event={event as any} />
+                <EventOverview event={event as any} />
+                <EventGallery event={event as any} />
+                <EventFAQ faqs={(event.faqs as any) || []} />
+                <EventCTA event={event as any} />
+            </main>
+            <Footer />
+        </div>
+    );
 }
