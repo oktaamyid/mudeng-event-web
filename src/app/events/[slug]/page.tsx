@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 import { getEventBySlug, getEvents } from "@/lib/actions/events";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -14,6 +15,41 @@ export async function generateStaticParams() {
     return res.data.map((event) => ({
         slug: event.slug,
     }));
+}
+
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+    const resolvedParams = await params;
+    const res = await getEventBySlug(resolvedParams.slug);
+
+    if (!res.success || !res.data || res.data.status !== "PUBLISHED") {
+        return {
+            title: "Event Not Found",
+        };
+    }
+
+    const event = res.data;
+    const previousImages = event.imageUrl ? [event.imageUrl] : [];
+
+    return {
+        title: event.title,
+        description: event.description || `Register for ${event.title}`,
+        openGraph: {
+            title: event.title,
+            description: event.description || `Register for ${event.title}`,
+            url: `https://mudeng.unf.ac.id/event/events/${event.slug}`,
+            images: previousImages,
+        },
+        twitter: {
+            card: "summary_large_image",
+            title: event.title,
+            description: event.description || `Register for ${event.title}`,
+            images: previousImages,
+        },
+    };
 }
 
 export default async function EventDetail({
