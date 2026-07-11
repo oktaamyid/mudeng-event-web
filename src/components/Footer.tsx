@@ -1,114 +1,101 @@
-export default function Footer() {
-  const footerLinks = [
-    {
-      title: "Menu",
-      items: [
-        { label: "About", href: "/#about" },
-        { label: "Services", href: "/#services" },
-        { label: "Curriculum", href: "/#curriculum" },
-        { label: "Events", href: "/#events" },
-      ],
-    },
-    {
-      title: "Support & Partnership",
-      items: [
-        { label: "FAQ", href: "/#faq" },
-        { label: "Email", href: "mailto:mudeng@nurulfikri.ac.id" },
-        {
-          label: "WhatsApp",
-          href: "https://chat.whatsapp.com/LOrUMOHuLMY3ftHmz6dovF?mode=gi_t",
-        },
-        {
-          label: "Ratecard",
-          href: "https://drive.google.com/file/d/1pW9ctakAwqCbqEgsRINSo16ZenppoW0x/view",
-        },
-        { label: "Support Us", href: "https://saweria.co/mudeng" },
-      ],
-    },
-    {
-      title: "Social Media",
-      items: [
-        { label: "Instagram", href: "https://www.instagram.com/mudengsttnf/" },
-        { label: "TikTok", href: "https://www.tiktok.com/@mudeng.sttnf" },
-        {
-          label: "YouTube",
-          href: "https://www.youtube.com/@MultimediaDigitalEngagementSTT",
-        },
-        { label: "Linktree", href: "https://linktr.ee/mudengsttnf" },
-      ],
-    },
-  ];
+import Image from "next/image";
+import React from "react";
 
+const menus = [
+  {
+    title: 'Menu',
+    links: [
+      { label: 'Approach', href: '#approach' },
+      { label: 'Instructor', href: '#about' },
+      { label: 'Curriculum', href: '#curriculum' },
+      { label: 'Pricing', href: '#cta' }
+    ]
+  },
+  {
+    title: 'Support',
+    links: [
+      { label: 'Email Us', href: '#' },
+      { label: 'Telegram', href: '#' },
+      { label: 'Live chat', href: '#' },
+      { label: 'Help Center', href: '#' }
+    ]
+  },
+  {
+    title: 'Follow',
+    links: [
+      { label: 'Instagram', href: '#' },
+      { label: 'TikTok', href: '#' },
+      { label: 'YouTube', href: '#' }
+    ]
+  },
+  {
+    title: 'Resources',
+    links: [
+      { label: 'Free Lesson', href: '#' },
+      { label: 'Course Guide', href: '#' },
+      { label: 'Community', href: '#' }
+    ]
+  }
+]
+
+export default function Footer() {
   return (
-    <footer className="border-divider border-t pt-[80px]" id="footer">
-      <div className="mx-auto max-w-360 px-6 lg:px-[120px] xl:px-[240px]">
-        <div className="mb-10 flex flex-col justify-between gap-10 md:flex-row">
-          <div className="flex max-w-[270px] flex-col gap-4">
-            <div className="flex items-center gap-2">
-              <img
-                src="/assets/Navbar-logo.png"
-                alt="MUDENG"
-                width="42"
-                height="42"
-                className="rounded-full"
-              />
-              <img
-                src="/assets/Mudeng-Elements.png"
-                alt="MUDENG"
-                height="14"
-                className="h-[14px] w-auto"
-              />
+    <footer className="bg-nav-outer pt-[100px] pb-[40px]" id="footer">
+      <div className="container mx-auto">
+        {/* Menu columns */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-[40px] mb-[60px]">
+          {menus.map((menu, i) => (
+            <div key={i}>
+              <div className="font-nav !font-bold text-[16px] uppercase tracking-[1px] mb-[16px] text-text-main">{menu.title}</div>
+              <ul className="space-y-[10px]">
+                {menu.links.map((link, j) => (
+                  <li key={j}>
+                    <a href={link.href} className="text-[16px] text-text-muted hover:!text-brand transition-colors">
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <p className="font-body text-text-muted text-base leading-[20.42px] font-medium">
-              MUDENG membantu kreator membangun konten dengan kejelasan,
-              konsistensi, dan tujuan.
+          ))}
+        </div>
+
+        {/* Logo/desc + Newsletter */}
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-[40px] mb-[40px]">
+          <div className="max-w-[400px]">
+            <div className="flex items-center gap-[12px] mb-[16px]">
+              <Image src="https://cdn.mudeng.oktaa.my.id/logo/logo-mudeng.svg" alt="MUDENG" width={32} height={32} className="w-auto" />
+            </div>
+            <p className="text-[16px] leading-[24px] text-footer-muted">
+              MUDENG membantu kreator membangun konten dengan kejelasan, konsistensi, dan tujuan.
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-10 md:gap-[120px]">
-            {footerLinks.map((column, i) => (
-              <div key={i} className="flex flex-col">
-                <div className="font-body text-text-main mb-4 text-base font-semibold">
-                  {column.title}
-                </div>
-                <div className="flex flex-col gap-2.5">
-                  {column.items.map((item, j) => (
-                    <a
-                      key={j}
-                      href={item.href}
-                      target={
-                        item.href.startsWith("http") ? "_blank" : undefined
-                      }
-                      rel={
-                        item.href.startsWith("http")
-                          ? "noopener noreferrer"
-                          : undefined
-                      }
-                      className="font-body text-text-muted hover:text-brand text-base font-medium transition-colors duration-200"
-                    >
-                      {item.label}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            ))}
+          <div className="w-full lg:w-auto">
+            <div className="font-nav font-bold text-[16px] mb-[16px] text-text-main">Don't miss updates</div>
+            <div className="flex items-center bg-[#f4f4f7] rounded-full p-[6px] pl-[24px] w-full lg:w-[380px]">
+              <input
+                type="email"
+                placeholder="Email address"
+                className="flex-1 bg-transparent outline-none text-[16px] text-text-main placeholder:text-text-muted min-w-0"
+              />
+              <button className="flex-shrink-0 !bg-brand text-white text-[16px] font-medium py-[12px] px-[24px] rounded-full whitespace-nowrap transition-transform hover:scale-105">
+                Subscribe
+              </button>
+            </div>
           </div>
         </div>
 
-        <div className="border-divider mt-10 flex flex-col items-center justify-between gap-4 border-t py-5 text-center sm:flex-row sm:gap-0 sm:text-left">
-          <span className="font-body text-text-muted text-base font-medium">
-            © {new Date().getFullYear()}, All Rights Reserved
-          </span>
-          <div className="flex items-center gap-3">
-            <a
-              href="#hero"
-              className="font-body text-text-muted hover:text-brand text-base font-medium transition-colors duration-200"
-            >
-              Back To Top
-            </a>
+        {/* Copyright */}
+        <div className="border-t border-divider pt-[24px] flex flex-col md:flex-row items-center justify-between gap-[24px]">
+          <span className="text-[16px] text-text-muted">© 2026, All Rights Reserved</span>
+          <div className="flex items-center gap-[12px]">
+            <a href="#" className="text-[16px] text-text-muted hover:!text-brand transition-colors">Privacy Policy</a>
+            <span className="w-[4px] h-[4px] rounded-full bg-[#cccccc]"></span>
+            <a href="#hero" className="text-[16px] text-text-muted hover:!text-brand transition-colors">Back To Top</a>
           </div>
         </div>
       </div>
     </footer>
-  );
+  )
 }

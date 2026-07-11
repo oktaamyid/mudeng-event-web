@@ -1,65 +1,68 @@
+"use client";
+
+import React, { useRef, useEffect } from "react";
+import Image from "next/image"; // Import Image for potential use with other assets, though video uses <video>
+
 export default function About() {
+  const stats = [
+    { number: '500', suffix: '+', label: 'Peserta Berpartisipasi' },
+    { number: '3', suffix: '', label: 'Kategori Pelatihan Utama' },
+    { number: '10', suffix: '+', label: 'Mentor Berpengalaman' },
+    { number: '100', suffix: '%', label: 'Berorientasi Portofolio' }
+  ];
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (videoRef.current) {
+        videoRef.current.play().catch(error => {
+          console.error("Autoplay failed:", error);
+        });
+      }
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <section className="py-[160px] text-center" id="about">
-      <div className="mx-auto max-w-360 px-6 lg:px-[240px]">
-        <h2 className="font-display text-brand mb-6 text-[32px] leading-[34px] font-normal tracking-[-2px] uppercase md:text-[40px] md:leading-[42px] lg:text-[72px] lg:leading-[72px]">
+    <section className="relative py-[160px] text-center" id="about">
+      <div className="mx-auto max-w-[1440px] px-6 md:px-[240px]">
+        <h2 className="font-['Anton'] text-[72px] leading-[72px] tracking-[-2px] text-[#6849E1] uppercase mb-6">
           MUDENG IS A MODERN CREATIVE
         </h2>
-        <p className="font-body text-text-muted mx-auto mb-[60px] max-w-[720px] text-base font-medium md:text-[18px]">
-          MUDENG adalah wadah kreatif modern yang fokus mengembangkan keahlian
-          multimedia melalui pelatihan interaktif guna mempersiapkan talenta
-          digital masa depan yang siap kerja.
+        <p className="font-['Inter'] font-medium text-[24px] leading-[29.76px] tracking-[-0.48px] text-[#1A1A1A]/65 max-w-[720px] mx-auto mb-[60px]">
+          MUDENG adalah wadah kreatif modern yang fokus mengembangkan keahlian multimedia melalui pelatihan interaktif guna mempersiapkan talenta digital masa depan yang siap kerja.
         </p>
 
-        <div className="mb-[60px] flex flex-col flex-wrap items-center justify-center gap-6 md:flex-row md:gap-0">
-          <div className="md:after:bg-divider relative min-w-[160px] flex-none px-6 text-center md:after:absolute md:after:top-0 md:after:right-0 md:after:bottom-0 md:after:w-[1px] md:after:content-['']">
-            <div className="font-body text-stat mb-2 text-[40px] leading-[48px] font-medium tracking-[-2.2px]">
-              500<span>+</span>
+        <div className="flex flex-wrap justify-center items-start gap-0 mb-[60px]">
+          {stats.map((stat, i) => (
+            <div 
+              key={i} 
+              className={`relative flex-none min-w-[160px] px-6 text-center ${i === stats.length - 1 ? '' : 'md:after:absolute md:after:right-0 md:after:top-0 md:after:bottom-0 md:after:w-[1px] md:after:bg-[#000000]/05 md:after:content-[""]'}`}
+            >
+              <div className="font-['Inter'] font-medium text-[40px] leading-[48px] tracking-[-2.2px] text-[#7C7AEA] mb-2">
+                {stat.number}{stat.suffix && <span>{stat.suffix}</span>}
+              </div>
+              <div className="font-['Inter'] font-medium text-[17px] leading-[27px] tracking-[-0.63px] text-[#7d7d7d]">
+                {stat.label}
+              </div>
             </div>
-            <div className="font-body text-footer-muted text-[17px] leading-[27px] font-medium tracking-[-0.63px]">
-              Peserta Berpartisipasi
-            </div>
-          </div>
-          <div className="md:after:bg-divider relative min-w-[160px] flex-none px-6 text-center md:after:absolute md:after:top-0 md:after:right-0 md:after:bottom-0 md:after:w-[1px] md:after:content-['']">
-            <div className="font-body text-stat mb-2 text-[40px] leading-[48px] font-medium tracking-[-2.2px]">
-              3
-            </div>
-            <div className="font-body text-footer-muted text-[17px] leading-[27px] font-medium tracking-[-0.63px]">
-              Kategori Pelatihan Utama
-            </div>
-          </div>
-          <div className="md:after:bg-divider relative min-w-[160px] flex-none px-6 text-center md:after:absolute md:after:top-0 md:after:right-0 md:after:bottom-0 md:after:w-[1px] md:after:content-['']">
-            <div className="font-body text-stat mb-2 text-[40px] leading-[48px] font-medium tracking-[-2.2px]">
-              10<span>+</span>
-            </div>
-            <div className="font-body text-footer-muted text-[17px] leading-[27px] font-medium tracking-[-0.63px]">
-              Mentor Berpengalaman
-            </div>
-          </div>
-          <div className="relative min-w-[160px] flex-none px-6 text-center">
-            <div className="font-body text-stat mb-2 text-[40px] leading-[48px] font-medium tracking-[-2.2px]">
-              100<span>%</span>
-            </div>
-            <div className="font-body text-footer-muted text-[17px] leading-[27px] font-medium tracking-[-0.63px]">
-              Berorientasi Portofolio
-            </div>
-          </div>
+          ))}
         </div>
 
-        <div className="rounded-card relative mx-auto aspect-[1200/650] w-full max-w-[1200px] overflow-hidden">
-          <img
-            src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&h=650&fit=crop"
-            alt="MUDENG creative workshop video preview"
+        <div className="relative mx-auto max-w-[1200px] aspect-[1200/650] overflow-hidden rounded-[32px] shadow-[0_16px_48px_-4px_rgba(26,26,26,0.2)]">
+          <video
+            ref={videoRef}
+            autoPlay
+            loop
+            muted
+            playsInline
             className="h-full w-full object-cover"
-          />
-          <div className="absolute top-1/2 left-1/2 flex h-[70px] w-[70px] -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white/20 backdrop-blur-[2.5px] transition-colors duration-200 hover:bg-white/40">
-            <svg
-              viewBox="0 0 24 24"
-              className="ml-[3px] h-[22px] w-[22px] fill-white"
-            >
-              <polygon points="5,3 19,12 5,21"></polygon>
-            </svg>
-          </div>
+          >
+            <source src="/videos/video-coming-soon.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
         </div>
       </div>
     </section>

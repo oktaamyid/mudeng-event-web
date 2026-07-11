@@ -1,148 +1,80 @@
-export default function Testimonials() {
-  const stars = Array(5)
-    .fill(0)
-    .map((_, i) => (
-      <svg key={i} className="text-badge-orange h-4 w-4" viewBox="0 0 24 24">
-        <path
-          fill="currentColor"
-          d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
-        />
-      </svg>
-    ));
+const testimonials = [
+  {
+    text: "Dulu bingung bikin layout web. Setelah ikut kelas UI Craft, sekarang paham workflow riset user sampai bikin komponen matang di Figma",
+    name: 'Bayu',
+    avatar: 'https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=Bayu',
+    rotation: 'testimonial-card--rotate-neg10'
+  },
+  {
+    text: "Materinya daging banget! Membuka mata tentang pentingnya pentingnya komposisi grid dan psikologi warna untuk branding.",
+    name: 'Raihan',
+    avatar: 'https://ui-avatars.com/api/?background=f&color=fff&name=Raihan',
+    rotation: 'testimonial-card--rotate-pos10'
+  },
+  {
+    text: "Event multimedia paling worth it! Gabungan materi UI Craft dan teknik  visual lainnya jadi modal kuat buat nyusun portofolio pertama.",
+    name: 'Siti',
+    avatar: 'https://ui-avatars.com/api/?background=ft78kmn&color=fff&name=Siti',
+    rotation: 'testimonial-card--rotate-neg10'
+  },
+  {
+    text: "Sesi Videography seru parah! Trik angle dinamis dan dasar  editing video dikupas habis, sangat mudah dipahami pemula.",
+    name: 'Nurul H.',
+    avatar: 'https://ui-avatars.com/api/?background=75h5w3&color=fff&name=Nurul+H.',
+    rotation: 'testimonial-card--rotate-neg5'
+  },
+  {
+    text: "Belajar segitiga eksposur dan teknik teknik komposisi di sini sangat membantu. Hasil foto produk saya sekarang jauh lebih estetik dan profesional!",
+    name: 'Zahra F.',
+    avatar: 'https://ui-avatars.com/api/?background=98ibnh&color=fff&name=Zahra+F.',
+    rotation: 'testimonial-card--rotate-pos5'
+  }
+]
 
+export default function Testimonials() {
   return (
-    <section className="py-[160px]" id="testimonials">
-      <div className="mx-auto max-w-360 px-6 lg:px-[120px] xl:px-[240px]">
-        <div className="mb-[60px] text-center">
-          <h2 className="font-display text-brand text-center text-[40px] leading-[42px] font-normal tracking-[-2px] uppercase lg:text-[72px] lg:leading-[72px]">
-            Real stories
-            <br />
-            from creators
-          </h2>
+    <section className="testimonials section-spacing" id="testimonials">
+      <div className="container">
+        <div className="testimonials__heading">
+          <h2 className="heading-h2" style={{ textAlign: 'center' }}>Real stories<br />from creators</h2>
         </div>
 
-        <div className="relative">
-          <img
-            src="assets/icon-arrow2.png"
-            alt=""
-            className="pointer-events-none absolute top-[10px] -left-[50px] hidden w-[150px] rotate-[15deg] opacity-20 lg:block"
-            aria-hidden="true"
-          />
-          <img
-            src="assets/icon-cling.png"
-            alt=""
-            className="pointer-events-none absolute -top-[40px] right-0 hidden w-[100px] rotate-[15deg] opacity-20 lg:block"
-            aria-hidden="true"
-          />
+        <div className="testimonials__scattered">
+          {/* Decorative icons */}
+          <img src="/assets/icon-arrow2.png" alt="" className="testimonials__deco testimonials__deco--arrow" aria-hidden="true" />
+          <img src="/assets/icon-cling.png" alt="" className="testimonials__deco testimonials__deco--bling" aria-hidden="true" />
 
-          {/* Row 1 */}
-          <div className="relative z-10 mb-6 flex flex-col flex-wrap items-center justify-center gap-6 md:flex-row md:flex-nowrap md:gap-0 lg:-mb-[30px]">
-            <div className="shadow-card flex w-full shrink-0 flex-col gap-4 rounded-[32px] bg-white p-7 text-left transition-transform duration-300 md:-mx-[10px] md:w-[280px] lg:-mx-[15px] lg:w-[300px] lg:-rotate-[10deg] lg:hover:z-10 lg:hover:scale-[1.03] lg:hover:rotate-0">
-              <div className="flex gap-1">{stars}</div>
-              <p className="font-body text-text-muted flex-1 text-[15px] leading-[22px] font-medium">
-                This course made consistency feel realistic. Instead of guessing
-                every time, I now follow a process that actually fits my
-                routine.
-              </p>
-              <div className="mt-auto flex items-center gap-2.5">
-                <div className="bg-pill-bg h-8 w-8 overflow-hidden rounded-full">
-                  <img
-                    src="https://i.pravatar.cc/128?img=12"
-                    alt="Jordan P."
-                    className="h-full w-full object-cover"
-                  />
+          {/* Row 1: 3 cards */}
+          <div className="testimonials__row">
+            {testimonials.slice(0, 3).map((t, i) => (
+              <div className={`testimonial-card ${t.rotation}`} key={i}>
+                <p className="testimonial-card__text">{t.text}</p>
+                <div className="testimonial-card__author">
+                  <div className="testimonial-card__avatar">
+                    <img src={t.avatar} alt={t.name} />
+                  </div>
+                  <span className="testimonial-card__name">{t.name}</span>
                 </div>
-                <span className="font-body text-text-main text-[14px] font-medium">
-                  Jordan P.
-                </span>
               </div>
-            </div>
-
-            <div className="shadow-card flex w-full shrink-0 flex-col gap-4 rounded-[32px] bg-white p-7 text-left transition-transform duration-300 md:-mx-[10px] md:w-[280px] lg:-mx-[15px] lg:w-[300px] lg:rotate-[10deg] lg:hover:z-10 lg:hover:scale-[1.03] lg:hover:rotate-0">
-              <div className="flex gap-1">{stars}</div>
-              <p className="font-body text-text-muted flex-1 text-[15px] leading-[22px] font-medium">
-                I finally understand what to post and why it works. Tokko gave
-                me structure without making content feel forced or overwhelming.
-              </p>
-              <div className="mt-auto flex items-center gap-2.5">
-                <div className="bg-pill-bg h-8 w-8 overflow-hidden rounded-full">
-                  <img
-                    src="https://i.pravatar.cc/128?img=32"
-                    alt="Alex R."
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <span className="font-body text-text-main text-[14px] font-medium">
-                  Alex R.
-                </span>
-              </div>
-            </div>
-
-            <div className="shadow-card flex w-full shrink-0 flex-col gap-4 rounded-[32px] bg-white p-7 text-left transition-transform duration-300 md:-mx-[10px] md:w-[280px] lg:-mx-[15px] lg:w-[300px] lg:-rotate-[10deg] lg:hover:z-10 lg:hover:scale-[1.03] lg:hover:rotate-0">
-              <div className="flex gap-1">{stars}</div>
-              <p className="font-body text-text-muted flex-1 text-[15px] leading-[22px] font-medium">
-                They helped me stop overthinking content and start posting with
-                confidence. Everything feels simpler and easier to stick with.
-              </p>
-              <div className="mt-auto flex items-center gap-2.5">
-                <div className="bg-pill-bg h-8 w-8 overflow-hidden rounded-full">
-                  <img
-                    src="https://i.pravatar.cc/128?img=47"
-                    alt="Sofia K."
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <span className="font-body text-text-main text-[14px] font-medium">
-                  Sofia K.
-                </span>
-              </div>
-            </div>
+            ))}
           </div>
 
-          {/* Row 2 */}
-          <div className="relative z-20 flex flex-col flex-wrap items-center justify-center gap-6 md:flex-row md:flex-nowrap md:gap-0">
-            <div className="shadow-card flex w-full shrink-0 flex-col gap-4 rounded-[32px] bg-white p-7 text-left transition-transform duration-300 md:-mx-[10px] md:w-[280px] lg:-mx-[15px] lg:w-[300px] lg:-rotate-[5deg] lg:hover:z-10 lg:hover:scale-[1.03] lg:hover:rotate-0">
-              <div className="flex gap-1">{stars}</div>
-              <p className="font-body text-text-muted flex-1 text-[15px] leading-[22px] font-medium">
-                Tokko gave me clarity. I don't waste time guessing what to post
-                anymore, and that alone made a huge difference for me.
-              </p>
-              <div className="mt-auto flex items-center gap-2.5">
-                <div className="bg-pill-bg h-8 w-8 overflow-hidden rounded-full">
-                  <img
-                    src="https://i.pravatar.cc/128?img=60"
-                    alt="Lena M."
-                    className="h-full w-full object-cover"
-                  />
+          {/* Row 2: 2 cards */}
+          <div className="testimonials__row testimonials__row--bottom">
+            {testimonials.slice(3).map((t, i) => (
+              <div className={`testimonial-card ${t.rotation}`} key={i}>
+                <p className="testimonial-card__text">{t.text}</p>
+                <div className="testimonial-card__author">
+                  <div className="testimonial-card__avatar">
+                    <img src={t.avatar} alt={t.name} />
+                  </div>
+                  <span className="testimonial-card__name">{t.name}</span>
                 </div>
-                <span className="font-body text-text-main text-[14px] font-medium">
-                  Lena M.
-                </span>
               </div>
-            </div>
-
-            <div className="shadow-card flex w-full shrink-0 flex-col gap-4 rounded-[32px] bg-white p-7 text-left transition-transform duration-300 md:-mx-[10px] md:w-[280px] lg:-mx-[15px] lg:w-[300px] lg:rotate-[5deg] lg:hover:z-10 lg:hover:scale-[1.03] lg:hover:rotate-0">
-              <div className="flex gap-1">{stars}</div>
-              <p className="font-body text-text-muted flex-1 text-[15px] leading-[22px] font-medium">
-                The biggest change for me was confidence. I know what I'm doing
-                now, and my content reflects that in a much more consistent way.
-              </p>
-              <div className="mt-auto flex items-center gap-2.5">
-                <div className="bg-pill-bg h-8 w-8 overflow-hidden rounded-full">
-                  <img
-                    src="https://i.pravatar.cc/128?img=68"
-                    alt="Emily T."
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <span className="font-body text-text-main text-[14px] font-medium">
-                  Emily T.
-                </span>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
     </section>
-  );
+  )
 }
