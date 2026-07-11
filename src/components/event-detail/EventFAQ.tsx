@@ -1,7 +1,16 @@
+"use client";
+
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { Plus, Minus } from "lucide-react";
+
 export default function EventFAQ({
     faqs = [],
+    event,
 }: {
     faqs?: { question: string; answer: string }[];
+    event?: any;
 }) {
     const defaultFaqs = [
         {
@@ -35,6 +44,12 @@ export default function EventFAQ({
             ? faqs.map((f) => ({ q: f.question, a: f.answer }))
             : defaultFaqs;
 
+    const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+    const toggleFaq = (index: number) => {
+        setOpenIndex(openIndex === index ? null : index);
+    };
+
     return (
         <section
             className="border-divider border-t bg-white py-[100px] md:py-[160px]"
@@ -43,76 +58,71 @@ export default function EventFAQ({
             <div className="mx-auto max-w-360 px-6 lg:px-[120px] xl:px-[240px]">
                 <div className="mb-[80px] text-center">
                     <h2 className="font-display text-text-main mx-auto mb-4 max-w-[500px] text-[36px] leading-[40px] font-normal md:text-[50px] md:leading-[52px]">
-                        Common{" "}
-                        <span className="text-text-muted">questions</span> about
-                        our program.
+                        FREQUENTLY <span className="text-text-muted">ASKED</span> QUESTIONS ABOUT OUR SERVICE.
                     </h2>
                     <p className="font-body text-text-muted mx-auto max-w-[500px] text-[16px] font-medium">
-                        Browse through these common inquiries to learn more
-                        about how our elite creative subscription model works
-                        daily
+                        Masih penasaran dengan event pelatihan gratis ini. Cek tanya jawab di bawah biar Kamu langsung paham.
                     </p>
                 </div>
 
                 <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
-                    <div className="relative flex h-[300px] w-full flex-col justify-end overflow-hidden rounded-[32px] bg-[#1a1a1a] p-10 lg:h-auto">
-                        <img
-                            src="https://images.unsplash.com/photo-1618761714954-0b8cd0026356?w=600&h=800&fit=crop"
-                            className="absolute inset-0 h-full w-full object-cover opacity-50 mix-blend-overlay"
-                        />
-                        <div className="relative z-10">
-                            <div className="mb-6 h-12 w-12 overflow-hidden rounded-full">
-                                <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop" />
-                            </div>
-                            <h3 className="font-body mb-2 text-[24px] font-semibold text-white">
-                                Book an intro Call
+                    <div className="relative flex h-[350px] w-full flex-col justify-end overflow-hidden rounded-[32px] p-8 lg:h-auto bg-gradient-to-br from-[#c4b5fd] to-[#818CF8]">
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent" />
+                        <div className="relative z-10 w-full rounded-2xl bg-white/20 p-6 backdrop-blur-md shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/30">
+                            <h3 className="font-display mb-2 text-[24px] font-semibold text-white">
+                                Daftar {event?.title || "Event"}
                             </h3>
-                            <p className="font-body mb-6 text-sm font-medium text-white/70">
-                                Book a free discovery call to explore our unique
-                                creative process.
+                            <p className="font-body mb-6 text-sm font-medium text-white/90">
+                                Bergabunglah dan mulai perjalananmu di dunia {event?.category || "UI/UX Design"}
                             </p>
-                            <button className="font-body w-full rounded-full bg-white py-3 text-sm font-semibold text-black transition-colors hover:bg-gray-100">
-                                Get started
-                            </button>
+                            <Link href={`/events/${event?.slug || ""}/register`} className="block">
+                                <button className="font-body w-full rounded-full bg-[#8b5cf6] py-3 text-sm font-semibold text-white shadow-md transition-all hover:bg-[#7c3aed] hover:shadow-lg">
+                                    Daftar Sekarang
+                                </button>
+                            </Link>
                         </div>
                     </div>
 
                     <div className="flex flex-col gap-3">
-                        {displayFaqs.map((faq, idx) => (
-                            <div
-                                key={idx}
-                                className="flex cursor-pointer items-center justify-between rounded-[16px] bg-[#F8F9FB] p-5 transition-colors hover:bg-[#F2F4F7]"
-                            >
-                                <span className="font-body text-text-main font-medium">
-                                    {faq.q}
-                                </span>
-                                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#6849E1]">
-                                    <svg
-                                        width="12"
-                                        height="12"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="white"
-                                        strokeWidth="3"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
+                        {displayFaqs.map((faq, idx) => {
+                            const isOpen = openIndex === idx;
+                            return (
+                                <div
+                                    key={idx}
+                                    className="flex flex-col rounded-[16px] bg-[#F8F9FB] transition-colors hover:bg-[#F2F4F7] overflow-hidden"
+                                >
+                                    <div 
+                                        className="flex cursor-pointer items-center justify-between p-5"
+                                        onClick={() => toggleFaq(idx)}
                                     >
-                                        <line
-                                            x1="12"
-                                            y1="5"
-                                            x2="12"
-                                            y2="19"
-                                        ></line>
-                                        <line
-                                            x1="5"
-                                            y1="12"
-                                            x2="19"
-                                            y2="12"
-                                        ></line>
-                                    </svg>
+                                        <span className="font-body text-text-main font-medium">
+                                            {faq.q}
+                                        </span>
+                                        <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition-colors ${isOpen ? 'bg-[#1a1a1a]' : 'bg-[#6849E1]'}`}>
+                                            {isOpen ? (
+                                                <Minus className="h-3 w-3 text-white" strokeWidth={3} />
+                                            ) : (
+                                                <Plus className="h-3 w-3 text-white" strokeWidth={3} />
+                                            )}
+                                        </div>
+                                    </div>
+                                    <AnimatePresence>
+                                        {isOpen && (
+                                            <motion.div
+                                                initial={{ height: 0, opacity: 0 }}
+                                                animate={{ height: "auto", opacity: 1 }}
+                                                exit={{ height: 0, opacity: 0 }}
+                                                transition={{ duration: 0.3, ease: "easeInOut" }}
+                                            >
+                                                <div className="px-5 pb-5 pt-0 font-body text-sm text-text-muted whitespace-pre-wrap">
+                                                    {faq.a}
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             </div>

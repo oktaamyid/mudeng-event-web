@@ -43,6 +43,7 @@ export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
                                     alt="Mudeng"
                                     width={32}
                                     height={32}
+                                    className="size-8"
                                 />
                             </div>
                             <div className="flex flex-col gap-0.5 leading-none">
@@ -50,7 +51,7 @@ export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
                                     MUDENG
                                 </span>
                                 <span className="text-muted-foreground text-xs">
-                                    Admin Panel
+                                    {isAdmin ? "Admin Panel" : "User Dashboard"}
                                 </span>
                             </div>
                         </SidebarMenuButton>

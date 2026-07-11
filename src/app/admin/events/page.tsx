@@ -40,8 +40,8 @@ export default async function AdminEventsPage() {
                     </p>
                 </div>
                 <Button render={<Link href="/admin/events/new" />}>
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    New Event
+                    <PlusCircle className="mr-2 h-4 w-4 text-white" />
+                    <p className="text-white">New Event</p>
                 </Button>
             </div>
 

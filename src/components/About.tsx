@@ -3,7 +3,7 @@
 import React, { useRef, useEffect } from "react";
 import Image from "next/image"; // Import Image for potential use with other assets, though video uses <video>
 
-export default function About() {
+export default function About({ event }: { event?: any }) {
     const stats = [
         { number: "500", suffix: "+", label: "Peserta Berpartisipasi" },
         { number: "3", suffix: "", label: "Kategori Pelatihan Utama" },
@@ -16,9 +16,12 @@ export default function About() {
     useEffect(() => {
         const timer = setTimeout(() => {
             if (videoRef.current) {
-                videoRef.current.play().catch((error) => {
-                    console.error("Autoplay failed:", error);
-                });
+                const playPromise = videoRef.current.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch((error) => {
+                        // Ignore abort error if component unmounts
+                    });
+                }
             }
         }, 0);
 
@@ -29,12 +32,11 @@ export default function About() {
         <section className="relative py-[160px] text-center" id="about">
             <div className="mx-auto max-w-[1440px] px-6 md:px-[240px]">
                 <h2 className="mb-6 font-['Anton'] text-[72px] leading-[72px] tracking-[-2px] text-[#6849E1] uppercase">
-                    MUDENG IS A MODERN CREATIVE
+                    {event?.overview?.title || "MUDENG IS A MODERN CREATIVE"}
                 </h2>
                 <p className="mx-auto mb-[60px] max-w-[720px] font-['Inter'] text-[24px] leading-[29.76px] font-medium tracking-[-0.48px] text-[#1A1A1A]/65">
-                    MUDENG adalah wadah kreatif modern yang fokus mengembangkan
-                    keahlian multimedia melalui pelatihan interaktif guna
-                    mempersiapkan talenta digital masa depan yang siap kerja.
+                    {event?.overview?.description ||
+                        "MUDENG adalah wadah kreatif modern yang fokus mengembangkan keahlian multimedia melalui pelatihan interaktif guna mempersiapkan talenta digital masa depan yang siap kerja."}
                 </p>
 
                 <div className="mb-[60px] flex flex-wrap items-start justify-center gap-0">
@@ -64,7 +66,7 @@ export default function About() {
                         className="h-full w-full object-cover"
                     >
                         <source
-                            src="/videos/video-coming-soon.mp4"
+                            src="https://cdn.mudeng.oktaa.my.id/videos/video-coming-soon.mp4"
                             type="video/mp4"
                         />
                         Your browser does not support the video tag.

@@ -7,7 +7,6 @@ import EventHero from "@/components/event-detail/EventHero";
 import EventOverview from "@/components/event-detail/EventOverview";
 import EventGallery from "@/components/event-detail/EventGallery";
 import EventFAQ from "@/components/event-detail/EventFAQ";
-import EventCTA from "@/components/event-detail/EventCTA";
 
 export async function generateStaticParams() {
     const res = await getEvents();
@@ -73,8 +72,10 @@ export default async function EventDetail({
                 <EventHero event={event as any} />
                 <EventOverview event={event as any} />
                 <EventGallery event={event as any} />
-                <EventFAQ faqs={(event.faqs as any) || []} />
-                <EventCTA event={event as any} />
+                <EventFAQ
+                    faqs={(event.faqs as any) || []}
+                    event={event as any}
+                />
             </main>
             <Footer />
         </div>

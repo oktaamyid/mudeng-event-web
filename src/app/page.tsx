@@ -11,15 +11,17 @@ import Testimonials from "@/components/Testimonials";
 import FAQ from "@/components/FAQ";
 import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
+import { getActiveEvent } from "@/lib/actions/events";
 
-export default function Home() {
+export default async function Home() {
+    const { data: activeEvent } = await getActiveEvent();
     return (
         <main>
             <Navbar />
 
-            <Hero />
+            <Hero event={activeEvent} />
 
-            <About />
+            <About event={activeEvent} />
 
             <Benefits />
 
@@ -35,7 +37,7 @@ export default function Home() {
 
             <Testimonials />
 
-            <FAQ />
+            <FAQ event={activeEvent} />
 
             <CTA />
 

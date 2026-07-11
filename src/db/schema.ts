@@ -27,6 +27,7 @@ export const events = pgTable("events", {
     gallery: jsonb("gallery"), // string[]
     faqs: jsonb("faqs"), // { question, answer }[]
     formFields: jsonb("form_fields"), // Dynamic form configuration
+    confirmationMessage: text("confirmation_message"), // Custom success message
     status: varchar("status", { length: 50 }).default("PUBLISHED").notNull(),
     isFeatured: boolean("is_featured").default(false).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),

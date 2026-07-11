@@ -1,9 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getActiveEvent } from "@/lib/actions/events";
-
-export default async function Hero() {
-    const { data: activeEvent } = await getActiveEvent();
+export default async function Hero({ event: activeEvent }: { event: any }) {
     const ctaLink = activeEvent
         ? `/events/${activeEvent.slug}/register`
         : "#events";
@@ -74,12 +71,11 @@ export default async function Hero() {
 
             <div className="relative z-10 mx-auto max-w-[800px] px-6 text-center">
                 <h1 className="mb-6 font-['Anton'] text-[96px] leading-[92.16px] tracking-[-3.84px] text-[#6849E1] uppercase">
-                    TAKE OVER THE TIMELINE
+                    {activeEvent?.title || "TAKE OVER THE TIMELINE"}
                 </h1>
                 <p className="mx-auto mb-[60px] max-w-[692px] font-['Inter'] text-[24px] leading-[29.76px] font-medium tracking-[-0.48px] text-[#1A1A1A]/65">
-                    Ikuti rangkaian pelatihan digital kreatif terbesar dari
-                    Multimedia Digital Engagement untuk kuasai keahlian masa
-                    depan.
+                    {activeEvent?.subtitle ||
+                        "Ikuti rangkaian pelatihan digital kreatif terbesar dari Multimedia Digital Engagement untuk kuasai keahlian masa depan."}
                 </p>
                 <div className="mb-[60px] flex w-full flex-col items-center justify-center gap-2 md:flex-row">
                     <Link
@@ -88,12 +84,12 @@ export default async function Hero() {
                     >
                         Daftar Sekarang
                     </Link>
-                    <a
-                        href="#services"
+                    <Link
+                        href="/#services"
                         className="bg-pill-bg text-btn-secondary-text rounded-pill font-nav w-full px-8 py-4 text-base font-semibold transition-all duration-300 hover:-translate-y-1 hover:bg-black/10 md:w-auto"
                     >
                         Lihat Detail
-                    </a>
+                    </Link>
                 </div>
             </div>
 

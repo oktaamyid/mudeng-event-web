@@ -27,16 +27,10 @@ import {
 import Link from "next/link";
 import { use } from "react";
 import { UploadButton } from "@/lib/uploadthing";
+import { deleteUploadThingFile } from "@/lib/actions/upload";
+import { FormBuilder } from "@/components/FormBuilder";
 
-const FIELD_TYPES = [
-    { value: "text", label: "Short Text" },
-    { value: "email", label: "Email" },
-    { value: "textarea", label: "Long Text" },
-    { value: "select", label: "Dropdown" },
-    { value: "radio", label: "Radio Buttons" },
-    { value: "number", label: "Number" },
-    { value: "phone", label: "Phone Number" },
-];
+
 
 export default function EditEventPage({
     params,
@@ -69,6 +63,7 @@ export default function EditEventPage({
         gallery: [] as string[],
         faqs: [] as { question: string; answer: string }[],
         isFeatured: false,
+        confirmationMessage: "",
     });
 
     const [formFields, setFormFields] = useState<any[]>([]);
@@ -104,6 +99,7 @@ export default function EditEventPage({
                     gallery: (res.data.gallery as any) || [],
                     faqs: (res.data.faqs as any) || [],
                     isFeatured: res.data.isFeatured || false,
+                    confirmationMessage: res.data.confirmationMessage || "",
                 });
                 setFormFields((res.data.formFields as any[]) || []);
             } else {
@@ -126,28 +122,7 @@ export default function EditEventPage({
         });
     };
 
-    const addField = () => {
-        setFormFields([
-            ...formFields,
-            {
-                id: `field_${Date.now()}`,
-                step: 1,
-                type: "text",
-                label: "New Question",
-                required: false,
-            },
-        ]);
-    };
 
-    const removeField = (index: number) => {
-        setFormFields(formFields.filter((_, i) => i !== index));
-    };
-
-    const updateField = (index: number, key: string, value: any) => {
-        const newFields = [...formFields];
-        newFields[index][key] = value;
-        setFormFields(newFields);
-    };
 
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -442,11 +417,31 @@ export default function EditEventPage({
                                         />
                                     </div>
                                     {eventData.imageUrl && (
-                                        <img
-                                            src={eventData.imageUrl}
-                                            alt="Main"
-                                            className="w-full max-w-sm rounded-md border object-cover"
-                                        />
+                                        <div className="relative inline-block w-full max-w-sm">
+                                            <img
+                                                src={eventData.imageUrl}
+                                                alt="Main"
+                                                className="w-full rounded-md border object-cover"
+                                            />
+                                            <Button
+                                                type="button"
+                                                variant="destructive"
+                                                size="sm"
+                                                onClick={async () => {
+                                                    const url = eventData.imageUrl;
+                                                    setEventData({
+                                                        ...eventData,
+                                                        imageUrl: "",
+                                                    });
+                                                    if (url.includes("utfs.io") || url.includes("ufs.sh")) {
+                                                        await deleteUploadThingFile(url);
+                                                    }
+                                                }}
+                                                className="absolute top-2 right-2 rounded-md bg-black/50 p-1.5 text-white hover:bg-black/70 h-8"
+                                            >
+                                                <X className="h-4 w-4 mr-1" /> Hapus
+                                            </Button>
+                                        </div>
                                     )}
                                 </div>
                             </div>
@@ -583,7 +578,8 @@ export default function EditEventPage({
                                     />
                                     <button
                                         type="button"
-                                        onClick={() => {
+                                        onClick={async () => {
+                                            const url = eventData.gallery[idx];
                                             const newGallery = [
                                                 ...eventData.gallery,
                                             ];
@@ -592,6 +588,9 @@ export default function EditEventPage({
                                                 ...eventData,
                                                 gallery: newGallery,
                                             });
+                                            if (url.includes("utfs.io") || url.includes("ufs.sh")) {
+                                                await deleteUploadThingFile(url);
+                                            }
                                         }}
                                         className="absolute top-2 right-2 rounded-md bg-black/50 p-1.5 text-white opacity-0 transition-opacity group-hover:opacity-100"
                                     >
@@ -757,209 +756,55 @@ export default function EditEventPage({
                             <div>
                                 <CardTitle>Registration Form</CardTitle>
                                 <CardDescription className="mt-1">
-                                    Customize the fields participants need to
-                                    fill in.
+                                    Customize the fields participants need to fill in. Use drag-and-drop to reorder them.
                                 </CardDescription>
                             </div>
                             <Button
                                 type="button"
                                 variant="outline"
                                 size="sm"
-                                onClick={addField}
+                                onClick={() => {
+                                    setFormFields([
+                                        ...formFields,
+                                        {
+                                            id: `field_${Date.now()}`,
+                                            step: 1,
+                                            type: "text",
+                                            label: "New Field",
+                                            required: false,
+                                        }
+                                    ]);
+                                }}
+                                className="bg-[#6849E1] hover:bg-[#5b3fd1] hover:text-black/85 border-0"
                             >
                                 <Plus className="mr-1.5 h-4 w-4" />
                                 Add Field
                             </Button>
                         </div>
                     </CardHeader>
-                    <CardContent className="space-y-3">
-                        {formFields.map((field: any, index: number) => (
-                            <div
-                                key={index}
-                                className="group bg-card relative space-y-4 rounded-lg border p-4"
-                            >
-                                {/* Field Header */}
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <GripVertical className="text-muted-foreground h-4 w-4" />
-                                        <Badge
-                                            variant="outline"
-                                            className="font-mono text-xs"
-                                        >
-                                            {field.id}
-                                        </Badge>
-                                        {field.required && (
-                                            <Badge
-                                                variant="secondary"
-                                                className="text-xs"
-                                            >
-                                                Required
-                                            </Badge>
-                                        )}
-                                    </div>
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => removeField(index)}
-                                        className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 h-7 w-7 p-0 opacity-0 transition-opacity group-hover:opacity-100"
-                                    >
-                                        <Trash className="h-3.5 w-3.5" />
-                                    </Button>
-                                </div>
-
-                                <Separator />
-
-                                {/* Field Config */}
-                                <div className="grid grid-cols-12 gap-4">
-                                    <div className="col-span-12 space-y-1.5 sm:col-span-4">
-                                        <Label className="text-muted-foreground text-xs">
-                                            Field ID
-                                        </Label>
-                                        <Input
-                                            value={field.id}
-                                            onChange={(e: any) =>
-                                                updateField(
-                                                    index,
-                                                    "id",
-                                                    e.target.value,
-                                                )
-                                            }
-                                            className="h-8 font-mono text-sm"
-                                        />
-                                    </div>
-                                    <div className="col-span-12 space-y-1.5 sm:col-span-5">
-                                        <Label className="text-muted-foreground text-xs">
-                                            Label / Question
-                                        </Label>
-                                        <Input
-                                            value={field.label}
-                                            onChange={(e: any) =>
-                                                updateField(
-                                                    index,
-                                                    "label",
-                                                    e.target.value,
-                                                )
-                                            }
-                                            className="h-8 text-sm"
-                                        />
-                                    </div>
-                                    <div className="col-span-6 space-y-1.5 sm:col-span-2">
-                                        <Label className="text-muted-foreground text-xs">
-                                            Type
-                                        </Label>
-                                        <select
-                                            value={field.type}
-                                            onChange={(e: any) =>
-                                                updateField(
-                                                    index,
-                                                    "type",
-                                                    e.target.value,
-                                                )
-                                            }
-                                            className="border-input focus-visible:ring-ring h-8 w-full rounded-md border bg-transparent px-2 text-sm focus-visible:ring-1 focus-visible:outline-none"
-                                        >
-                                            {FIELD_TYPES.map((t) => (
-                                                <option
-                                                    key={t.value}
-                                                    value={t.value}
-                                                >
-                                                    {t.label}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="col-span-6 space-y-1.5 sm:col-span-1">
-                                        <Label className="text-muted-foreground text-xs">
-                                            Step
-                                        </Label>
-                                        <Input
-                                            type="number"
-                                            min={1}
-                                            value={field.step}
-                                            onChange={(e: any) =>
-                                                updateField(
-                                                    index,
-                                                    "step",
-                                                    parseInt(e.target.value),
-                                                )
-                                            }
-                                            className="h-8 text-sm"
-                                        />
-                                    </div>
-
-                                    {(field.type === "select" ||
-                                        field.type === "radio") && (
-                                        <div className="col-span-12 space-y-1.5">
-                                            <Label className="text-muted-foreground text-xs">
-                                                Options{" "}
-                                                <span className="font-normal">
-                                                    (comma separated)
-                                                </span>
-                                            </Label>
-                                            <Input
-                                                value={
-                                                    field.options?.join(", ") ||
-                                                    ""
-                                                }
-                                                onChange={(e: any) =>
-                                                    updateField(
-                                                        index,
-                                                        "options",
-                                                        e.target.value
-                                                            .split(",")
-                                                            .map((s: string) =>
-                                                                s.trim(),
-                                                            ),
-                                                    )
-                                                }
-                                                className="h-8 text-sm"
-                                                placeholder="Option A, Option B, Option C"
-                                            />
-                                        </div>
-                                    )}
-
-                                    <div className="col-span-12 flex items-center gap-2">
-                                        <input
-                                            type="checkbox"
-                                            checked={field.required}
-                                            onChange={(e: any) =>
-                                                updateField(
-                                                    index,
-                                                    "required",
-                                                    e.target.checked,
-                                                )
-                                            }
-                                            id={`req_${index}`}
-                                            className="border-input accent-primary h-4 w-4 cursor-pointer rounded border"
-                                        />
-                                        <label
-                                            htmlFor={`req_${index}`}
-                                            className="text-muted-foreground cursor-pointer text-sm select-none"
-                                        >
-                                            Required field
-                                        </label>
-                                    </div>
-                                </div>
+                    <CardContent>
+                        <FormBuilder fields={formFields} setFields={setFormFields} />
+                        
+                        <div className="pt-6 border-t space-y-3 mt-6">
+                            <div className="space-y-1">
+                                <Label className="text-base font-semibold">Custom Confirmation Message</Label>
+                                <CardDescription>
+                                    This message will be shown to users after they successfully submit this form.
+                                </CardDescription>
                             </div>
-                        ))}
-
-                        {formFields.length === 0 && (
-                            <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-10 text-center">
-                                <p className="text-muted-foreground text-sm">
-                                    No fields yet.
-                                </p>
-                                <Button
-                                    type="button"
-                                    variant="link"
-                                    size="sm"
-                                    className="mt-1"
-                                    onClick={addField}
-                                >
-                                    Add your first field
-                                </Button>
-                            </div>
-                        )}
+                            <textarea
+                                rows={3}
+                                placeholder="e.g. Pendaftaran Berhasil! Terima kasih telah mendaftar. Kami akan menghubungi Anda segera."
+                                value={eventData.confirmationMessage}
+                                onChange={(e) =>
+                                    setEventData({
+                                        ...eventData,
+                                        confirmationMessage: e.target.value,
+                                    })
+                                }
+                                className="border-input placeholder:text-muted-foreground focus-visible:ring-ring w-full resize-none rounded-md border bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:ring-1 focus-visible:outline-none"
+                            />
+                        </div>
                     </CardContent>
                 </Card>
 
@@ -972,7 +817,12 @@ export default function EditEventPage({
                     >
                         Cancel
                     </Button>
-                    <Button type="submit" disabled={isSubmitting}>
+                    <Button
+                        className="outline-1 outline-black"
+                        type="submit"
+                        variant="outline"
+                        disabled={isSubmitting}
+                    >
                         <Save className="mr-2 h-4 w-4" />
                         {isSubmitting ? "Saving..." : "Save Changes"}
                     </Button>

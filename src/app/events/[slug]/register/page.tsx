@@ -18,14 +18,14 @@ export default async function RegisterEventPage({
     }
 
     return (
-        <div className="flex min-h-screen flex-col bg-[#050505]">
+        <div className="flex min-h-screen flex-col bg-gray-50">
             <Navbar />
             <main className="flex-1 px-4 pt-32 pb-20">
                 <div className="mb-10 text-center">
-                    <h1 className="font-display mb-2 text-4xl text-white">
+                    <h1 className="font-display mb-2 text-4xl text-gray-900">
                         Register to {event.title}
                     </h1>
-                    <p className="text-white/60">
+                    <p className="text-gray-600">
                         Fill in the details below to join the event.
                     </p>
                 </div>

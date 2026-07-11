@@ -27,7 +27,7 @@ const faqItems = [
     },
 ];
 
-export default function FAQ() {
+export default function FAQ({ event }: { event?: any }) {
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
     const toggleItem = useCallback((index: number | null) => {
@@ -42,7 +42,7 @@ export default function FAQ() {
                 </h2>
 
                 <div className="flex flex-col items-center space-y-3">
-                    {faqItems.map((item, i) => (
+                    {(event?.faqs || faqItems).map((item: any, i: number) => (
                         <div
                             key={i}
                             className={`bg-nav-outer border-divider w-[560px] max-w-full overflow-hidden border transition-all ${

@@ -137,6 +137,7 @@ export async function createEvent(data: any) {
             gallery: data.gallery,
             faqs: data.faqs,
             formFields: data.formFields,
+            confirmationMessage: data.confirmationMessage || "",
             isFeatured: data.isFeatured || false,
             status: "PUBLISHED",
         });
@@ -254,6 +255,7 @@ export async function updateEvent(id: string, data: any) {
                 gallery: data.gallery,
                 faqs: data.faqs,
                 formFields: data.formFields,
+                confirmationMessage: data.confirmationMessage || "",
                 isFeatured:
                     data.isFeatured !== undefined ? data.isFeatured : false,
                 status: data.status,

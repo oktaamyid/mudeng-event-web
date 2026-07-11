@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-page-custom-font */
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -61,9 +62,7 @@ export default function RootLayout({
                     rel="stylesheet"
                 />
             </head>
-            <body className="flex min-h-full flex-col">
-                {children}
-            </body>
+            <body className="flex min-h-full flex-col">{children}</body>
         </html>
     );
 }

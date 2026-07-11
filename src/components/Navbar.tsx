@@ -8,10 +8,10 @@ const logoMain = "https://cdn.mudeng.oktaa.my.id/logo/logo-mudeng.svg";
 const logoSmall = "/assets/logo-monogram.svg";
 
 const navLinks = [
-    { label: "ABOUT", href: "#about", sectionId: "about" },
-    { label: "SERVICES", href: "#services", sectionId: "services" },
-    { label: "PROCESS", href: "#approach", sectionId: "approach" },
-    { label: "EVENT", href: "#events", sectionId: "events" },
+    { label: "ABOUT", href: "/#about", sectionId: "about" },
+    { label: "SERVICES", href: "/#services", sectionId: "services" },
+    { label: "PROCESS", href: "/#approach", sectionId: "approach" },
+    { label: "EVENT", href: "/#events", sectionId: "events" },
 ];
 
 const pillStyle = {
@@ -112,16 +112,18 @@ export default function Navbar() {
                     gridTemplateColumns: isCompact ? "1fr" : "auto 1fr auto",
                 }}
             >
-                <img
-                    src={logoMain}
-                    alt="MUDENG"
-                    className="shrink-0 object-contain"
-                    style={{
-                        height: "20px",
-                        width: "auto",
-                        display: isCompact ? "none" : "block",
-                    }}
-                />
+                <Link href={"/"}>
+                    <img
+                        src={logoMain}
+                        alt="MUDENG"
+                        className="shrink-0 object-contain"
+                        style={{
+                            height: "20px",
+                            width: "auto",
+                            display: isCompact ? "none" : "block",
+                        }}
+                    />
+                </Link>
 
                 <div className="flex items-center justify-center">
                     <div

@@ -9,7 +9,7 @@ export default function Preview() {
 
                 <div className="preview__video">
                     <video
-                        src="/videos/boost-digital-skill.mp4"
+                        src="https://cdn.mudeng.oktaa.my.id/videos/boost-digital-skill.mp4"
                         autoPlay
                         loop
                         muted
