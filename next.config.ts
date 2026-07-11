@@ -13,6 +13,8 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  basePath: '/event',
+  output: 'standalone',
 };
 
 export default nextConfig;

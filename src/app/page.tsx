@@ -13,33 +13,33 @@ import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
 
 export default function Home() {
-  return (
-    <main>
-      <Navbar />
+    return (
+        <main>
+            <Navbar />
 
-      <Hero />
+            <Hero />
 
-      <About />
+            <About />
 
-      <Benefits />
+            <Benefits />
 
-      <Approach />
+            <Approach />
 
-      <System />
+            <System />
 
-      <Events />
+            <Events />
 
-      <Curriculum />
+            <Curriculum />
 
-      <Preview />
+            <Preview />
 
-      <Testimonials />
+            <Testimonials />
 
-      <FAQ />
+            <FAQ />
 
-      <CTA />
+            <CTA />
 
-      <Footer />
-    </main>
-  );
+            <Footer />
+        </main>
+    );
 }

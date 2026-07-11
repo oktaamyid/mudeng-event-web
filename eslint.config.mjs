@@ -27,6 +27,8 @@ export default [
             "react/no-unescaped-entities": "off",
             "@next/next/no-img-element": "off",
             "react/react-in-jsx-scope": "off",
+            "tailwindcss/classnames-order": "off",
+            "tailwindcss/no-custom-classname": "off"
         },
     },
     {

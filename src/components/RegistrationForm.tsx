@@ -5,166 +5,266 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { registerEvent } from "@/lib/actions/events";
+import { CheckCircle2, ChevronRight, ChevronLeft } from "lucide-react";
 
-const schema = z.object({
-  email: z.string().email("Email tidak valid"),
-  fullName: z.string().min(2, "Nama lengkap harus diisi"),
-  institution: z.string().min(2, "Asal instansi harus diisi"),
-  whatsapp: z.string().min(9, "Nomor WhatsApp harus diisi"),
-  source: z.string().min(1, "Wajib dipilih"),
-  experience: z.string().min(1, "Wajib dipilih"),
-  tools: z.string().min(1, "Wajib dipilih"),
-  expectations: z.string().min(1, "Wajib dipilih"),
-  commitment: z.string().min(1, "Wajib dipilih"),
-  description: z.string().optional(),
-});
+type FormField = {
+    id: string;
+    step: number;
+    type: "text" | "email" | "select" | "radio" | "textarea";
+    label: string;
+    required?: boolean;
+    options?: string[];
+};
 
-type FormData = z.infer<typeof schema>;
+const buildSchema = (fields: FormField[]) => {
+    const shape: Record<string, z.ZodTypeAny> = {};
+    for (const field of fields) {
+        if (field.required) {
+            if (field.type === "email") {
+                shape[field.id] = z.string().email("Email tidak valid");
+            } else {
+                shape[field.id] = z
+                    .string()
+                    .min(1, `${field.label} wajib diisi`);
+            }
+        } else {
+            shape[field.id] = z.string().optional();
+        }
+    }
+    return z.object(shape);
+};
 
-export default function RegistrationForm({ eventId }: { eventId: string }) {
-  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
-  const [errorMessage, setErrorMessage] = useState("");
+export default function RegistrationForm({ event }: { event: any }) {
+    const formFields: FormField[] = event.formFields || [];
+    const totalSteps =
+        formFields.length > 0 ? Math.max(...formFields.map((f) => f.step)) : 1;
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  });
+    const [currentStep, setCurrentStep] = useState(1);
+    const [status, setStatus] = useState<
+        "idle" | "submitting" | "success" | "error"
+    >("idle");
+    const [errorMessage, setErrorMessage] = useState("");
 
-  const onSubmit = async (data: FormData) => {
-    setStatus("submitting");
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      if (value) formData.append(key, value);
+    const schema = buildSchema(formFields);
+    type FormData = z.infer<typeof schema>;
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        trigger,
+    } = useForm<FormData>({
+        resolver: zodResolver(schema),
     });
 
-    const res = await registerEvent(eventId, formData);
-    if (res.success) {
-      setStatus("success");
-    } else {
-      setStatus("error");
-      setErrorMessage(res.error || "Terjadi kesalahan. Coba lagi.");
+    const nextStep = async () => {
+        const fieldsInCurrentStep = formFields
+            .filter((f) => f.step === currentStep)
+            .map((f) => f.id as keyof FormData);
+
+        const isValid = await trigger(fieldsInCurrentStep);
+        if (isValid) {
+            setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
+        }
+    };
+
+    const prevStep = () => {
+        setCurrentStep((prev) => Math.max(prev - 1, 1));
+    };
+
+    const onSubmit = async (data: FormData) => {
+        setStatus("submitting");
+        const res = await registerEvent(event.id, data);
+        if (res.success) {
+            setStatus("success");
+        } else {
+            setStatus("error");
+            setErrorMessage(res.error || "Terjadi kesalahan. Coba lagi.");
+        }
+    };
+
+    if (status === "success") {
+        return (
+            <div className="mx-auto max-w-2xl rounded-2xl border border-white/5 bg-[#0A0B10] p-10 text-center">
+                <div className="mb-6 flex justify-center">
+                    <CheckCircle2 className="h-16 w-16 text-[#6849E1]" />
+                </div>
+                <h3 className="font-display mb-4 text-3xl text-white">
+                    Pendaftaran Berhasil!
+                </h3>
+                <p className="text-lg text-white/70">
+                    Terima kasih telah mendaftar. Kami akan memproses
+                    pendaftaran Anda dan menghubungi Anda lebih lanjut.
+                </p>
+            </div>
+        );
     }
-  };
 
-  if (status === "success") {
+    const fieldsToRender = formFields.filter((f) => f.step === currentStep);
+
     return (
-      <div className="rounded-2xl bg-[#0A0B10] p-10 text-center">
-        <h3 className="font-display text-2xl text-white mb-4">Pendaftaran Berhasil!</h3>
-        <p className="text-white/70">
-          Terima kasih telah mendaftar. Kami akan memproses pendaftaran Anda dan menghubungi Anda melalui WhatsApp atau Email.
-        </p>
-      </div>
-    );
-  }
+        <div className="mx-auto w-full max-w-3xl rounded-3xl border border-white/5 bg-[#0A0B10] p-8 text-left shadow-2xl">
+            {/* Stepper Indicator */}
+            <div className="mb-10">
+                <div className="relative flex items-center justify-between">
+                    <div className="absolute top-1/2 left-0 z-0 h-[2px] w-full -translate-y-1/2 bg-white/10"></div>
+                    <div
+                        className="absolute top-1/2 left-0 z-0 h-[2px] -translate-y-1/2 bg-[#6849E1] transition-all duration-300"
+                        style={{
+                            width: `${((currentStep - 1) / (totalSteps - 1)) * 100}%`,
+                        }}
+                    ></div>
 
-  return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6 w-full max-w-2xl mx-auto p-8 rounded-2xl bg-[#0A0B10] text-left">
-      <h2 className="font-display text-3xl text-white mb-4">Form Pendaftaran</h2>
+                    {Array.from({ length: totalSteps }).map((_, i) => {
+                        const stepNumber = i + 1;
+                        const isActive = stepNumber === currentStep;
+                        const isCompleted = stepNumber < currentStep;
 
-      {status === "error" && (
-        <div className="bg-red-500/20 text-red-500 p-4 rounded-xl text-sm">{errorMessage}</div>
-      )}
+                        return (
+                            <div
+                                key={stepNumber}
+                                className={`relative z-10 flex h-10 w-10 items-center justify-center rounded-full font-bold transition-all duration-300 ${
+                                    isActive
+                                        ? "bg-[#6849E1] text-white ring-4 ring-[#6849E1]/30"
+                                        : isCompleted
+                                          ? "bg-[#6849E1] text-white"
+                                          : "border border-white/10 bg-[#1A1A1A] text-white/40"
+                                }`}
+                            >
+                                {isCompleted ? (
+                                    <CheckCircle2 className="h-5 w-5" />
+                                ) : (
+                                    stepNumber
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
 
-      <div className="flex flex-col gap-2">
-        <label className="text-white text-sm font-semibold">Alamat Email *</label>
-        <input {...register("email")} className="bg-white/10 rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-[#6849E1]" placeholder="Email aktif" />
-        {errors.email && <span className="text-red-400 text-xs">{errors.email.message}</span>}
-      </div>
+            <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="flex flex-col gap-6"
+            >
+                <h2 className="font-display mb-2 text-2xl text-white">
+                    Langkah {currentStep} dari {totalSteps}
+                </h2>
 
-      <div className="flex flex-col gap-2">
-        <label className="text-white text-sm font-semibold">Nama Lengkap *</label>
-        <input {...register("fullName")} className="bg-white/10 rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-[#6849E1]" placeholder="Nama lengkap sesuai KTP" />
-        {errors.fullName && <span className="text-red-400 text-xs">{errors.fullName.message}</span>}
-      </div>
+                {status === "error" && (
+                    <div className="rounded-xl border border-red-500/30 bg-red-500/20 p-4 text-sm text-red-500">
+                        {errorMessage}
+                    </div>
+                )}
 
-      <div className="flex flex-col gap-2">
-        <label className="text-white text-sm font-semibold">Asal Instansi *</label>
-        <input {...register("institution")} className="bg-white/10 rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-[#6849E1]" placeholder="Sekolah / Kampus / Perusahaan" />
-        {errors.institution && <span className="text-red-400 text-xs">{errors.institution.message}</span>}
-      </div>
+                <div className="flex min-h-[300px] flex-col gap-6">
+                    {fieldsToRender.map((field) => (
+                        <div
+                            key={field.id}
+                            className="animate-in fade-in slide-in-from-bottom-2 flex flex-col gap-2 duration-300"
+                        >
+                            <label className="text-sm font-semibold text-white/90">
+                                {field.label}{" "}
+                                {field.required && (
+                                    <span className="text-[#6849E1]">*</span>
+                                )}
+                            </label>
 
-      <div className="flex flex-col gap-2">
-        <label className="text-white text-sm font-semibold">Nomor WhatsApp (aktif) *</label>
-        <input {...register("whatsapp")} className="bg-white/10 rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-[#6849E1]" placeholder="08123456789" />
-        {errors.whatsapp && <span className="text-red-400 text-xs">{errors.whatsapp.message}</span>}
-      </div>
+                            {field.type === "text" || field.type === "email" ? (
+                                <input
+                                    type={field.type}
+                                    {...register(field.id)}
+                                    className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white transition-all outline-none placeholder:text-white/20 focus:border-[#6849E1] focus:bg-white/10"
+                                    placeholder={`Masukkan ${field.label.toLowerCase()}`}
+                                />
+                            ) : field.type === "textarea" ? (
+                                <textarea
+                                    {...register(field.id)}
+                                    className="min-h-[100px] resize-y rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white transition-all outline-none placeholder:text-white/20 focus:border-[#6849E1] focus:bg-white/10"
+                                    placeholder={`Masukkan ${field.label.toLowerCase()}`}
+                                />
+                            ) : field.type === "select" && field.options ? (
+                                <select
+                                    {...register(field.id)}
+                                    className="appearance-none rounded-xl border border-white/10 bg-[#1A1A1A] px-4 py-3 text-white transition-all outline-none focus:border-[#6849E1]"
+                                >
+                                    <option value="">Pilih...</option>
+                                    {field.options.map((opt) => (
+                                        <option key={opt} value={opt}>
+                                            {opt}
+                                        </option>
+                                    ))}
+                                </select>
+                            ) : field.type === "radio" && field.options ? (
+                                <div className="mt-2 flex flex-col gap-4 sm:flex-row">
+                                    {field.options.map((opt) => (
+                                        <label
+                                            key={opt}
+                                            className="group flex cursor-pointer items-center gap-3 text-white/80"
+                                        >
+                                            <div className="relative flex h-5 w-5 items-center justify-center">
+                                                <input
+                                                    type="radio"
+                                                    value={opt}
+                                                    {...register(field.id)}
+                                                    className="peer h-5 w-5 cursor-pointer appearance-none rounded-full border-2 border-white/20 transition-colors checked:border-[#6849E1]"
+                                                />
+                                                <div className="pointer-events-none absolute h-2.5 w-2.5 rounded-full bg-[#6849E1] opacity-0 transition-opacity peer-checked:opacity-100"></div>
+                                            </div>
+                                            <span className="transition-colors group-hover:text-white">
+                                                {opt}
+                                            </span>
+                                        </label>
+                                    ))}
+                                </div>
+                            ) : null}
 
-      <div className="flex flex-col gap-2">
-        <label className="text-white text-sm font-semibold">Dari mana kamu mengetahui event ini? *</label>
-        <select {...register("source")} className="bg-[#1A1A1A] rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-[#6849E1]">
-          <option value="">Pilih...</option>
-          <option value="Sosial media">Sosial media</option>
-          <option value="Teman/Sahabat">Teman/Sahabat</option>
-          <option value="Poster/Pamflet">Poster/Pamflet</option>
-          <option value="Website / Media Online">Website / Media Online</option>
-          <option value="Other">Other</option>
-        </select>
-        {errors.source && <span className="text-red-400 text-xs">{errors.source.message}</span>}
-      </div>
+                            {errors[field.id] && (
+                                <span className="mt-1 text-xs text-red-400">
+                                    {errors[field.id]?.message as string}
+                                </span>
+                            )}
+                        </div>
+                    ))}
+                </div>
 
-      <div className="flex flex-col gap-2">
-        <label className="text-white text-sm font-semibold">Pengalaman di bidang Design? *</label>
-        <select {...register("experience")} className="bg-[#1A1A1A] rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-[#6849E1]">
-          <option value="">Pilih...</option>
-          <option value="Belum pernah sama sekali">Belum pernah sama sekali</option>
-          <option value="Pernah belajar dasar-dasarnya">Pernah belajar dasar-dasarnya</option>
-          <option value="Pernah membuat desain Infografis">Pernah membuat desain Infografis</option>
-          <option value="Sudah cukup familiar dengan Canva & Tools lainnya">Sudah cukup familiar dengan Canva & Tools lainnya</option>
-          <option value="Other">Other</option>
-        </select>
-        {errors.experience && <span className="text-red-400 text-xs">{errors.experience.message}</span>}
-      </div>
+                <div className="mt-8 flex items-center justify-between border-t border-white/10 pt-6">
+                    {currentStep > 1 ? (
+                        <button
+                            type="button"
+                            onClick={prevStep}
+                            className="flex items-center gap-2 rounded-full px-6 py-3 font-medium text-white/70 transition-all hover:bg-white/5 hover:text-white"
+                        >
+                            <ChevronLeft className="h-4 w-4" /> Kembali
+                        </button>
+                    ) : (
+                        <div></div> // Empty div for flex spacing
+                    )}
 
-      <div className="flex flex-col gap-2">
-        <label className="text-white text-sm font-semibold">Aplikasi desain yang pernah digunakan? *</label>
-        <select {...register("tools")} className="bg-[#1A1A1A] rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-[#6849E1]">
-          <option value="">Pilih...</option>
-          <option value="Figma">Figma</option>
-          <option value="Canva">Canva</option>
-          <option value="Adobe Family">Adobe Family</option>
-          <option value="Belum pernah menggunakan aplikasi desain">Belum pernah menggunakan aplikasi desain</option>
-          <option value="Other">Other</option>
-        </select>
-        {errors.tools && <span className="text-red-400 text-xs">{errors.tools.message}</span>}
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <label className="text-white text-sm font-semibold">Harapan mengikuti event ini? *</label>
-        <select {...register("expectations")} className="bg-[#1A1A1A] rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-[#6849E1]">
-          <option value="">Pilih...</option>
-          <option value="Memahami Dasar Dasar Tools Design">Memahami Dasar Dasar Tools Design</option>
-          <option value="Menambah Portofolio Desain">Menambah Portofolio Desain</option>
-          <option value="Menambah Relasi dan Networking">Menambah Relasi dan Networking</option>
-          <option value="Sekadar ingin mencoba dan mengenal pembuatan desain">Sekadar ingin mencoba dan mengenal pembuatan desain</option>
-          <option value="Other">Other</option>
-        </select>
-        {errors.expectations && <span className="text-red-400 text-xs">{errors.expectations.message}</span>}
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <label className="text-white text-sm font-semibold">Bersedia mengikuti seluruh rangkaian kegiatan? *</label>
-        <div className="flex gap-6 mt-1">
-          <label className="flex items-center gap-2 text-white">
-            <input type="radio" value="Ya" {...register("commitment")} className="accent-[#6849E1]" /> Ya
-          </label>
-          <label className="flex items-center gap-2 text-white">
-            <input type="radio" value="Tidak" {...register("commitment")} className="accent-[#6849E1]" /> Tidak
-          </label>
+                    {currentStep < totalSteps ? (
+                        <button
+                            type="button"
+                            onClick={nextStep}
+                            className="flex items-center gap-2 rounded-full bg-[#6849E1] px-8 py-3 font-medium text-white transition-all hover:bg-[#5b3fd1]"
+                        >
+                            Selanjutnya <ChevronRight className="h-4 w-4" />
+                        </button>
+                    ) : (
+                        <button
+                            type="submit"
+                            disabled={status === "submitting"}
+                            className="flex min-w-[160px] items-center justify-center gap-2 rounded-full bg-[#6849E1] px-8 py-3 font-medium text-white transition-all hover:bg-[#5b3fd1] disabled:opacity-50"
+                        >
+                            {status === "submitting" ? (
+                                "Memproses..."
+                            ) : (
+                                <>
+                                    Submit <CheckCircle2 className="h-4 w-4" />
+                                </>
+                            )}
+                        </button>
+                    )}
+                </div>
+            </form>
         </div>
-        {errors.commitment && <span className="text-red-400 text-xs">{errors.commitment.message}</span>}
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <label className="text-white text-sm font-semibold">Deskripsi Tambahan / Pesan</label>
-        <textarea {...register("description")} className="bg-white/10 rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-[#6849E1] h-24 resize-none" placeholder="Opsional..." />
-      </div>
-
-      <button 
-        type="submit" 
-        disabled={status === "submitting"}
-        className="mt-4 font-body rounded-full bg-[#1A1A1A] hover:bg-black border border-[#333] px-6 py-4 text-sm font-semibold text-white transition-all disabled:opacity-50 w-full flex justify-center"
-      >
-        {status === "submitting" ? "Memproses..." : "Submit Pendaftaran"}
-      </button>
-    </form>
-  );
+    );
 }
