@@ -1,8 +1,58 @@
 import { config } from "dotenv";
-config({ path: ".env.local" });
+config({ path: ".env" });
 
 import { db } from "../lib/db";
 import { events } from "./schema";
+
+const defaultFormFields = [
+  // Step 1: Data Diri
+  { id: "email", step: 1, type: "email", label: "Alamat Email", required: true },
+  { id: "fullName", step: 1, type: "text", label: "Nama Lengkap sesuai KTP", required: true },
+  { id: "institution", step: 1, type: "text", label: "Asal Instansi (Sekolah / Kampus / Perusahaan)", required: true },
+  { id: "whatsapp", step: 1, type: "text", label: "Nomor WhatsApp (aktif)", required: true },
+  // Step 2: Pengalaman
+  { 
+    id: "source", 
+    step: 2, 
+    type: "select", 
+    label: "Dari mana kamu mengetahui event ini?", 
+    required: true,
+    options: ["Sosial media", "Teman/Sahabat", "Poster/Pamflet", "Website / Media Online", "Other"]
+  },
+  { 
+    id: "experience", 
+    step: 2, 
+    type: "select", 
+    label: "Pengalaman di bidang Design?", 
+    required: true,
+    options: ["Belum pernah sama sekali", "Pernah belajar dasar-dasarnya", "Pernah membuat desain Infografis", "Sudah cukup familiar dengan Canva & Tools lainnya", "Other"]
+  },
+  { 
+    id: "tools", 
+    step: 2, 
+    type: "select", 
+    label: "Aplikasi desain yang pernah digunakan?", 
+    required: true,
+    options: ["Figma", "Canva", "Adobe Family", "Belum pernah menggunakan aplikasi desain", "Other"]
+  },
+  // Step 3: Komitmen
+  { 
+    id: "expectations", 
+    step: 3, 
+    type: "select", 
+    label: "Harapan mengikuti event ini?", 
+    required: true,
+    options: ["Memahami Dasar Dasar Tools Design", "Menambah Portofolio Desain", "Menambah Relasi dan Networking", "Sekadar ingin mencoba dan mengenal pembuatan desain", "Other"]
+  },
+  { 
+    id: "commitment", 
+    step: 3, 
+    type: "radio", 
+    label: "Bersedia mengikuti seluruh rangkaian kegiatan?", 
+    required: true,
+    options: ["Ya", "Tidak"]
+  }
+];
 
 const seedEvents = [
   {
@@ -13,7 +63,8 @@ const seedEvents = [
     timeline: "4 Minggu",
     service: "UI/UX Design",
     kickoffDate: "Juli 2025",
-    status: "PUBLISHED"
+    status: "PUBLISHED",
+    formFields: defaultFormFields
   },
   {
     slug: "creative-craft",
@@ -23,7 +74,8 @@ const seedEvents = [
     timeline: "4 Minggu",
     service: "UI/UX Design",
     kickoffDate: "Juli 2025",
-    status: "PUBLISHED"
+    status: "PUBLISHED",
+    formFields: defaultFormFields
   },
   {
     slug: "mucrex",
@@ -33,7 +85,8 @@ const seedEvents = [
     timeline: "4 Minggu",
     service: "UI/UX Design",
     kickoffDate: "Juli 2025",
-    status: "PUBLISHED"
+    status: "PUBLISHED",
+    formFields: defaultFormFields
   }
 ];
 

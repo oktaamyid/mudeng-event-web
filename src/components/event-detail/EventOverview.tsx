@@ -1,6 +1,6 @@
 import { EventData } from "@/data/events";
 
-export default function EventOverview({ event }: { event: EventData }) {
+export default function EventOverview({ event }: { event: any }) {
   return (
     <section className="py-[100px] md:py-[160px]" id="overview">
       <div className="mx-auto max-w-360 px-6 lg:px-[120px] xl:px-[240px]">
@@ -9,28 +9,28 @@ export default function EventOverview({ event }: { event: EventData }) {
           <div className="flex flex-col gap-10 lg:col-span-8">
             <div>
               <h2 className="font-body text-text-main mb-4 text-[28px] font-semibold md:text-[32px]">
-                {event.overview.title}
+                {event.overview?.title || "Program overview"}
               </h2>
               <p className="font-body text-text-muted text-[16px] leading-[28px] font-medium md:text-[18px]">
-                {event.overview.description}
+                {event.overview?.description || event.description}
               </p>
             </div>
 
             <div>
               <h2 className="font-body text-text-main mb-4 text-[28px] font-semibold md:text-[32px]">
-                {event.process.title}
+                {event.process?.title || "Learning process"}
               </h2>
               <p className="font-body text-text-muted text-[16px] leading-[28px] font-medium md:text-[18px]">
-                {event.process.description}
+                {event.process?.description}
               </p>
             </div>
 
             <div>
               <h2 className="font-body text-text-main mb-4 text-[28px] font-semibold md:text-[32px]">
-                {event.result.title}
+                {event.result?.title || "Final result"}
               </h2>
               <p className="font-body text-text-muted text-[16px] leading-[28px] font-medium md:text-[18px]">
-                {event.result.description}
+                {event.result?.description}
               </p>
             </div>
           </div>
@@ -44,7 +44,7 @@ export default function EventOverview({ event }: { event: EventData }) {
                     Instructor:
                   </span>
                   <span className="font-body text-text-muted text-[15px] font-medium">
-                    {event.infoBox.instructor}
+                    {event.instructor}
                   </span>
                 </div>
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm">
@@ -70,7 +70,7 @@ export default function EventOverview({ event }: { event: EventData }) {
                     Category:
                   </span>
                   <span className="font-body text-text-muted text-[15px] font-medium">
-                    {event.infoBox.category}
+                    {event.category}
                   </span>
                 </div>
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm">
@@ -98,7 +98,7 @@ export default function EventOverview({ event }: { event: EventData }) {
                     Duration:
                   </span>
                   <span className="font-body text-text-muted text-[15px] font-medium">
-                    {event.infoBox.duration}
+                    {event.duration}
                   </span>
                 </div>
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm">
@@ -133,7 +133,7 @@ export default function EventOverview({ event }: { event: EventData }) {
                     Start Date:
                   </span>
                   <span className="font-body text-text-muted text-[15px] font-medium">
-                    {event.infoBox.startDate}
+                    {event.kickoffDate}
                   </span>
                 </div>
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm">

@@ -1,5 +1,5 @@
-export default function EventFAQ() {
-  const faqs = [
+export default function EventFAQ({ faqs = [] }: { faqs?: { question: string; answer: string }[] }) {
+  const defaultFaqs = [
     {
       q: "How does the subscription work?",
       a: "Pendaftaran dapat dilakukan kapan saja selama kuota masih tersedia.",
@@ -25,6 +25,10 @@ export default function EventFAQ() {
       a: "Semua sesi live akan direkam dan bisa diakses selamanya.",
     },
   ];
+
+  const displayFaqs = faqs.length > 0 
+    ? faqs.map(f => ({ q: f.question, a: f.answer })) 
+    : defaultFaqs;
 
   return (
     <section
@@ -67,7 +71,7 @@ export default function EventFAQ() {
           </div>
 
           <div className="flex flex-col gap-3">
-            {faqs.map((faq, idx) => (
+            {displayFaqs.map((faq, idx) => (
               <div
                 key={idx}
                 className="flex cursor-pointer items-center justify-between rounded-[16px] bg-[#F8F9FB] p-5 transition-colors hover:bg-[#F2F4F7]"

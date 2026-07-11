@@ -1,4 +1,6 @@
 allowBuilds:
+  esbuild: false
+  msgpackr-extract: false
   sharp: true
   unrs-resolver: false
 minimumReleaseAgeExclude:

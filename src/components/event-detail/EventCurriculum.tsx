@@ -1,6 +1,6 @@
 import { EventData } from "@/data/events";
 
-export default function EventCurriculum({ event }: { event: EventData }) {
+export default function EventCurriculum({ event }: { event: any }) {
   return (
     <section className="bg-[#f8f8f8] py-[100px] md:py-[160px]" id="curriculum">
       <div className="mx-auto max-w-360 px-6 lg:px-[120px] xl:px-[240px]">
@@ -15,7 +15,7 @@ export default function EventCurriculum({ event }: { event: EventData }) {
         </div>
 
         <div className="mx-auto grid max-w-[1000px] grid-cols-1 gap-6 md:grid-cols-2 lg:gap-8">
-          {event.curriculum.map((item, idx) => (
+          {event.curriculum?.map((item: any, idx: any) => (
             <div
               key={idx}
               className="border-divider rounded-[24px] border bg-white p-8 shadow-[0px_10px_30px_rgba(0,0,0,0.03)] md:p-10"

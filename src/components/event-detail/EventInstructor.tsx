@@ -1,6 +1,6 @@
 import { EventData } from "@/data/events";
 
-export default function EventInstructor({ event }: { event: EventData }) {
+export default function EventInstructor({ event }: { event: any }) {
   return (
     <section className="py-[100px] md:py-[160px]" id="instructor">
       <div className="mx-auto max-w-360 px-6 lg:px-[120px] xl:px-[240px]">

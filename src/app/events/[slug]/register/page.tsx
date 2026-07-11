@@ -3,8 +3,6 @@ import { getEventBySlug } from "@/lib/actions/events";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import RegistrationForm from "@/components/RegistrationForm";
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
 
 export default async function RegisterEventPage({
   params,
@@ -12,12 +10,6 @@ export default async function RegisterEventPage({
   params: Promise<{ slug: string }>;
 }) {
   const resolvedParams = await params;
-  const { userId } = await auth();
-
-  // Protect the route
-  if (!userId) {
-    redirect(`/sign-in?redirect_url=/events/${resolvedParams.slug}/register`);
-  }
 
   const { data: event } = await getEventBySlug(resolvedParams.slug);
 
@@ -34,7 +26,7 @@ export default async function RegisterEventPage({
           <p className="text-white/60">Fill in the details below to join the event.</p>
         </div>
         
-        <RegistrationForm eventId={event.id} />
+        <RegistrationForm event={event} />
       </main>
       <Footer />
     </div>

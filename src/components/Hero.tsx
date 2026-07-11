@@ -1,4 +1,10 @@
-export default function Hero() {
+import Link from "next/link";
+import { getActiveEvent } from "@/lib/actions/events";
+
+export default async function Hero() {
+  const { data: activeEvent } = await getActiveEvent();
+  const ctaLink = activeEvent ? `/events/${activeEvent.slug}/register` : "#events";
+
   return (
     <section
       className="relative flex min-h-screen flex-col items-center justify-center gap-5 overflow-hidden pt-[100px] pb-[60px] lg:pt-[120px]"
@@ -70,12 +76,12 @@ export default function Hero() {
           Digital Engagement untuk kuasai keahlian masa depan.
         </p>
         <div className="mb-[60px] flex w-full flex-col items-center justify-center gap-2 md:flex-row">
-          <a
-            href="#cta"
-            className="bg-brand text-bg-main rounded-pill font-nav shadow-cta-btn w-full px-8 py-4 text-base font-semibold transition-all duration-300 hover:-translate-y-1 hover:shadow-lg md:w-auto"
+          <Link
+            href={ctaLink}
+            className="bg-brand text-bg-main rounded-pill font-nav shadow-cta-btn flex items-center justify-center w-full px-8 py-4 text-base font-semibold transition-all duration-300 hover:-translate-y-1 hover:shadow-lg md:w-auto"
           >
             Daftar Sekarang
-          </a>
+          </Link>
           <a
             href="#services"
             className="bg-pill-bg text-btn-secondary-text rounded-pill font-nav w-full px-8 py-4 text-base font-semibold transition-all duration-300 hover:-translate-y-1 hover:bg-black/10 md:w-auto"

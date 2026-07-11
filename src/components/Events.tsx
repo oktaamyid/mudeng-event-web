@@ -5,6 +5,10 @@ export default async function Events() {
   const { data } = await getEvents();
   const events = data || [];
 
+  const sortedEvents = [...events].sort((a, b) => {
+    if (a.isFeatured === b.isFeatured) return 0;
+    return a.isFeatured ? -1 : 1;
+  });
 
   return (
     <section className="py-[160px]" id="events">
@@ -23,7 +27,7 @@ export default async function Events() {
         </div>
 
         <div className="flex flex-col gap-5">
-          {events.map((evt, idx) => (
+          {sortedEvents.map((evt, idx) => (
             <div
               key={idx}
               className="group relative h-[500px] w-full overflow-hidden rounded-[32px] bg-[#0a0a0a] md:h-[650px]"
