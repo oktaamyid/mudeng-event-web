@@ -31,7 +31,7 @@ export default function EventFAQ({
     ];
 
     const displayFaqs =
-        faqs.length > 0
+        faqs?.length > 0
             ? faqs.map((f) => ({ q: f.question, a: f.answer }))
             : defaultFaqs;
 

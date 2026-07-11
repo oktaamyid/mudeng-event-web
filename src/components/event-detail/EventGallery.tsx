@@ -5,7 +5,7 @@ export default function EventGallery({ event }: { event: EventData }) {
         <section className="pb-25 md:pb-40" id="gallery">
             <div className="mx-auto max-w-360 px-6 lg:px-30 xl:px-60">
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                    {event.gallery.map((img, idx) => (
+                    {event.gallery?.map((img, idx) => (
                         <div
                             key={idx}
                             className="aspect-4/3 w-full overflow-hidden rounded-[24px] md:aspect-auto md:h-100"
