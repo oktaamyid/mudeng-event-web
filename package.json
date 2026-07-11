@@ -10,6 +10,7 @@
         "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css}\""
     },
     "dependencies": {
+        "@clerk/nextjs": "^7.5.14",
         "@hookform/resolvers": "^5.4.0",
         "@neondatabase/serverless": "^1.1.0",
         "framer-motion": "^12.40.0",

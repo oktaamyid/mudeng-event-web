@@ -34,7 +34,7 @@ export default async function EventDetail({
         <EventOverview event={event} />
         <EventGallery event={event} />
         <EventFAQ />
-        <EventCTA />
+        <EventCTA event={event} />
       </main>
       <Footer />
     </div>
