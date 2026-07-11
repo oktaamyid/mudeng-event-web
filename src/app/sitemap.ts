@@ -2,7 +2,7 @@ import { MetadataRoute } from "next";
 import { getEvents } from "@/lib/actions/events";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = "https://mudeng.unf.ac.id/event";
+    const baseUrl = "https://mudeng.nurulfikri.ac.id/event";
 
     // Standard static routes
     const routes: MetadataRoute.Sitemap = [

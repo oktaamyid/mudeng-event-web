@@ -7,20 +7,19 @@ import {
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Separator } from "@/components/ui/separator";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { getSession } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
-import { UserButton } from "@clerk/nextjs";
+import { logout } from "@/lib/actions/auth";
 
 export default async function AdminLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const user = await currentUser();
-    const role = user?.publicMetadata?.role;
+    const session = await getSession();
 
-    if (!user || role !== "admin") {
-        redirect("/");
+    if (!session || session.role !== "admin") {
+        redirect("/sign-in");
     }
 
     return (
@@ -35,7 +34,11 @@ export default async function AdminLayout({
                         <span className="text-muted-foreground text-sm font-medium">
                             Admin Dashboard
                         </span>
-                        <UserButton />
+                        <form action={logout}>
+                            <button type="submit" className="text-sm font-medium text-red-500 hover:underline">
+                                Logout
+                            </button>
+                        </form>
                     </div>
                 </header>
 

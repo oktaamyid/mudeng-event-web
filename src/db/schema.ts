@@ -50,3 +50,12 @@ export const registrations = pgTable("registrations", {
     status: varchar("status", { length: 50 }).default("PENDING").notNull(),
     registeredAt: timestamp("registered_at").defaultNow().notNull(),
 });
+
+export const users = pgTable("users", {
+    id: uuid("id").defaultRandom().primaryKey(),
+    email: varchar("email", { length: 255 }).notNull().unique(),
+    name: varchar("name", { length: 255 }),
+    passwordHash: text("password_hash").notNull(),
+    role: varchar("role", { length: 50 }).default("user").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+});

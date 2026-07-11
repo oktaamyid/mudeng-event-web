@@ -1,5 +1,3 @@
-/* eslint-disable @next/next/no-page-custom-font */
-import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -15,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    metadataBase: new URL("https://mudeng.unf.ac.id/event"),
+    metadataBase: new URL("https://mudeng.nurulfikri.ac.id/event"),
     title: {
         default: "Mudeng Event",
         template: "%s | Mudeng Event",
@@ -34,7 +32,7 @@ export const metadata: Metadata = {
         title: "Mudeng Event",
         description:
             "Elite creative subscription and workshops to elevate your digital presence.",
-        url: "https://mudeng.unf.ac.id/event",
+        url: "https://mudeng.nurulfikri.ac.id/event",
         siteName: "Mudeng Event",
         locale: "id_ID",
         type: "website",
@@ -64,7 +62,7 @@ export default function RootLayout({
                 />
             </head>
             <body className="flex min-h-full flex-col">
-                <ClerkProvider>{children}</ClerkProvider>
+                {children}
             </body>
         </html>
     );

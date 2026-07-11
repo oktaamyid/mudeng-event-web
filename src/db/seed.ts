@@ -149,6 +149,28 @@ async function runSeed() {
     for (const evt of seedEvents) {
         await db.insert(events).values(evt).onConflictDoNothing();
     }
+    
+    console.log("Seeding admin...");
+    const bcrypt = require("bcryptjs");
+    const { users } = require("./schema");
+    const passwordHash = await bcrypt.hash("admin123", 10);
+    
+    try {
+        await db.insert(users).values({
+            email: "admin@mudeng.id",
+            name: "Administrator",
+            passwordHash,
+            role: "admin",
+        });
+        console.log("Admin seeded successfully.");
+    } catch (e: any) {
+        if (e.code === '23505') {
+            console.log("Admin already exists.");
+        } else {
+            console.error(e);
+        }
+    }
+    
     console.log("Seeding complete!");
 }
 
