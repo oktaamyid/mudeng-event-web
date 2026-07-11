@@ -1,15 +1,16 @@
 "use server";
 
-import { db } from "../db";
-import { users } from "../db/schema";
+import { db } from "@/lib/db";
+import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
-import { createSession, deleteSession } from "../auth/session";
+import { createSession, deleteSession } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
 
 export async function login(prevState: any, formData: FormData) {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+    let userRole = "user";
 
     if (!email || !password) {
         return { error: "Email and password are required." };
@@ -27,13 +28,18 @@ export async function login(prevState: any, formData: FormData) {
         }
 
         await createSession(user[0].id, user[0].role);
+        userRole = user[0].role;
         
     } catch (e) {
         return { error: "An unexpected error occurred." };
     }
     
     // Redirect must be called outside try/catch
-    redirect("/dashboard");
+    if (userRole === "admin") {
+        redirect("/admin");
+    } else {
+        redirect("/dashboard");
+    }
 }
 
 export async function logout() {

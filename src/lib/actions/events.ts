@@ -3,7 +3,7 @@
 import { db } from "../db";
 import { events, registrations } from "../../db/schema";
 import { eq } from "drizzle-orm";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { getSession } from "../auth/session";
 
 export async function getEvents() {
     try {
@@ -82,7 +82,8 @@ export async function registerEvent(
 
 export async function getUserRegistrations() {
     try {
-        const { userId } = await auth();
+        const session = await getSession();
+        const userId = session?.userId;
         if (!userId) {
             return { success: false, error: "Unauthorized" };
         }
@@ -113,10 +114,10 @@ export async function getUserRegistrations() {
 
 export async function createEvent(data: any) {
     try {
-        const user = await currentUser();
-        const role = user?.publicMetadata?.role;
+        const session = await getSession();
+        const role = session?.role;
 
-        if (!user?.id || role !== "admin") {
+        if (!session?.userId || role !== "admin") {
             return { success: false, error: "Unauthorized" };
         }
 
@@ -149,10 +150,10 @@ export async function createEvent(data: any) {
 
 export async function getEventRegistrants(slug: string) {
     try {
-        const user = await currentUser();
-        const role = user?.publicMetadata?.role;
+        const session = await getSession();
+        const role = session?.role;
 
-        if (!user?.id || role !== "admin") {
+        if (!session?.userId || role !== "admin") {
             return { success: false, error: "Unauthorized" };
         }
 
@@ -187,10 +188,10 @@ export async function getEventRegistrants(slug: string) {
 
 export async function getAdminDashboardStats() {
     try {
-        const user = await currentUser();
-        const role = user?.publicMetadata?.role;
+        const session = await getSession();
+        const role = session?.role;
 
-        if (!user?.id || role !== "admin") {
+        if (!session?.userId || role !== "admin") {
             return { success: false, error: "Unauthorized" };
         }
 
@@ -228,10 +229,10 @@ export async function getAdminDashboardStats() {
 
 export async function updateEvent(id: string, data: any) {
     try {
-        const user = await currentUser();
-        const role = user?.publicMetadata?.role;
+        const session = await getSession();
+        const role = session?.role;
 
-        if (!user?.id || role !== "admin") {
+        if (!session?.userId || role !== "admin") {
             return { success: false, error: "Unauthorized" };
         }
 
@@ -268,10 +269,10 @@ export async function updateEvent(id: string, data: any) {
 
 export async function deleteEvent(id: string) {
     try {
-        const user = await currentUser();
-        const role = user?.publicMetadata?.role;
+        const session = await getSession();
+        const role = session?.role;
 
-        if (!user?.id || role !== "admin") {
+        if (!session?.userId || role !== "admin") {
             return { success: false, error: "Unauthorized" };
         }
 
@@ -292,10 +293,10 @@ import { revalidatePath } from "next/cache";
 
 export async function updateRegistrationStatus(id: string, status: string) {
     try {
-        const user = await currentUser();
-        const role = user?.publicMetadata?.role;
+        const session = await getSession();
+        const role = session?.role;
 
-        if (!user?.id || role !== "admin") {
+        if (!session?.userId || role !== "admin") {
             return { success: false, error: "Unauthorized" };
         }
 
