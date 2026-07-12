@@ -12,7 +12,7 @@ export default async function Hero({ event: activeEvent }: { event: any }) {
         >
             <div className="absolute inset-0 z-0">
                 <Image
-                    src="/assets/Background-Hero-Content.png"
+                    src="/event/assets/Background-Hero-Content.png"
                     alt=""
                     layout="fill"
                     objectFit="cover"
@@ -25,7 +25,7 @@ export default async function Hero({ event: activeEvent }: { event: any }) {
             <div className="pointer-events-none absolute top-[40%] left-1/2 z-20 hidden h-[320px] w-[900px] -translate-x-1/2 -translate-y-1/2 lg:block">
                 <div className="absolute top-[10px] left-[30px] flex h-8 rotate-[-10deg] items-center gap-2 rounded-full bg-white px-4 py-2 shadow-[0_12px_10px_rgba(26,26,26,0.1)]">
                     <Image
-                        src="/assets/icon-eyes.png"
+                        src="/event/assets/icon-eyes.png"
                         alt=""
                         width="14"
                         height="14"
@@ -36,7 +36,7 @@ export default async function Hero({ event: activeEvent }: { event: any }) {
                 </div>
                 <div className="absolute top-[200px] left-0 flex h-8 rotate-[10deg] items-center gap-2 rounded-full bg-white px-4 py-2 shadow-[0_12px_10px_rgba(26,26,26,0.1)]">
                     <Image
-                        src="/assets/icon-heart.png"
+                        src="/event/assets/icon-heart.png"
                         alt=""
                         width="14"
                         height="14"
@@ -47,7 +47,7 @@ export default async function Hero({ event: activeEvent }: { event: any }) {
                 </div>
                 <div className="absolute top-[30px] right-0 flex h-8 rotate-[10deg] items-center gap-2 rounded-full bg-white px-4 py-2 shadow-[0_12px_10px_rgba(26,26,26,0.1)]">
                     <Image
-                        src="/assets/icon-save.png"
+                        src="/event/assets/icon-save.png"
                         alt=""
                         width="14"
                         height="14"
@@ -58,7 +58,7 @@ export default async function Hero({ event: activeEvent }: { event: any }) {
                 </div>
                 <div className="absolute top-[210px] right-[10px] flex h-8 rotate-[-10deg] items-center gap-2 rounded-full bg-white px-4 py-2 shadow-[0_12px_10px_rgba(26,26,26,0.1)]">
                     <Image
-                        src="/assets/icon-chat.png"
+                        src="/event/assets/icon-chat.png"
                         alt=""
                         width="14"
                         height="14"
@@ -97,7 +97,7 @@ export default async function Hero({ event: activeEvent }: { event: any }) {
             <div className="relative z-10 mx-auto hidden h-[304px] w-full max-w-[1200px] lg:block">
                 <div className="absolute top-1/2 left-[calc(50%-300px-132px)] h-[264px] w-[264px] -translate-y-1/2 rotate-[-3deg] overflow-hidden rounded-[32px]">
                     <Image
-                        src="/assets/image1.png"
+                        src="/event/assets/image1.png"
                         alt="Portrait creative woman"
                         layout="fill"
                         objectFit="cover"
@@ -105,7 +105,7 @@ export default async function Hero({ event: activeEvent }: { event: any }) {
                 </div>
                 <div className="absolute top-[calc(50%-20px)] left-[calc(50%-100px-132px)] z-10 h-[264px] w-[264px] -translate-y-1/2 rotate-[3deg] overflow-hidden rounded-[32px]">
                     <Image
-                        src="/assets/image2.png"
+                        src="/event/assets/image2.png"
                         alt="Portrait man with red cap"
                         layout="fill"
                         objectFit="cover"
@@ -113,7 +113,7 @@ export default async function Hero({ event: activeEvent }: { event: any }) {
                 </div>
                 <div className="absolute top-[calc(50%+20px)] left-[calc(50%+100px-132px)] z-20 h-[264px] w-[264px] -translate-y-1/2 rotate-[-3deg] overflow-hidden rounded-[32px]">
                     <Image
-                        src="/assets/image3.png"
+                        src="/event/assets/image3.png"
                         alt="Portrait woman in pink top"
                         layout="fill"
                         objectFit="cover"
@@ -121,7 +121,7 @@ export default async function Hero({ event: activeEvent }: { event: any }) {
                 </div>
                 <div className="absolute top-1/2 left-[calc(50%+300px-132px)] z-30 h-[264px] w-[264px] -translate-y-1/2 rotate-[3deg] overflow-hidden rounded-[32px]">
                     <Image
-                        src="/assets/image1.png"
+                        src="/event/assets/image1.png"
                         alt="Portrait man with sunglasses"
                         layout="fill"
                         objectFit="cover"

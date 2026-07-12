@@ -1,36 +1,36 @@
 const benefitCards = [
     {
-        image: "/assets/image3.png",
+        image: "/event/assets/image3.png",
         tag: "Real momentum",
         title: "UI Craft",
         desc: "Pelatihan pembuatan desain antarmuka aplikasi dan website modern.",
     },
     {
-        image: "/assets/image2.png",
+        image: "/event/assets/image2.png",
         tag: "No more falling off",
         title: "Graphic Desain",
         desc: "Pelatihan eksklusif komunikasi visual dan desain grafis modern.",
     },
     {
-        image: "/assets/image1.png",
+        image: "/event/assets/image1.png",
         tag: "Never stuck again",
         title: "Photography",
         desc: "Pelatihan eksklusif teknik fotografi digital dan komposisi visual.",
     },
     {
-        image: "/assets/image1.png",
+        image: "/event/assets/image1.png",
         tag: "Growth with payoff",
         title: "Videography",
         desc: "Pelatihan eksklusif produksi video kreatif dan teknik sinematografi.",
     },
     {
-        image: "/assets/digital-art.png",
+        image: "/event/assets/digital-art.png",
         tag: "Likes, comments, saves",
         title: "Digital ART",
         desc: "Pelatihan eksklusif ilustrasi digital dan seni visual modern.",
     },
     {
-        image: "/assets/motion.png",
+        image: "/event/assets/motion.png",
         tag: "You're ready now",
         title: "Motion Graphic",
         desc: "Pelatihan eksklusif animasi grafis dan efek visual modern.",

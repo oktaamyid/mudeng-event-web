@@ -52,14 +52,14 @@ export default function Footer() {
                     <div className="flex max-w-[270px] flex-col gap-4">
                         <div className="flex items-center gap-2">
                             <img
-                                src="/assets/Navbar-logo.png"
+                                src="/event/assets/Navbar-logo.png"
                                 alt="MUDENG"
                                 width="42"
                                 height="42"
                                 className="rounded-full"
                             />
                             <img
-                                src="/assets/Mudeng-Elements.png"
+                                src="/event/assets/Mudeng-Elements.png"
                                 alt="MUDENG"
                                 height="14"
                                 className="h-[14px] w-auto"

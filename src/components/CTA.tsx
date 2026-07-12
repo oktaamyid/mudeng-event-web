@@ -1,4 +1,4 @@
-const photo = "/assets/user.png";
+const photo = "/event/assets/user.png";
 
 export default function CTA() {
     return (

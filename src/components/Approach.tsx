@@ -1,15 +1,15 @@
 const tools = [
-    { name: "instagram", label: "Instagram", img: "/assets/logo-ig.png" },
-    { name: "canva", label: "Canva", img: "/assets/logo-canva.png" },
-    { name: "figma", label: "Figma", img: "/assets/logo-figma.png" },
-    { name: "linkedin", label: "LinkedIn", img: "/assets/logo-linkedin.png" },
-    { name: "capcut", label: "CapCut", img: "/assets/logo-capcut.png" },
+    { name: "instagram", label: "Instagram", img: "/event/assets/logo-ig.png" },
+    { name: "canva", label: "Canva", img: "/event/assets/logo-canva.png" },
+    { name: "figma", label: "Figma", img: "/event/assets/logo-figma.png" },
+    { name: "linkedin", label: "LinkedIn", img: "/event/assets/logo-linkedin.png" },
+    { name: "capcut", label: "CapCut", img: "/event/assets/logo-capcut.png" },
     {
         name: "photoshop",
         label: "Photoshop",
-        img: "/assets/logo-photoshop.png",
+        img: "/event/assets/logo-photoshop.png",
     },
-    { name: "dribbble", label: "Dribbble", img: "/assets/logo-dribble.png" },
+    { name: "dribbble", label: "Dribbble", img: "/event/assets/logo-dribble.png" },
 ];
 
 const benefits = [
@@ -43,17 +43,17 @@ export default function Approach() {
                         ))}
                         <img
                             className="approach__deco approach__deco--arrow-1"
-                            src="/assets/icon-arrow.png"
+                            src="/event/assets/icon-arrow.png"
                             alt=""
                         />
                         <img
                             className="approach__deco approach__deco--cling-1"
-                            src="/assets/icon-cling.png"
+                            src="/event/assets/icon-cling.png"
                             alt=""
                         />
                         <img
                             className="approach__deco approach__deco--tali"
-                            src="/assets/icon-tali.png"
+                            src="/event/assets/icon-tali.png"
                             alt=""
                         />
                     </div>

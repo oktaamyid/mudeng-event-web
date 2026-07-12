@@ -46,13 +46,13 @@ export default function Testimonials() {
                 <div className="testimonials__scattered">
                     {/* Decorative icons */}
                     <img
-                        src="/assets/icon-arrow2.png"
+                        src="/event/assets/icon-arrow2.png"
                         alt=""
                         className="testimonials__deco testimonials__deco--arrow"
                         aria-hidden="true"
                     />
                     <img
-                        src="/assets/icon-cling.png"
+                        src="/event/assets/icon-cling.png"
                         alt=""
                         className="testimonials__deco testimonials__deco--bling"
                         aria-hidden="true"

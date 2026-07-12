@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 
 const logoMain = "https://cdn.mudeng.oktaa.my.id/logo/logo-mudeng.svg";
-const logoSmall = "/assets/logo-monogram.svg";
+const logoSmall = "/event/assets/logo-monogram.svg";
 
 const navLinks = [
     { label: "ABOUT", href: "/#about", sectionId: "about" },

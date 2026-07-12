@@ -162,7 +162,7 @@ export default function Curriculum() {
                 {/* Banner */}
                 <div className="curriculum__banner">
                     <div className="">
-                        <img src="/assets/mask-group.svg" alt="" />
+                        <img src="/event/assets/mask-group.svg" alt="" />
                     </div>
                     <div className="curriculum__banner-text">
                         <div className="curriculum__banner-title">
