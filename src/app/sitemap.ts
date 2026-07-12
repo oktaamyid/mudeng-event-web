@@ -19,7 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     if (res.success && res.data) {
         const events = res.data.filter((e) => e.status === "PUBLISHED");
         const eventRoutes: MetadataRoute.Sitemap = events.map((event) => ({
-            url: `${baseUrl}/events/${event.slug}`,
+            url: `${baseUrl}/${event.slug}`,
             lastModified: new Date(event.createdAt || new Date()),
             changeFrequency: "weekly",
             priority: 0.8,

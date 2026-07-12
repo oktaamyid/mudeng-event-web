@@ -110,7 +110,7 @@ export default async function DashboardPage() {
                                             size="sm"
                                             render={
                                                 <Link
-                                                    href={`/events/${reg.event.slug}`}
+                                                    href={`/${reg.event.slug}`}
                                                 />
                                             }
                                             className="text-white/70 hover:text-white"

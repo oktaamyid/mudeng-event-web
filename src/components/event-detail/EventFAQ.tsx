@@ -75,7 +75,7 @@ export default function EventFAQ({
                             <p className="font-body mb-6 text-sm font-medium text-white/90">
                                 Bergabunglah dan mulai perjalananmu di dunia {event?.category || "UI/UX Design"}
                             </p>
-                            <Link href={`/events/${event?.slug || ""}/register`} className="block">
+                            <Link href={`/${event?.slug || ""}/register`} className="block">
                                 <button className="font-body w-full rounded-full bg-[#8b5cf6] py-3 text-sm font-semibold text-white shadow-md transition-all hover:bg-[#7c3aed] hover:shadow-lg">
                                     Daftar Sekarang
                                 </button>

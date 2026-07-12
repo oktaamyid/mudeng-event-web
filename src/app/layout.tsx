@@ -16,33 +16,55 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
     metadataBase: new URL("https://mudeng.nurulfikri.ac.id/event"),
     title: {
-        default: "Mudeng Event",
-        template: "%s | Mudeng Event",
+        default: "MUDENG Event - Pelatihan & Workshop Multimedia",
+        template: "%s | MUDENG Event",
     },
     description:
-        "Mudeng Event - Elite creative subscription and workshops to elevate your digital presence and portfolio.",
+        "MUDENG Event adalah platform pendaftaran dan manajemen kelas interaktif, pelatihan, serta workshop multimedia untuk mengembangkan keahlian digital Anda.",
     keywords: [
         "mudeng",
-        "event",
-        "workshop",
-        "creative",
-        "design",
-        "portfolio",
+        "nurul fikri",
+        "sttnf",
+        "stt terpadu nurul fikri",
+        "ukm nurul fikri",
+        "pelatihan IT",
+        "workshop kreatif",
+        "kelas UI/UX",
+        "event desain",
+        "bootcamp multimedia",
     ],
+    icons: {
+        icon: [
+            { url: "/favicon.ico" },
+            { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+            { url: "/favicon.svg", type: "image/svg+xml" },
+        ],
+        apple: "/apple-touch-icon.png",
+    },
+    manifest: "/site.webmanifest",
     openGraph: {
-        title: "Mudeng Event",
+        title: "MUDENG Event - Pelatihan & Workshop Multimedia",
         description:
-            "Elite creative subscription and workshops to elevate your digital presence.",
+            "Platform pendaftaran dan manajemen kelas interaktif, pelatihan, serta workshop multimedia untuk mengembangkan keahlian digital Anda.",
         url: "https://mudeng.nurulfikri.ac.id/event",
-        siteName: "Mudeng Event",
+        siteName: "MUDENG Event",
         locale: "id_ID",
         type: "website",
+        images: [
+            {
+                url: "https://cdn.mudeng.oktaa.my.id/seo/og-image.png",
+                width: 1200,
+                height: 630,
+                alt: "MUDENG Event",
+            },
+        ],
     },
     twitter: {
         card: "summary_large_image",
-        title: "Mudeng Event",
+        title: "MUDENG Event - Pelatihan & Workshop Multimedia",
         description:
-            "Elite creative subscription and workshops to elevate your digital presence.",
+            "Platform pendaftaran dan manajemen kelas interaktif, pelatihan, serta workshop multimedia untuk mengembangkan keahlian digital Anda.",
+        images: ["https://cdn.mudeng.oktaa.my.id/seo/og-image.png"],
     },
 };
 

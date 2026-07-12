@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 export default async function Hero({ event: activeEvent }: { event: any }) {
     const ctaLink = activeEvent
-        ? `/events/${activeEvent.slug}/register`
+        ? `/${activeEvent.slug}/register`
         : "#events";
 
     return (

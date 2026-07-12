@@ -35,7 +35,7 @@ export default function Navbar() {
     useEffect(() => {
         getActiveEvent().then((res) => {
             if (res.data) {
-                setCtaLink(`/events/${res.data.slug}/register`);
+                setCtaLink(`/${res.data.slug}/register`);
             }
         });
     }, []);

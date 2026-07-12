@@ -14,18 +14,18 @@ export default async function proxy(req: NextRequest) {
     const session = await getSession();
     
     if (isProtectedRoute && !session?.userId) {
-        return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+        return NextResponse.redirect(new URL("/event/sign-in", req.nextUrl));
     }
 
     if (path.startsWith("/admin") && session?.role !== "admin") {
-        return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
+        return NextResponse.redirect(new URL("/event/dashboard", req.nextUrl));
     }
     
     if (isPublicRoute && session?.userId) {
         if (session.role === "admin") {
-            return NextResponse.redirect(new URL("/admin", req.nextUrl));
+            return NextResponse.redirect(new URL("/event/admin", req.nextUrl));
         } else {
-            return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
+            return NextResponse.redirect(new URL("/event/dashboard", req.nextUrl));
         }
     }
     

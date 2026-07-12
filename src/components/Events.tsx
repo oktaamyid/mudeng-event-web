@@ -65,7 +65,7 @@ export default async function Events() {
                                     {evt.description}
                                 </p>
                                 <Link
-                                    href={`/events/${evt.slug}`}
+                                    href={`/${evt.slug}`}
                                     className="font-body inline-flex h-12.25 w-50 items-center justify-center rounded-[30px] bg-[#F8F9FA] text-[17px] leading-6.75 font-medium text-black shadow-[0px_6px_20px_rgba(0,0,0,0.1)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0px_8px_24px_rgba(0,0,0,0.15)] md:w-62.5"
                                 >
                                     Event details
