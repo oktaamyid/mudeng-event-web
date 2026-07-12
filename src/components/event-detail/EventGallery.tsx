@@ -1,4 +1,5 @@
 import { EventData } from "@/data/events";
+import Link from "next/link";
 
 export default function EventGallery({ event }: { event: EventData }) {
     return (
@@ -20,12 +21,12 @@ export default function EventGallery({ event }: { event: EventData }) {
                 </div>
 
                 <div className="mt-12 flex justify-start">
-                    <a
-                        href="#"
+                    <Link
+                        href="/#events"
                         className="font-body text-text-main inline-flex rounded-full bg-[#F2F4F7] px-8 py-3 text-sm font-medium transition-colors hover:bg-[#E4E7EC]"
                     >
-                        Next Project
-                    </a>
+                        Lihat Event Lainnya
+                    </Link>
                 </div>
             </div>
         </section>

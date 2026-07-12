@@ -1,9 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 export default async function Hero({ event: activeEvent }: { event: any }) {
-    const ctaLink = activeEvent
-        ? `/${activeEvent.slug}/register`
-        : "#events";
+    const ctaLink = activeEvent ? `/${activeEvent.slug}/register` : "#events";
 
     return (
         <section
@@ -80,12 +78,12 @@ export default async function Hero({ event: activeEvent }: { event: any }) {
                 <div className="mb-[60px] flex w-full flex-col items-center justify-center gap-2 md:flex-row">
                     <Link
                         href={ctaLink}
-                        className="bg-brand text-bg-main rounded-pill font-nav shadow-cta-btn flex w-full items-center justify-center px-8 py-4 text-base font-semibold transition-all duration-300 hover:-translate-y-1 hover:shadow-lg md:w-auto"
+                        className="bg-brand !text-white rounded-pill font-nav shadow-cta-btn flex w-full items-center justify-center px-8 py-4 text-base font-semibold transition-all duration-300 hover:-translate-y-1 hover:shadow-lg md:w-auto"
                     >
                         Daftar Sekarang
                     </Link>
                     <Link
-                        href="/#services"
+                        href="/#events"
                         className="bg-pill-bg text-btn-secondary-text rounded-pill font-nav w-full px-8 py-4 text-base font-semibold transition-all duration-300 hover:-translate-y-1 hover:bg-black/10 md:w-auto"
                     >
                         Lihat Detail

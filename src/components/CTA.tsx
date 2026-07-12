@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const photo = "/event/assets/user.png";
 
 export default function CTA() {
@@ -27,12 +29,12 @@ export default function CTA() {
                     dan terarah.
                 </p>
 
-                <a
-                    href="#"
+                <Link
+                    href="/#events"
                     className="bg-brand font-body inline-block rounded-[100px] px-[28px] py-[13px] text-[16px] font-medium !text-white transition-transform hover:scale-105"
                 >
                     Daftar Sekarang
-                </a>
+                </Link>
             </div>
         </section>
     );

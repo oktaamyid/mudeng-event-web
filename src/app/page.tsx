@@ -37,7 +37,7 @@ export default async function Home() {
 
             <Testimonials />
 
-            <FAQ event={activeEvent} />
+            <FAQ />
 
             <CTA />
 

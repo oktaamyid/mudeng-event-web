@@ -44,9 +44,7 @@ export default function Navbar() {
     const [activeSection, setActiveSection] = useState("MUDENG");
     const [isCompact, setIsCompact] = useState(false);
     const lastScrollY = useRef(0);
-    const [isMobile, setIsMobile] = useState(
-        typeof window !== "undefined" ? window.innerWidth < 768 : false,
-    );
+    const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
         function handleScroll() {
@@ -88,6 +86,7 @@ export default function Navbar() {
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 768);
+        handleResize();
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
@@ -97,7 +96,7 @@ export default function Navbar() {
             className="fixed top-4 left-1/2 z-50 -translate-x-1/2 px-4 transition-all duration-500 ease-in-out"
             style={{
                 width:
-                    typeof window !== "undefined" && window.innerWidth < 768
+                    isMobile
                         ? "calc(100% - 2rem)"
                         : isCompact
                           ? "fit-content"

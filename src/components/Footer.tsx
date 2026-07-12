@@ -1,10 +1,12 @@
+import Link from "next/link";
+
 export default function Footer() {
     const footerLinks = [
         {
             title: "Menu",
             items: [
                 { label: "About", href: "/#about" },
-                { label: "Services", href: "/#services" },
+                { label: "Benefits", href: "/#benefits" },
                 { label: "Curriculum", href: "/#curriculum" },
                 { label: "Events", href: "/#events" },
             ],
@@ -59,7 +61,7 @@ export default function Footer() {
                                 className="rounded-full"
                             />
                             <img
-                                src="/event/assets/Mudeng-Elements.png"
+                                src="https://cdn.mudeng.oktaa.my.id/logo/logo-element.png"
                                 alt="MUDENG"
                                 height="14"
                                 className="h-[14px] w-auto"
@@ -108,12 +110,12 @@ export default function Footer() {
                         © {new Date().getFullYear()}, All Rights Reserved
                     </span>
                     <div className="flex items-center gap-3">
-                        <a
-                            href="#hero"
+                        <Link
+                            href="/#hero"
                             className="font-body text-text-muted hover:text-brand text-base font-medium transition-colors duration-200"
                         >
                             Back To Top
-                        </a>
+                        </Link>
                     </div>
                 </div>
             </div>

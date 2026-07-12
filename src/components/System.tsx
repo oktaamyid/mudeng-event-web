@@ -45,13 +45,13 @@ export default function System() {
 
                 <div className="flex items-center justify-center gap-2 md:flex-row">
                     <Link
-                        href="#cta"
+                        href="/#events"
                         className="bg-brand font-body inline-block rounded-[100px] px-[28px] py-[13px] text-[16px] font-medium !text-white transition-transform hover:scale-105"
                     >
                         Daftar Sekarang
                     </Link>
                     <Link
-                        href="#services"
+                        href="/#events"
                         className="bg-brand-light text-text-muted font-body inline-block rounded-[100px] px-[28px] py-[13px] text-[16px] font-medium transition-transform hover:scale-105"
                     >
                         Lihat Detail
