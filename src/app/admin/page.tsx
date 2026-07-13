@@ -16,6 +16,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export default async function AdminDashboardPage() {
     const { data, success } = await getAdminDashboardStats();
@@ -78,7 +79,7 @@ export default async function AdminDashboardPage() {
                         </div>
                         <p className="text-muted-foreground mt-1 text-xs">
                             Total participants across all events
-                        </p>
+                    </p>
                     </CardContent>
                 </Card>
 
@@ -134,13 +135,27 @@ export default async function AdminDashboardPage() {
                             </TableHeader>
                             <TableBody>
                                 {recentRegistrations.map((reg: any) => (
-                                    <TableRow key={reg.id}>
+                                    <TableRow
+                                        key={reg.id}
+                                        className="hover:bg-muted/50 transition-colors"
+                                    >
                                         <TableCell>
-                                            <div className="font-medium">
-                                                {reg.fullName}
-                                            </div>
-                                            <div className="text-muted-foreground text-xs">
-                                                {reg.email}
+                                            <div className="flex items-center gap-3">
+                                                <Avatar className="h-9 w-9">
+                                                    <AvatarFallback className="bg-primary/10 text-primary">
+                                                        {reg.fullName
+                                                            .substring(0, 2)
+                                                            .toUpperCase()}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                                <div>
+                                                    <div className="font-medium">
+                                                        {reg.fullName}
+                                                    </div>
+                                                    <div className="text-muted-foreground text-xs">
+                                                        {reg.email}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </TableCell>
                                         <TableCell className="text-muted-foreground text-sm">

@@ -33,8 +33,7 @@ export default function AdminSettingsPage() {
                         <Label htmlFor="name">Display Name</Label>
                         <Input id="name" defaultValue="Admin User" disabled />
                         <p className="text-muted-foreground text-[0.8rem]">
-                            Your name is managed by your authentication provider
-                            (Clerk).
+                            Your profile information is managed by the system administrator.
                         </p>
                     </div>
                     <div className="space-y-2">

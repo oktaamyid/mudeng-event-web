@@ -92,7 +92,7 @@ export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
             <SidebarFooter>
                 <div className="px-2 py-2">
                     <p className="text-muted-foreground text-xs">
-                        © 2025 Mudeng Events
+                        © {new Date().getFullYear()} Mudeng Events
                     </p>
                 </div>
             </SidebarFooter>

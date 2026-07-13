@@ -10,6 +10,8 @@ import { Separator } from "@/components/ui/separator";
 import { getSession } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
 import { logout } from "@/lib/actions/auth";
+import { Button } from "@/components/ui/button";
+import { LogOut } from "lucide-react";
 
 export default async function AdminLayout({
     children,
@@ -27,7 +29,7 @@ export default async function AdminLayout({
             <AppSidebar isAdmin={true} />
             <SidebarInset>
                 {/* Top Header Bar */}
-                <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
+                <header className="bg-background flex h-14 shrink-0 items-center gap-2 border-b px-4">
                     <SidebarTrigger className="-ml-1" />
                     <Separator orientation="vertical" className="h-4" />
                     <div className="flex flex-1 items-center justify-between">
@@ -35,15 +37,21 @@ export default async function AdminLayout({
                             Admin Dashboard
                         </span>
                         <form action={logout}>
-                            <button type="submit" className="text-sm font-medium text-red-500 hover:underline">
+                            <Button
+                                type="submit"
+                                variant="ghost"
+                                size="sm"
+                                className="text-muted-foreground hover:text-red-600 hover:bg-red-50"
+                            >
+                                <LogOut className="mr-2 h-4 w-4" />
                                 Logout
-                            </button>
+                            </Button>
                         </form>
                     </div>
                 </header>
 
                 {/* Main Content */}
-                <main className="flex-1 p-6">{children}</main>
+                <main className="bg-muted/20 flex-1 p-6">{children}</main>
             </SidebarInset>
         </SidebarProvider>
     );
