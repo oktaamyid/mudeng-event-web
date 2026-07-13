@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
     ],
   },
   basePath: '/event',
-  trailingSlash: true,
+  
   output: 'standalone',
 };
 
