@@ -66,6 +66,11 @@ export const metadata: Metadata = {
             "Platform pendaftaran dan manajemen kelas interaktif, pelatihan, serta workshop multimedia untuk mengembangkan keahlian digital Anda.",
         images: ["https://cdn.mudeng.oktaa.my.id/seo/og-image.png"],
     },
+    verification: {
+        other: {
+            "msvalidate.01": ["C3591A71AD0662B4BF4374B3130209A5"],
+        },
+    },
 };
 
 export default function RootLayout({

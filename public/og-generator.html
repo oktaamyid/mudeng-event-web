@@ -4,7 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MUDENG OG Image Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        anton: ['Anton', 'sans-serif'],
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: '#6849E1',
+                        brandLight: '#7C7AEA',
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         body {
             margin: 0;
@@ -35,7 +52,6 @@
             opacity: 0.65;
             border-radius: 50%;
             z-index: 1;
-            animation: pulse 10s ease-in-out infinite alternate;
         }
         
         .blob-1 {
@@ -89,12 +105,23 @@
         .logo-wrapper {
             position: relative;
             z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         .logo-wrapper img {
-            height: 220px; /* Diperbesar agar seimbang dengan ukuran 1200x630 */
+            height: 220px;
             object-fit: contain;
-            filter: drop-shadow(0 20px 40px rgba(104, 73, 225, 0.15));
+            filter: drop-shadow(0 20px 40px rgba(104, 73, 225, 0.25));
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #6849E1 0%, #FF7EB3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
     </style>
 </head>
@@ -108,9 +135,12 @@
         <div class="grid-pattern"></div>
         <div class="noise"></div>
 
-        <!-- MUDENG Logo -->
-        <div class="logo-wrapper">
+        <!-- MUDENG Logo & Text -->
+        <div class="logo-wrapper gap-2">
             <img src="https://cdn.mudeng.oktaa.my.id/logo/logo-monogram.svg" alt="MUDENG Logo">
+            <h1 class="font-anton font-normal text-[110px] leading-none tracking-[16px] text-[#6667E4]/90 uppercase mt-2 drop-shadow-md">
+                MUDENG
+            </h1>
         </div>
     </div>
 
