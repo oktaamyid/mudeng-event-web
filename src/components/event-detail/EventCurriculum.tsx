@@ -3,11 +3,11 @@ import { EventData } from "@/data/events";
 export default function EventCurriculum({ event }: { event: any }) {
     return (
         <section
-            className="bg-[#f8f8f8] py-[100px] md:py-[160px]"
+            className="bg-[#f8f8f8] py-[50px] sm:py-[80px] md:py-[160px]"
             id="curriculum"
         >
             <div className="mx-auto max-w-360 px-6 lg:px-[120px] xl:px-[240px]">
-                <div className="mb-[80px] text-center">
+                <div className="mb-[40px] sm:mb-[60px] md:mb-[80px] text-center">
                     <h2 className="font-display text-text-main mb-4 text-[32px] leading-[34px] font-normal tracking-[-1px] uppercase md:text-[50px] md:leading-[52px]">
                         CURRICULUM
                     </h2>
@@ -21,7 +21,7 @@ export default function EventCurriculum({ event }: { event: any }) {
                     {event.curriculum?.map((item: any, idx: any) => (
                         <div
                             key={idx}
-                            className="border-divider rounded-[24px] border bg-white p-8 shadow-[0px_10px_30px_rgba(0,0,0,0.03)] md:p-10"
+                            className="border-divider rounded-[16px] sm:rounded-[24px] border bg-white p-5 sm:p-8 shadow-[0px_10px_30px_rgba(0,0,0,0.03)] md:p-10"
                         >
                             <span className="font-body text-text-muted mb-6 inline-block rounded-full bg-black/5 px-4 py-1.5 text-sm font-semibold">
                                 Week {item.week}

@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -84,12 +85,20 @@ export default function RootLayout({
             className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
         >
             <head>
+                <script
+                    dangerouslySetInnerHTML={{
+                        __html: `if(history.scrollRestoration){history.scrollRestoration='manual'}`,
+                    }}
+                />
                 <link
                     href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600&display=swap"
                     rel="stylesheet"
                 />
             </head>
-            <body className="flex min-h-full flex-col">{children}</body>
+            <body className="flex min-h-full flex-col overflow-x-clip" suppressHydrationWarning>
+                <ScrollToTop />
+                {children}
+            </body>
         </html>
     );
 }

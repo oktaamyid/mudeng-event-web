@@ -2,6 +2,14 @@
 
 import React, { useRef, useEffect } from "react";
 import Image from "next/image"; // Import Image for potential use with other assets, though video uses <video>
+import {
+    TextReveal,
+    FadeSlideIn,
+    PopIn,
+    StaggerContainer,
+    StaggerItem,
+    ScaleIn,
+} from "@/components/ui/motion-primitives";
 
 export default function About({ event }: { event?: any }) {
     const stats = [
@@ -29,19 +37,28 @@ export default function About({ event }: { event?: any }) {
     }, []);
 
     return (
-        <section className="relative py-[160px] text-center" id="about">
-            <div className="mx-auto max-w-[1440px] px-6 md:px-[240px]">
-                <h2 className="mb-6 font-['Anton'] text-[72px] leading-[72px] tracking-[-2px] text-[#6849E1] uppercase">
+        <section className="relative py-[80px] sm:py-[120px] md:py-[160px] text-center" id="about">
+            <div className="mx-auto max-w-[1440px] px-6 sm:px-12 md:px-[240px]">
+                <TextReveal
+                    as="h2"
+                    className="mb-4 sm:mb-6 font-['Anton'] text-[36px] leading-[38px] sm:text-[52px] sm:leading-[54px] md:text-[72px] md:leading-[72px] tracking-[-2px] text-[#6849E1] uppercase"
+                >
                     {event?.overview?.title || "MUDENG IS A MODERN CREATIVE"}
-                </h2>
-                <p className="mx-auto mb-[60px] max-w-[720px] font-['Inter'] text-[24px] leading-[29.76px] font-medium tracking-[-0.48px] text-[#1A1A1A]/65">
-                    {event?.overview?.description ||
-                        "MUDENG adalah wadah kreatif modern yang fokus mengembangkan keahlian multimedia melalui pelatihan interaktif guna mempersiapkan talenta digital masa depan yang siap kerja."}
-                </p>
+                </TextReveal>
 
-                <div className="mb-[60px] flex flex-wrap items-start justify-center gap-0">
+                <FadeSlideIn delay={0.1}>
+                    <p className="mx-auto mb-[40px] sm:mb-[60px] max-w-[720px] font-['Inter'] text-[16px] leading-[24px] sm:text-[20px] sm:leading-[26px] md:text-[24px] md:leading-[29.76px] font-medium tracking-[-0.48px] text-[#1A1A1A]/65">
+                        {event?.overview?.description ||
+                            "MUDENG adalah wadah kreatif modern yang fokus mengembangkan keahlian multimedia melalui pelatihan interaktif guna mempersiapkan talenta digital masa depan yang siap kerja."}
+                    </p>
+                </FadeSlideIn>
+
+                <StaggerContainer
+                    className="mb-[60px] flex flex-wrap items-start justify-center gap-0"
+                    stagger={0.1}
+                >
                     {stats.map((stat, i) => (
-                        <div
+                        <StaggerItem
                             key={i}
                             className={`relative min-w-[160px] flex-none px-6 text-center ${i === stats.length - 1 ? "" : 'md:after:bg-[#000000]/05 md:after:absolute md:after:top-0 md:after:right-0 md:after:bottom-0 md:after:w-[1px] md:after:content-[""]'}`}
                         >
@@ -52,26 +69,28 @@ export default function About({ event }: { event?: any }) {
                             <div className="font-['Inter'] text-[17px] leading-[27px] font-medium tracking-[-0.63px] text-[#7d7d7d]">
                                 {stat.label}
                             </div>
-                        </div>
+                        </StaggerItem>
                     ))}
-                </div>
+                </StaggerContainer>
 
-                <div className="relative mx-auto aspect-[1200/650] max-w-[1200px] overflow-hidden rounded-[32px] shadow-[0_16px_48px_-4px_rgba(26,26,26,0.2)]">
-                    <video
-                        ref={videoRef}
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        className="h-full w-full object-cover"
-                    >
-                        <source
-                            src="https://cdn.mudeng.oktaa.my.id/videos/video-coming-soon.mp4"
-                            type="video/mp4"
-                        />
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
+                <ScaleIn>
+                    <div className="relative mx-auto aspect-[1200/650] max-w-[1200px] overflow-hidden rounded-[16px] sm:rounded-[24px] md:rounded-[32px] shadow-[0_16px_48px_-4px_rgba(26,26,26,0.2)]">
+                        <video
+                            ref={videoRef}
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="h-full w-full object-cover"
+                        >
+                            <source
+                                src="https://cdn.mudeng.oktaa.my.id/videos/video-coming-soon.mp4"
+                                type="video/mp4"
+                            />
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </ScaleIn>
             </div>
         </section>
     );

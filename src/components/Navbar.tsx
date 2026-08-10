@@ -93,15 +93,15 @@ export default function Navbar() {
 
     return (
         <nav
-            className="fixed top-4 left-1/2 z-50 -translate-x-1/2 px-4 transition-all duration-500 ease-in-out"
+            className="fixed top-4 inset-x-0 z-50 mx-auto px-4 transition-all duration-500 ease-in-out"
             style={{
                 width:
                     isMobile
-                        ? "calc(100% - 2rem)"
+                        ? "100%"
                         : isCompact
-                          ? "fit-content"
-                          : "calc(100% - 2rem)",
-                maxWidth: "1152px",
+                            ? "fit-content"
+                            : "100%",
+                maxWidth: "1184px",
             }}
         >
             <div
@@ -184,19 +184,17 @@ export default function Navbar() {
                             <Link
                                 key={link.label}
                                 href={link.href}
-                                className={`group relative pb-1 text-base whitespace-nowrap transition-colors duration-300 ease-out ${
-                                    activeSection === link.label
+                                className={`group relative pb-1 text-base whitespace-nowrap transition-colors duration-300 ease-out ${activeSection === link.label
                                         ? "!text-brand font-bold"
                                         : "!text-nav-link hover:!text-brand font-medium"
-                                }`}
+                                    }`}
                             >
                                 {link.label}
                                 <span
-                                    className={`bg-brand absolute bottom-0 left-0 h-[2px] w-full origin-center transition-transform duration-300 ease-out ${
-                                        activeSection === link.label
+                                    className={`bg-brand absolute bottom-0 left-0 h-[2px] w-full origin-center transition-transform duration-300 ease-out ${activeSection === link.label
                                             ? "scale-x-100"
                                             : "scale-x-0 group-hover:scale-x-100"
-                                    }`}
+                                        }`}
                                 />
                             </Link>
                         ))}

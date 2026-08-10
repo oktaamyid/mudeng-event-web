@@ -3,7 +3,12 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { Plus, Minus } from "lucide-react";
+import {
+    TextReveal,
+    FadeSlideIn,
+    StaggerContainer,
+    StaggerItem,
+} from "@/components/ui/motion-primitives";
 
 export default function EventFAQ({
     faqs = [],
@@ -12,30 +17,32 @@ export default function EventFAQ({
     faqs?: { question: string; answer: string }[];
     event?: any;
 }) {
+    const eventTitle = event?.title?.toUpperCase() || "EVENT";
+
     const defaultFaqs = [
         {
-            q: "How does the subscription work?",
-            a: "Pendaftaran dapat dilakukan kapan saja selama kuota masih tersedia.",
+            q: `Apa itu ${eventTitle}?`,
+            a: `${eventTitle} adalah program pelatihan intensif yang dirancang untuk membantu peserta mengembangkan keterampilan di bidang ${event?.category || "desain digital"} melalui praktik langsung dan proyek nyata.`,
         },
         {
-            q: "What is the turnaround time?",
-            a: "Kelas dimulai secara serentak sesuai tanggal kickoff.",
+            q: `Siapa saja yang mengikuti ${eventTitle}?`,
+            a: `${eventTitle} terbuka untuk semua kalangan, mulai dari mahasiswa, fresh graduate, hingga profesional yang ingin mengembangkan keterampilan di bidang ${event?.category || "desain digital"}.`,
         },
         {
-            q: "What happens if I need a revision?",
-            a: "Mentor akan membimbing Anda sampai karya Anda mencapai standar portofolio.",
+            q: "Apakah saya harus memiliki pengalaman desain?",
+            a: "Tidak harus. Program ini dirancang untuk semua level, termasuk pemula yang belum memiliki pengalaman sama sekali. Mentor akan membimbing dari dasar.",
         },
         {
-            q: "Can I share my subscription with others?",
-            a: "Satu tiket hanya berlaku untuk satu peserta terdaftar.",
+            q: `Software apa yang digunakan dalam ${eventTitle}?`,
+            a: "Peserta akan menggunakan tools industri seperti Figma, Adobe Photoshop, Canva, dan tools pendukung lainnya sesuai kebutuhan program.",
         },
         {
-            q: "How do I submit requests?",
-            a: "Melalui dashboard student yang akan diberikan setelah pendaftaran.",
+            q: `Apakah ada tugas atau proyek selama ${eventTitle}?`,
+            a: "Ya, setiap sesi dilengkapi dengan tugas praktik dan proyek akhir yang akan menjadi bagian dari portofolio peserta.",
         },
         {
-            q: "What happens if I miss a class?",
-            a: "Semua sesi live akan direkam dan bisa diakses selamanya.",
+            q: `Bagaimana bergabung dengan ${eventTitle}?`,
+            a: "Kamu bisa mendaftar melalui tombol 'Daftar Sekarang' di halaman ini. Isi formulir pendaftaran dan tunggu konfirmasi dari tim kami.",
         },
     ];
 
@@ -43,6 +50,14 @@ export default function EventFAQ({
         faqs?.length > 0
             ? faqs.map((f) => ({ q: f.question, a: f.answer }))
             : defaultFaqs;
+
+    const ctaDescriptionMap: Record<string, string> = {
+        "ui-craft": "Bergabunglah dan mulai perjalananmu di dunia UI/UX Design",
+        "creative-craft": "Bergabunglah dan kembangkan kreativitasmu melalui berbagai karya desain dan multimedia",
+        "mucrex": "Tampilkan karya terbaikmu dan jadilah bagian dari pameran kreativitas digital bersama Mudeng STT NF.",
+    };
+
+    const ctaDescription = ctaDescriptionMap[event?.slug] || `Bergabunglah dan mulai perjalananmu di dunia ${event?.category || "UI/UX Design"}`;
 
     const [openIndex, setOpenIndex] = useState<number | null>(null);
 
@@ -52,78 +67,116 @@ export default function EventFAQ({
 
     return (
         <section
-            className="border-divider border-t bg-white py-[100px] md:py-[160px]"
+            className="border-divider border-t bg-white py-[50px] sm:py-[80px] md:py-[160px]"
             id="faq"
         >
             <div className="mx-auto max-w-360 px-6 lg:px-[120px] xl:px-[240px]">
-                <div className="mb-[80px] text-center">
-                    <h2 className="font-display text-text-main mx-auto mb-4 max-w-[500px] text-[36px] leading-[40px] font-normal md:text-[50px] md:leading-[52px]">
-                        FREQUENTLY <span className="text-text-muted">ASKED</span> QUESTIONS ABOUT OUR SERVICE.
-                    </h2>
-                    <p className="font-body text-text-muted mx-auto max-w-[500px] text-[16px] font-medium">
-                        Masih penasaran dengan event pelatihan gratis ini. Cek tanya jawab di bawah biar Kamu langsung paham.
-                    </p>
+                {/* Heading */}
+                <div className="mb-[40px] sm:mb-[60px] md:mb-[80px] text-center">
+                    <TextReveal as="h2" className="font-display text-brand mx-auto mb-4 sm:mb-6 max-w-[700px] text-[28px] leading-[30px] font-normal uppercase sm:text-[40px] sm:leading-[42px] md:text-[56px] md:leading-[58px]">
+                        {"Frequently asked questions about our service"}
+                    </TextReveal>
+                    <FadeSlideIn delay={0.15}>
+                        <p className="font-body mx-auto max-w-[500px] text-[16px] leading-[24px] font-medium tracking-[-0.32px] text-[#1A1A1A]/65">
+                            Masih penasaran dengan event pelatihan gratis ini.
+                            <br />
+                            Cek tanya jawab di bawah biar Kamu langsung paham.
+                        </p>
+                    </FadeSlideIn>
                 </div>
 
-                <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
-                    <div className="relative flex h-[350px] w-full flex-col justify-end overflow-hidden rounded-[32px] p-8 lg:h-auto bg-gradient-to-br from-[#c4b5fd] to-[#818CF8]">
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent" />
-                        <div className="relative z-10 w-full rounded-2xl bg-white/20 p-6 backdrop-blur-md shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/30">
-                            <h3 className="font-display mb-2 text-[24px] font-semibold text-white">
-                                Daftar {event?.title || "Event"}
-                            </h3>
-                            <p className="font-body mb-6 text-sm font-medium text-white/90">
-                                Bergabunglah dan mulai perjalananmu di dunia {event?.category || "UI/UX Design"}
-                            </p>
-                            <Link href={`/${event?.slug || ""}/register`} className="block">
-                                <button className="font-body w-full rounded-full bg-[#8b5cf6] py-3 text-sm font-semibold text-white shadow-md transition-all hover:bg-[#7c3aed] hover:shadow-lg">
-                                    Daftar Sekarang
-                                </button>
-                            </Link>
-                        </div>
-                    </div>
+                {/* Content Grid */}
+                <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+                    {/* CTA Card */}
+                    <FadeSlideIn delay={0.2} className="lg:col-span-5">
+                        <div className="relative flex h-[280px] sm:h-[350px] w-full flex-col justify-end overflow-hidden rounded-[20px] sm:rounded-[32px] p-5 sm:p-8 lg:h-full">
+                            {/* Background image */}
+                            <img
+                                src="/event/assets/Gradient V26.png"
+                                alt=""
+                                className="absolute inset-0 h-full w-full object-cover"
+                            />
 
-                    <div className="flex flex-col gap-3">
+                            {/* Glass card */}
+                            <div className="relative z-10 w-full rounded-2xl border border-white/30 bg-white/20 p-4 sm:p-6 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] backdrop-blur-md">
+                                <h3 className="font-body mb-2 text-[17px] sm:text-[20px] font-semibold text-white">
+                                    Daftar {event?.title || "Event"}
+                                </h3>
+                                <p className="font-body mb-4 sm:mb-6 text-[13px] sm:text-sm font-medium text-white/90">
+                                    {ctaDescription}
+                                </p>
+                                <Link
+                                    href={`/${event?.slug || ""}/register`}
+                                    className="block"
+                                >
+                                    <button className="font-body w-full rounded-full bg-[#6849E1] py-3.5 text-sm font-bold uppercase tracking-wider text-white shadow-[0_10px_20px_rgba(104,73,225,0.4)] transition-all hover:bg-[#5a3dcf] hover:shadow-[0_12px_24px_rgba(104,73,225,0.5)]">
+                                        Daftar Sekarang
+                                    </button>
+                                </Link>
+                            </div>
+                        </div>
+                    </FadeSlideIn>
+
+                    {/* FAQ Items */}
+                    <StaggerContainer className="flex flex-col gap-3 lg:col-span-7" stagger={0.08}>
                         {displayFaqs.map((faq, idx) => {
                             const isOpen = openIndex === idx;
                             return (
+                                <StaggerItem key={idx}>
                                 <div
-                                    key={idx}
-                                    className="flex flex-col rounded-[16px] bg-[#F8F9FB] transition-colors hover:bg-[#F2F4F7] overflow-hidden"
-                                >
-                                    <div 
-                                        className="flex cursor-pointer items-center justify-between p-5"
+                                    className="flex flex-col overflow-hidden rounded-[16px] bg-[#7C7AEA]/10 transition-colors hover:bg-[#7C7AEA]/15">
+
+                                    <div
+                                        className="flex cursor-pointer items-center justify-between p-3.5 sm:p-5"
                                         onClick={() => toggleFaq(idx)}
                                     >
-                                        <span className="font-body text-text-main font-medium">
+                                        <span className="font-body text-text-main pr-4 text-[14px] sm:text-[16px] font-medium">
                                             {faq.q}
                                         </span>
-                                        <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition-colors ${isOpen ? 'bg-[#1a1a1a]' : 'bg-[#6849E1]'}`}>
-                                            {isOpen ? (
-                                                <Minus className="h-3 w-3 text-white" strokeWidth={3} />
-                                            ) : (
-                                                <Plus className="h-3 w-3 text-white" strokeWidth={3} />
-                                            )}
+                                        <div
+                                            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#7C7AEA] transition-transform duration-300 ${isOpen ? "rotate-45" : ""}`}
+                                        >
+                                            <svg
+                                                viewBox="0 0 24 24"
+                                                width="14"
+                                                height="14"
+                                                className="fill-white"
+                                            >
+                                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                                            </svg>
                                         </div>
                                     </div>
                                     <AnimatePresence>
                                         {isOpen && (
                                             <motion.div
-                                                initial={{ height: 0, opacity: 0 }}
-                                                animate={{ height: "auto", opacity: 1 }}
-                                                exit={{ height: 0, opacity: 0 }}
-                                                transition={{ duration: 0.3, ease: "easeInOut" }}
+                                                initial={{
+                                                    height: 0,
+                                                    opacity: 0,
+                                                }}
+                                                animate={{
+                                                    height: "auto",
+                                                    opacity: 1,
+                                                }}
+                                                exit={{
+                                                    height: 0,
+                                                    opacity: 0,
+                                                }}
+                                                transition={{
+                                                    duration: 0.3,
+                                                    ease: "easeInOut",
+                                                }}
                                             >
-                                                <div className="px-5 pb-5 pt-0 font-body text-sm text-text-muted whitespace-pre-wrap">
+                                                <div className="font-body text-text-muted whitespace-pre-wrap px-3.5 pb-3.5 sm:px-5 sm:pb-5 pt-0 text-[13px] sm:text-sm">
                                                     {faq.a}
                                                 </div>
                                             </motion.div>
                                         )}
                                     </AnimatePresence>
                                 </div>
+                                </StaggerItem>
                             );
                         })}
-                    </div>
+                    </StaggerContainer>
                 </div>
             </div>
         </section>

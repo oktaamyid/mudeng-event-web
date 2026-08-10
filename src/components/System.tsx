@@ -1,4 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import {
+    TextReveal,
+    FadeSlideIn,
+    PopIn,
+} from "@/components/ui/motion-primitives";
 
 const pills = [
     "Sistem Hybrid",
@@ -23,40 +30,48 @@ export default function System() {
         <section className="system section-spacing" id="system">
             <div className="container">
                 <div className="system__heading">
-                    <h2 className="heading-h2">THE SYSTEM THAT PROVIDES</h2>
+                    <TextReveal as="h2" className="heading-h2">
+                        THE SYSTEM THAT PROVIDES
+                    </TextReveal>
                 </div>
 
                 <div className="system__pills">
                     {pills.map((label, i) => (
-                        <div className="system__pill" key={i}>
-                            <div className="system__pill-icon">
-                                <CheckIcon />
+                        <PopIn key={i} delay={i * 0.06}>
+                            <div className="system__pill">
+                                <div className="system__pill-icon">
+                                    <CheckIcon />
+                                </div>
+                                <span className="system__pill-label">{label}</span>
                             </div>
-                            <span className="system__pill-label">{label}</span>
-                        </div>
+                        </PopIn>
                     ))}
                 </div>
 
-                <p className="system__text text-subtitle">
-                    Belajar jadi lebih mudah karena kurikulum kami tersusun rapi
-                    dari dasar. Kamu akan dibimbing langkah demi langkah sampai
-                    berhasil membuat portofolio keren sendiri.
-                </p>
+                <FadeSlideIn delay={0.2}>
+                    <p className="system__text text-subtitle">
+                        Belajar jadi lebih mudah karena kurikulum kami tersusun rapi
+                        dari dasar. Kamu akan dibimbing langkah demi langkah sampai
+                        berhasil membuat portofolio keren sendiri.
+                    </p>
+                </FadeSlideIn>
 
-                <div className="flex items-center justify-center gap-2 md:flex-row">
-                    <Link
-                        href="/#events"
-                        className="bg-brand font-body inline-block rounded-[100px] px-[28px] py-[13px] text-[16px] font-medium !text-white transition-transform hover:scale-105"
-                    >
-                        Daftar Sekarang
-                    </Link>
-                    <Link
-                        href="/#events"
-                        className="bg-brand-light text-text-muted font-body inline-block rounded-[100px] px-[28px] py-[13px] text-[16px] font-medium transition-transform hover:scale-105"
-                    >
-                        Lihat Detail
-                    </Link>
-                </div>
+                <FadeSlideIn delay={0.3}>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
+                        <Link
+                            href="/#events"
+                            className="bg-brand font-body inline-block w-full sm:w-auto rounded-[100px] px-[24px] sm:px-[28px] py-[11px] sm:py-[13px] text-[14px] sm:text-[16px] font-medium !text-white transition-transform hover:scale-105 text-center"
+                        >
+                            Daftar Sekarang
+                        </Link>
+                        <Link
+                            href="/#events"
+                            className="bg-brand-light text-text-muted font-body inline-block w-full sm:w-auto rounded-[100px] px-[24px] sm:px-[28px] py-[11px] sm:py-[13px] text-[14px] sm:text-[16px] font-medium transition-transform hover:scale-105 text-center"
+                        >
+                            Lihat Detail
+                        </Link>
+                    </div>
+                </FadeSlideIn>
             </div>
         </section>
     );
