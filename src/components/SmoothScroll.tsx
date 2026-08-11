@@ -14,12 +14,33 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
     const pathname = usePathname();
     const lenisRef = useRef<Lenis | null>(null);
 
-    // Scroll to top on every route change
+    // Scroll to top or hash target on every route change
     useEffect(() => {
-        if (lenisRef.current) {
-            lenisRef.current.scrollTo(0, { immediate: true });
+        const hash = window.location.hash;
+
+        if (hash) {
+            // URL has a hash (e.g., /#approach) — wait for DOM then scroll to section
+            const scrollToHash = () => {
+                const id = hash.slice(1);
+                const element = document.getElementById(id);
+                if (element) {
+                    if (lenisRef.current) {
+                        lenisRef.current.scrollTo(element, { offset: -80, immediate: true });
+                    } else {
+                        element.scrollIntoView({ behavior: "instant", block: "start" });
+                    }
+                }
+            };
+            // Small delay to let Next.js hydrate the new page
+            const timer = setTimeout(scrollToHash, 100);
+            return () => clearTimeout(timer);
         } else {
-            window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+            // No hash — scroll to top
+            if (lenisRef.current) {
+                lenisRef.current.scrollTo(0, { immediate: true });
+            } else {
+                window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+            }
         }
     }, [pathname]);
 
@@ -28,17 +49,31 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
         const lenis = lenisRef.current;
         if (!lenis) return;
 
-        const target = (e.target as HTMLElement).closest("a");
-        if (!target) return;
+        const anchor = (e.target as HTMLElement).closest("a");
+        if (!anchor) return;
 
-        const href = target.getAttribute("href");
+        const href = anchor.getAttribute("href");
         if (!href) return;
 
-        // Match hash links like "/#about", "#about", "/event/#about"
-        const hashMatch = href.match(/#([a-zA-Z0-9_-]+)$/);
+        // Match hash links like "/#about", "#about", "/some-page/#section"
+        const hashMatch = href.match(/^(\/[^#]*)?(#[a-zA-Z0-9_-]+)$/);
         if (!hashMatch) return;
 
-        const id = hashMatch[1];
+        const linkPath = hashMatch[1] || "/"; // e.g., "/" or "/ui-craft"
+        const hash = hashMatch[2];            // e.g., "#about"
+        const id = hash.slice(1);             // e.g., "about"
+
+        // If the link targets a different page, let Next.js handle navigation
+        const currentPath = window.location.pathname;
+        const normalizedLinkPath = linkPath.replace(/\/$/, "") || "/";
+        const normalizedCurrentPath = currentPath.replace(/\/$/, "") || "/";
+
+        if (normalizedLinkPath !== normalizedCurrentPath) {
+            // Different page — don't intercept, let router navigate
+            return;
+        }
+
+        // Same page — smooth scroll to section
         const element = document.getElementById(id);
         if (!element) return;
 
