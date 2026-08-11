@@ -95,7 +95,7 @@ export default function RootLayout({
                     rel="stylesheet"
                 />
             </head>
-            <body className="flex min-h-full flex-col overflow-x-clip" suppressHydrationWarning>
+            <body className="flex min-h-full flex-col" suppressHydrationWarning>
                 <ScrollToTop />
                 {children}
             </body>

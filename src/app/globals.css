@@ -2394,26 +2394,35 @@ button {
     }
 
     .system__pills {
-        flex-direction: column;
-        align-items: center;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 32px;
     }
 
     .system__pill {
         width: 100%;
-        max-width: 400px;
+        max-width: none;
+        height: 52px;
+        gap: 8px;
+        padding: 6px;
+        padding-right: 12px;
     }
 
     .system__pill-label {
-        font-size: 20px;
+        font-size: 14px;
+        line-height: 1.2;
+        white-space: normal;
     }
 
     .system__pill-icon {
-        width: 56px;
-        height: 56px;
+        width: 36px;
+        height: 36px;
     }
 
-    .system__pill {
-        height: 72px;
+    .system__pill-icon svg {
+        width: 18px;
+        height: 18px;
     }
 
     .curriculum__grid {
@@ -2527,6 +2536,9 @@ button {
 
     .testimonials__heading {
         margin-bottom: 30px;
+    }
+    .events {
+        padding: 80px 0;
     }
 }
 

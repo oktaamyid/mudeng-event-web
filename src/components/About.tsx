@@ -38,35 +38,35 @@ export default function About({ event }: { event?: any }) {
 
     return (
         <section className="relative py-[80px] sm:py-[120px] md:py-[160px] text-center" id="about">
-            <div className="mx-auto max-w-[1440px] px-6 sm:px-12 md:px-[240px]">
+            <div className="mx-auto max-w-[1440px] px-6 sm:px-12 md:px-16 lg:px-[240px]">
                 <TextReveal
                     as="h2"
-                    className="mb-4 sm:mb-6 font-['Anton'] text-[36px] leading-[38px] sm:text-[52px] sm:leading-[54px] md:text-[72px] md:leading-[72px] tracking-[-2px] text-[#6849E1] uppercase"
+                    className="mb-4 sm:mb-6 font-['Anton'] text-[36px] leading-[38px] sm:text-[42px] sm:leading-[44px] md:text-[52px] md:leading-[54px] lg:text-[72px] lg:leading-[72px] tracking-[-2px] text-[#6849E1] uppercase"
                 >
                     {event?.overview?.title || "MUDENG IS A MODERN CREATIVE"}
                 </TextReveal>
 
                 <FadeSlideIn delay={0.1}>
-                    <p className="mx-auto mb-[40px] sm:mb-[60px] max-w-[720px] font-['Inter'] text-[16px] leading-[24px] sm:text-[20px] sm:leading-[26px] md:text-[24px] md:leading-[29.76px] font-medium tracking-[-0.48px] text-[#1A1A1A]/65">
+                    <p className="mx-auto mb-[40px] sm:mb-[60px] max-w-[720px] font-['Inter'] text-[16px] leading-[24px] sm:text-[18px] sm:leading-[26px] md:text-[20px] md:leading-[28px] lg:text-[24px] lg:leading-[29.76px] font-medium tracking-[-0.48px] text-[#1A1A1A]/65">
                         {event?.overview?.description ||
                             "MUDENG adalah wadah kreatif modern yang fokus mengembangkan keahlian multimedia melalui pelatihan interaktif guna mempersiapkan talenta digital masa depan yang siap kerja."}
                     </p>
                 </FadeSlideIn>
 
                 <StaggerContainer
-                    className="mb-[60px] flex flex-wrap items-start justify-center gap-0"
+                    className="mb-[40px] sm:mb-[60px] grid grid-cols-2 md:flex md:flex-wrap md:items-start md:justify-center gap-6 md:gap-0"
                     stagger={0.1}
                 >
                     {stats.map((stat, i) => (
                         <StaggerItem
                             key={i}
-                            className={`relative min-w-[160px] flex-none px-6 text-center ${i === stats.length - 1 ? "" : 'md:after:bg-[#000000]/05 md:after:absolute md:after:top-0 md:after:right-0 md:after:bottom-0 md:after:w-[1px] md:after:content-[""]'}`}
+                            className={`relative px-4 sm:px-6 sm:min-w-[160px] sm:flex-none text-center ${i === stats.length - 1 ? "" : 'md:after:bg-[#000000]/05 md:after:absolute md:after:top-0 md:after:right-0 md:after:bottom-0 md:after:w-[1px] md:after:content-[""]'}`}
                         >
-                            <div className="mb-2 font-['Inter'] text-[40px] leading-[48px] font-medium tracking-[-2.2px] text-[#7C7AEA]">
+                            <div className="mb-1 sm:mb-2 font-['Inter'] text-[32px] leading-[40px] sm:text-[40px] sm:leading-[48px] font-medium tracking-[-2.2px] text-[#7C7AEA]">
                                 {stat.number}
                                 {stat.suffix && <span>{stat.suffix}</span>}
                             </div>
-                            <div className="font-['Inter'] text-[17px] leading-[27px] font-medium tracking-[-0.63px] text-[#7d7d7d]">
+                            <div className="font-['Inter'] text-[14px] leading-[20px] sm:text-[17px] sm:leading-[27px] font-medium tracking-[-0.63px] text-[#7d7d7d]">
                                 {stat.label}
                             </div>
                         </StaggerItem>

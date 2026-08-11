@@ -16,7 +16,7 @@ import { getActiveEvent } from "@/lib/actions/events";
 export default async function Home() {
     const { data: activeEvent } = await getActiveEvent();
     return (
-        <main className="overflow-x-clip">
+        <main>
             <Navbar />
 
             <Hero event={activeEvent} />
