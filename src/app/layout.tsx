@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import ScrollToTop from "@/components/ScrollToTop";
+import SmoothScroll from "@/components/SmoothScroll";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -96,8 +96,9 @@ export default function RootLayout({
                 />
             </head>
             <body className="flex min-h-full flex-col" suppressHydrationWarning>
-                <ScrollToTop />
-                {children}
+                <SmoothScroll>
+                    {children}
+                </SmoothScroll>
             </body>
         </html>
     );

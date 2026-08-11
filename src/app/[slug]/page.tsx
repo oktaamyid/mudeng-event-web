@@ -8,7 +8,6 @@ import EventOverview from "@/components/event-detail/EventOverview";
 import EventGallery from "@/components/event-detail/EventGallery";
 import EventFAQ from "@/components/event-detail/EventFAQ";
 
-import ScrollReset from "@/components/ScrollToTop";
 
 export async function generateStaticParams() {
     const res = await getEvents();
@@ -69,7 +68,6 @@ export default async function EventDetail({
 
     return (
         <div className="flex min-h-screen flex-col overflow-x-clip">
-            <ScrollReset />
             <Navbar />
             <main className="flex-1 overflow-x-clip">
                 <EventHero event={event as any} />

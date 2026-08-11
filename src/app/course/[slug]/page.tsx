@@ -3,7 +3,6 @@ import { Metadata } from "next";
 import { coursesData, coursesList } from "@/data/courses";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ScrollReset from "@/components/ScrollToTop";
 import CourseDetail from "@/components/course-detail/CourseDetail";
 
 export async function generateStaticParams() {
@@ -44,7 +43,6 @@ export default async function CoursePage({
 
     return (
         <div className="flex min-h-screen flex-col overflow-x-clip">
-            <ScrollReset />
             <Navbar />
             <main className="flex-1 overflow-x-clip">
                 <CourseDetail course={course} />
