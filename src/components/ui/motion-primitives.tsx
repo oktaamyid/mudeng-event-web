@@ -287,6 +287,7 @@ interface FloatingBadgeProps {
     delay?: number;
     fromX?: number;
     fromY?: number;
+    style?: React.CSSProperties;
 }
 
 export function FloatingBadge({
@@ -295,10 +296,12 @@ export function FloatingBadge({
     delay = 0,
     fromX = 0,
     fromY = 30,
+    style,
 }: FloatingBadgeProps) {
     return (
         <motion.div
             className={className}
+            style={style}
             initial={{
                 opacity: 0,
                 x: fromX,

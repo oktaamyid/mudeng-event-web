@@ -1,5 +1,7 @@
 "use client";
 
+import { motion } from "framer-motion";
+
 import {
     TextReveal,
     FadeSlideIn,
@@ -99,8 +101,9 @@ export default function Approach() {
                                         bottom: (icon as any).bottom,
                                         left: (icon as any).left,
                                         right: (icon as any).right,
-                                        transform: `rotate(${icon.rotate})`,
-                                    }}
+                                        "--icon-rotate": icon.rotate,
+                                        animation: `icon-float 5s ease-in-out ${i * 0.3}s infinite`,
+                                    } as React.CSSProperties}
                                 >
                                     <img
                                         src={icon.img}

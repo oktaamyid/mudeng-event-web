@@ -230,6 +230,20 @@ export default function CourseDetail({ course }: { course: CourseData }) {
 
                                         <div className="border-divider flex items-start justify-between border-b pb-5 mb-5">
                                             <div className="flex flex-col">
+                                                <span className="font-body text-text-main mb-1 text-sm font-medium">Format:</span>
+                                                <span className="font-body text-text-muted text-[15px] font-medium">Hybrid</span>
+                                            </div>
+                                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-sm">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7C7AEA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path>
+                                                    <path d="M2 12h20"></path>
+                                                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                                                </svg>
+                                            </div>
+                                        </div>
+
+                                        <div className="border-divider flex items-start justify-between border-b pb-5 mb-5">
+                                            <div className="flex flex-col">
                                                 <span className="font-body text-text-main mb-1 text-sm font-medium">Level:</span>
                                                 <span className="font-body text-text-muted text-[15px] font-medium">Pemula - Intermediate</span>
                                             </div>
@@ -277,9 +291,21 @@ export default function CourseDetail({ course }: { course: CourseData }) {
                         {course.curriculum.map((item, i) => (
                             <StaggerItem key={i}>
                                 <div className="group rounded-[16px] md:rounded-[24px] bg-[#7C7AEA]/10 p-5 sm:p-8 transition-all duration-300 hover:bg-[#7C7AEA]/15 hover:shadow-lg">
-                                    <span className="font-body mb-2 inline-block rounded-full bg-[#6849E1] px-4 py-1 text-xs font-bold text-white">
-                                        {item.week}
-                                    </span>
+                                    <div className="mb-2 flex items-center gap-2 flex-wrap">
+                                        <span className="font-body inline-block rounded-full bg-[#6849E1] px-4 py-1 text-xs font-bold text-white">
+                                            {item.week}
+                                        </span>
+                                        <span className={`font-body inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold ${
+                                            item.mode === "Online"
+                                                ? "bg-emerald-100 text-emerald-700"
+                                                : "bg-blue-100 text-blue-700"
+                                        }`}>
+                                            <span className={`inline-block h-1.5 w-1.5 rounded-full ${
+                                                item.mode === "Online" ? "bg-emerald-500" : "bg-blue-500"
+                                            }`}></span>
+                                            {item.mode}
+                                        </span>
+                                    </div>
                                     <h3 className="font-body text-text-main mb-2 text-[20px] font-bold">
                                         {item.topic}
                                     </h3>

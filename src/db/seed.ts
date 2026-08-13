@@ -103,6 +103,106 @@ const defaultFormFields = [
     },
 ];
 
+const mucrexFormFields = [
+    // Step 1: Data Diri (sama dengan default)
+    {
+        id: "email",
+        step: 1,
+        type: "email",
+        label: "Alamat Email",
+        required: true,
+    },
+    {
+        id: "fullName",
+        step: 1,
+        type: "text",
+        label: "Nama Lengkap sesuai KTP",
+        required: true,
+    },
+    {
+        id: "institution",
+        step: 1,
+        type: "text",
+        label: "Asal Instansi (Sekolah / Kampus / Perusahaan)",
+        required: true,
+    },
+    {
+        id: "whatsapp",
+        step: 1,
+        type: "text",
+        label: "Nomor WhatsApp (aktif)",
+        required: true,
+    },
+    // Step 2: Karya & Pengalaman
+    {
+        id: "source",
+        step: 2,
+        type: "select",
+        label: "Dari mana kamu mengetahui MuCreX?",
+        required: true,
+        options: [
+            "Sosial media",
+            "Teman/Sahabat",
+            "Poster/Pamflet",
+            "Website / Media Online",
+            "Informasi dari Kampus",
+            "Other",
+        ],
+    },
+    {
+        id: "portfolioType",
+        step: 2,
+        type: "select",
+        label: "Jenis karya yang ingin dipamerkan?",
+        required: true,
+        options: [
+            "Desain Grafis",
+            "Fotografi",
+            "Videografi",
+            "Motion Graphic",
+            "Digital Art / Ilustrasi",
+            "UI/UX Design",
+            "Other",
+        ],
+    },
+    {
+        id: "exhibitionExperience",
+        step: 2,
+        type: "select",
+        label: "Apakah kamu pernah mengikuti pameran karya sebelumnya?",
+        required: true,
+        options: [
+            "Belum pernah sama sekali",
+            "Pernah 1 kali",
+            "Pernah 2-3 kali",
+            "Sudah sering mengikuti pameran",
+        ],
+    },
+    // Step 3: Komitmen & Harapan
+    {
+        id: "expectations",
+        step: 3,
+        type: "select",
+        label: "Harapan kamu mengikuti MuCreX?",
+        required: true,
+        options: [
+            "Mendapatkan apresiasi atas karya yang dibuat",
+            "Memperluas relasi dan networking di industri kreatif",
+            "Menambah pengalaman dalam pameran karya",
+            "Mendapatkan feedback untuk pengembangan karya",
+            "Other",
+        ],
+    },
+    {
+        id: "commitment",
+        step: 3,
+        type: "radio",
+        label: "Bersedia hadir di lokasi pameran (Kampus B STT NF) selama acara berlangsung?",
+        required: true,
+        options: ["Ya", "Tidak"],
+    },
+];
+
 const seedEvents = [
     {
         slug: "ui-craft",
@@ -205,7 +305,7 @@ const seedEvents = [
         instructor: "Tim MUDENG",
         duration: "4 Minggu",
         status: "PUBLISHED",
-        formFields: defaultFormFields,
+        formFields: mucrexFormFields,
         overview: {
             title: "Project overview",
             description:

@@ -99,6 +99,45 @@ export default function EventOverview({ event }: { event: any }) {
                                     </div>
                                 </div>
 
+                                {/* Format */}
+                                <div className="border-divider flex items-start justify-between border-b pb-5 mb-5">
+                                    <div className="flex flex-col">
+                                        <span className="font-body text-text-main mb-1 text-sm font-medium">
+                                            Format:
+                                        </span>
+                                        <span className="font-body text-text-muted text-[15px] font-medium">
+                                            {event.slug === "mucrex" ? "Offline" : "Hybrid"}
+                                        </span>
+                                    </div>
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-sm">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7C7AEA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path>
+                                            <path d="M2 12h20"></path>
+                                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+
+                                {/* Lokasi - hanya untuk MUCREX */}
+                                {event.slug === "mucrex" && (
+                                <div className="border-divider flex items-start justify-between border-b pb-5 mb-5">
+                                    <div className="flex flex-col">
+                                        <span className="font-body text-text-main mb-1 text-sm font-medium">
+                                            Lokasi:
+                                        </span>
+                                        <span className="font-body text-text-muted text-[15px] font-medium">
+                                            Kampus B STT NF
+                                        </span>
+                                    </div>
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-sm">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7C7AEA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                            <circle cx="12" cy="10" r="3"></circle>
+                                        </svg>
+                                    </div>
+                                </div>
+                                )}
+
                                 {/* Fokus */}
                                 <div className="border-divider flex items-start justify-between border-b pb-5 mb-5">
                                     <div className="flex flex-col">

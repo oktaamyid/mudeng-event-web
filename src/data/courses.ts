@@ -8,7 +8,7 @@ export interface CourseData {
     overview: string;
     highlights: string[];
     tools: { name: string; logo: string }[];
-    curriculum: { week: string; topic: string; description: string }[];
+    curriculum: { week: string; topic: string; description: string; mode: "Online" | "Offline" }[];
     faqs: { q: string; a: string }[];
 }
 
@@ -37,10 +37,10 @@ export const coursesData: Record<string, CourseData> = {
             { name: "Figma", logo: "/event/assets/logo-figma.png" },
         ],
         curriculum: [
-            { week: "Minggu 1", topic: "Fundamental UI/UX", description: "Pengenalan prinsip desain, wireframing, dan user research." },
-            { week: "Minggu 2", topic: "Design System", description: "Membangun komponen reusable, tipografi, dan color palette." },
-            { week: "Minggu 3", topic: "Prototyping", description: "Membuat prototype interaktif menggunakan Figma." },
-            { week: "Minggu 4", topic: "Final Project", description: "Menyelesaikan proyek akhir dan presentasi portofolio." },
+            { week: "Minggu 1", topic: "Fundamental UI/UX", description: "Pengenalan prinsip desain, wireframing, dan user research.", mode: "Online" },
+            { week: "Minggu 2", topic: "Design System", description: "Membangun komponen reusable, tipografi, dan color palette.", mode: "Online" },
+            { week: "Minggu 3", topic: "Prototyping", description: "Membuat prototype interaktif menggunakan Figma.", mode: "Offline" },
+            { week: "Minggu 4", topic: "Final Project", description: "Menyelesaikan proyek akhir dan presentasi portofolio.", mode: "Offline" },
         ],
         faqs: [
             { q: "Apa itu UI Craft?", a: "UI Craft adalah program pelatihan intensif di bidang UI/UX Design yang dirancang untuk pemula hingga intermediate." },
@@ -75,10 +75,10 @@ export const coursesData: Record<string, CourseData> = {
             { name: "Canva", logo: "/event/assets/logo-canva.png" },
         ],
         curriculum: [
-            { week: "Minggu 1", topic: "Dasar Desain Grafis", description: "Prinsip layout, warna, dan tipografi." },
-            { week: "Minggu 2", topic: "Identitas Visual", description: "Membuat logo dan brand identity." },
-            { week: "Minggu 3", topic: "Marketing Material", description: "Desain poster, brosur, dan media sosial." },
-            { week: "Minggu 4", topic: "Final Project", description: "Proyek branding lengkap dan presentasi." },
+            { week: "Minggu 1", topic: "Dasar Desain Grafis", description: "Prinsip layout, warna, dan tipografi.", mode: "Online" },
+            { week: "Minggu 2", topic: "Identitas Visual", description: "Membuat logo dan brand identity.", mode: "Online" },
+            { week: "Minggu 3", topic: "Marketing Material", description: "Desain poster, brosur, dan media sosial.", mode: "Offline" },
+            { week: "Minggu 4", topic: "Final Project", description: "Proyek branding lengkap dan presentasi.", mode: "Offline" },
         ],
         faqs: [
             { q: "Apa itu program Graphic Design?", a: "Program pelatihan komunikasi visual dan desain grafis modern." },
@@ -113,10 +113,10 @@ export const coursesData: Record<string, CourseData> = {
             { name: "Photoshop", logo: "/event/assets/logo-photoshop.png" },
         ],
         curriculum: [
-            { week: "Minggu 1", topic: "Dasar Fotografi", description: "Pengenalan kamera, exposure triangle, dan komposisi." },
-            { week: "Minggu 2", topic: "Teknik Lanjutan", description: "Pencahayaan studio, portrait, dan landscape." },
-            { week: "Minggu 3", topic: "Post-Processing", description: "Editing menggunakan Lightroom dan Photoshop." },
-            { week: "Minggu 4", topic: "Final Project", description: "Photo series dan presentasi portofolio." },
+            { week: "Minggu 1", topic: "Dasar Fotografi", description: "Pengenalan kamera, exposure triangle, dan komposisi.", mode: "Online" },
+            { week: "Minggu 2", topic: "Teknik Lanjutan", description: "Pencahayaan studio, portrait, dan landscape.", mode: "Online" },
+            { week: "Minggu 3", topic: "Post-Processing", description: "Editing menggunakan Lightroom dan Photoshop.", mode: "Offline" },
+            { week: "Minggu 4", topic: "Final Project", description: "Photo series dan presentasi portofolio.", mode: "Offline" },
         ],
         faqs: [
             { q: "Apakah harus punya kamera profesional?", a: "Tidak harus, smartphone dengan kamera yang baik juga bisa digunakan." },
@@ -151,10 +151,10 @@ export const coursesData: Record<string, CourseData> = {
             { name: "CapCut", logo: "/event/assets/logo-capcut.png" },
         ],
         curriculum: [
-            { week: "Minggu 1", topic: "Dasar Videografi", description: "Pengenalan kamera video, framing, dan movement." },
-            { week: "Minggu 2", topic: "Sinematografi", description: "Teknik pencahayaan, angle, dan storytelling visual." },
-            { week: "Minggu 3", topic: "Video Editing", description: "Editing menggunakan Premiere Pro dan DaVinci Resolve." },
-            { week: "Minggu 4", topic: "Final Project", description: "Produksi short film atau konten kreatif." },
+            { week: "Minggu 1", topic: "Dasar Videografi", description: "Pengenalan kamera video, framing, dan movement.", mode: "Online" },
+            { week: "Minggu 2", topic: "Sinematografi", description: "Teknik pencahayaan, angle, dan storytelling visual.", mode: "Online" },
+            { week: "Minggu 3", topic: "Video Editing", description: "Editing menggunakan Premiere Pro dan DaVinci Resolve.", mode: "Offline" },
+            { week: "Minggu 4", topic: "Final Project", description: "Produksi short film atau konten kreatif.", mode: "Offline" },
         ],
         faqs: [
             { q: "Apakah harus punya kamera video?", a: "Tidak harus, smartphone dengan fitur video yang baik juga bisa digunakan." },
@@ -190,10 +190,10 @@ export const coursesData: Record<string, CourseData> = {
             { name: "Photoshop", logo: "/event/assets/logo-photoshop.png" },
         ],
         curriculum: [
-            { week: "Minggu 1", topic: "Dasar Digital Art", description: "Pengenalan tools, brushes, dan teknik dasar." },
-            { week: "Minggu 2", topic: "Ilustrasi Digital", description: "Character design dan environment illustration." },
-            { week: "Minggu 3", topic: "Digital Painting", description: "Teknik pewarnaan, shading, dan lighting." },
-            { week: "Minggu 4", topic: "Final Project", description: "Karya ilustrasi lengkap untuk portofolio." },
+            { week: "Minggu 1", topic: "Dasar Digital Art", description: "Pengenalan tools, brushes, dan teknik dasar.", mode: "Online" },
+            { week: "Minggu 2", topic: "Ilustrasi Digital", description: "Character design dan environment illustration.", mode: "Online" },
+            { week: "Minggu 3", topic: "Digital Painting", description: "Teknik pewarnaan, shading, dan lighting.", mode: "Offline" },
+            { week: "Minggu 4", topic: "Final Project", description: "Karya ilustrasi lengkap untuk portofolio.", mode: "Offline" },
         ],
         faqs: [
             { q: "Apakah harus punya drawing tablet?", a: "Disarankan, tapi bisa juga menggunakan mouse atau trackpad untuk awal." },
@@ -230,10 +230,10 @@ export const coursesData: Record<string, CourseData> = {
             { name: "CapCut", logo: "/event/assets/logo-capcut.png" },
         ],
         curriculum: [
-            { week: "Minggu 1", topic: "Dasar Motion Graphic", description: "Prinsip animasi, keyframe, dan timing." },
-            { week: "Minggu 2", topic: "After Effects", description: "Menguasai tools, layer, dan efek dasar." },
-            { week: "Minggu 3", topic: "Motion Design", description: "Logo animation, kinetic typography, dan transisi." },
-            { week: "Minggu 4", topic: "Final Project", description: "Motion reel dan portofolio animasi." },
+            { week: "Minggu 1", topic: "Dasar Motion Graphic", description: "Prinsip animasi, keyframe, dan timing.", mode: "Online" },
+            { week: "Minggu 2", topic: "After Effects", description: "Menguasai tools, layer, dan efek dasar.", mode: "Online" },
+            { week: "Minggu 3", topic: "Motion Design", description: "Logo animation, kinetic typography, dan transisi.", mode: "Offline" },
+            { week: "Minggu 4", topic: "Final Project", description: "Motion reel dan portofolio animasi.", mode: "Offline" },
         ],
         faqs: [
             { q: "Apa itu Motion Graphic?", a: "Motion Graphic adalah seni menghidupkan elemen grafis melalui animasi." },

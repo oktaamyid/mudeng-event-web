@@ -75,28 +75,32 @@ export default function Testimonials() {
                     </TextReveal>
                 </div>
 
-                {/* Sticky Card Stack */}
-                <FadeSlideIn delay={0.2}>
-                    <div
-                        className="relative mx-auto"
-                        style={{
-                            height: CARD_HEIGHT + (testimonials.length - 1) * CARD_GAP,
-                            maxWidth: 600,
-                        }}
-                        onMouseEnter={() => setIsPaused(true)}
-                        onMouseLeave={() => setIsPaused(false)}
-                    >
-                        {/* Decorative icons */}
-                        <img
-                            src="/event/assets/icon-arrow.png"
-                            alt=""
-                            className="pointer-events-none absolute -top-4 left-2 z-50 w-[60px] rotate-[15deg] opacity-70 sm:-left-12 sm:-top-6 sm:w-[80px]"
-                        />
-                        <img
-                            src="/event/assets/icon-cling.png"
-                            alt=""
-                            className="pointer-events-none absolute -top-2 right-6 z-50 w-[50px] rotate-[15deg] opacity-70 sm:-top-4 sm:right-4 sm:w-[70px]"
-                        />
+                {/* Card stack + decorative icons */}
+                <div
+                    className="relative mx-auto"
+                    style={{
+                        height: CARD_HEIGHT + (testimonials.length - 1) * CARD_GAP,
+                        maxWidth: 600,
+                    }}
+                    onMouseEnter={() => setIsPaused(true)}
+                    onMouseLeave={() => setIsPaused(false)}
+                >
+                    {/* Decorative icons — continuous bobbing animation */}
+                    <img
+                        src="/event/assets/icon-arrow.png"
+                        alt=""
+                        className="pointer-events-none absolute -top-4 left-2 z-50 w-[60px] opacity-70 sm:-left-12 sm:-top-6 sm:w-[80px]"
+                        style={{ animation: "deco-float-1 5s ease-in-out infinite" }}
+                    />
+                    <img
+                        src="/event/assets/icon-cling.png"
+                        alt=""
+                        className="pointer-events-none absolute -top-2 right-6 z-50 w-[50px] opacity-70 sm:-top-4 sm:right-4 sm:w-[70px]"
+                        style={{ animation: "deco-float-2 5s ease-in-out infinite" }}
+                    />
+
+                    {/* Card stack */}
+                    <FadeSlideIn delay={0.2} className="absolute inset-0">
                         {testimonials.map((t, i) => {
                             const pos = (i - activeCard + testimonials.length) % testimonials.length;
                             // pos 0 = front, 1 = behind, 2 = further behind
@@ -152,8 +156,8 @@ export default function Testimonials() {
                                 </motion.div>
                             );
                         })}
-                    </div>
-                </FadeSlideIn>
+                    </FadeSlideIn>
+                </div>
 
                 {/* Dot indicators */}
                 <div className="mt-6 flex items-center justify-center gap-2">
@@ -161,8 +165,8 @@ export default function Testimonials() {
                         <button
                             key={i}
                             className={`h-2 rounded-full transition-all duration-300 ${activeCard === i
-                                    ? "w-6 bg-[#6849E1]"
-                                    : "w-2 bg-[#6849E1]/20"
+                                ? "w-6 bg-[#6849E1]"
+                                : "w-2 bg-[#6849E1]/20"
                                 }`}
                             onClick={() => setActiveCard(i)}
                         />

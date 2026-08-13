@@ -39,10 +39,11 @@ export default function Hero({ event: activeEvent }: { event: any }) {
             {/* Floating Badges — Fade + Slide from different directions */}
             <div className="pointer-events-none absolute top-[40%] left-1/2 z-20 hidden h-[320px] w-[900px] -translate-x-1/2 -translate-y-1/2 lg:block">
                 <FloatingBadge
-                    className="absolute top-[10px] left-[30px] flex h-8 rotate-[-10deg] items-center gap-2 rounded-full bg-white px-4 py-2 shadow-[0_12px_10px_rgba(26,26,26,0.1)]"
+                    className="absolute top-[10px] left-[30px] flex h-8 items-center gap-2 rounded-full bg-white px-4 py-2 shadow-[0_12px_10px_rgba(26,26,26,0.1)]"
                     delay={0.5}
                     fromX={-40}
                     fromY={-20}
+                    style={{ "--badge-rotate": "-10deg", animation: "hero-badge-float-1 5s ease-in-out infinite" } as React.CSSProperties}
                 >
                     <Image
                         src="/event/assets/icon-eyes.png"
@@ -55,10 +56,11 @@ export default function Hero({ event: activeEvent }: { event: any }) {
                     </span>
                 </FloatingBadge>
                 <FloatingBadge
-                    className="absolute top-[200px] left-0 flex h-8 rotate-[10deg] items-center gap-2 rounded-full bg-white px-4 py-2 shadow-[0_12px_10px_rgba(26,26,26,0.1)]"
+                    className="absolute top-[200px] left-0 flex h-8 items-center gap-2 rounded-full bg-white px-4 py-2 shadow-[0_12px_10px_rgba(26,26,26,0.1)]"
                     delay={0.7}
                     fromX={-50}
                     fromY={20}
+                    style={{ "--badge-rotate": "10deg", animation: "hero-badge-float-2 5s ease-in-out 0.5s infinite" } as React.CSSProperties}
                 >
                     <Image
                         src="/event/assets/icon-heart.png"
@@ -71,10 +73,11 @@ export default function Hero({ event: activeEvent }: { event: any }) {
                     </span>
                 </FloatingBadge>
                 <FloatingBadge
-                    className="absolute top-[30px] right-0 flex h-8 rotate-[10deg] items-center gap-2 rounded-full bg-white px-4 py-2 shadow-[0_12px_10px_rgba(26,26,26,0.1)]"
+                    className="absolute top-[30px] right-0 flex h-8 items-center gap-2 rounded-full bg-white px-4 py-2 shadow-[0_12px_10px_rgba(26,26,26,0.1)]"
                     delay={0.6}
                     fromX={40}
                     fromY={-20}
+                    style={{ "--badge-rotate": "10deg", animation: "hero-badge-float-1 5s ease-in-out 1s infinite" } as React.CSSProperties}
                 >
                     <Image
                         src="/event/assets/icon-save.png"
@@ -87,10 +90,11 @@ export default function Hero({ event: activeEvent }: { event: any }) {
                     </span>
                 </FloatingBadge>
                 <FloatingBadge
-                    className="absolute top-[210px] right-[10px] flex h-8 rotate-[-10deg] items-center gap-2 rounded-full bg-white px-4 py-2 shadow-[0_12px_10px_rgba(26,26,26,0.1)]"
+                    className="absolute top-[210px] right-[10px] flex h-8 items-center gap-2 rounded-full bg-white px-4 py-2 shadow-[0_12px_10px_rgba(26,26,26,0.1)]"
                     delay={0.85}
                     fromX={50}
                     fromY={20}
+                    style={{ "--badge-rotate": "-10deg", animation: "hero-badge-float-2 5s ease-in-out 1.5s infinite" } as React.CSSProperties}
                 >
                     <Image
                         src="/event/assets/icon-chat.png"
@@ -282,6 +286,8 @@ export default function Hero({ event: activeEvent }: { event: any }) {
                             "absolute top-1/2 left-[calc(50%-300px-132px)] h-[264px] w-[264px] -translate-y-1/2 rotate-[-3deg] overflow-hidden rounded-[32px]",
                         delay: 0.4,
                         rotate: -8,
+                        cardRotate: "-3deg",
+                        animDelay: "0s",
                     },
                     {
                         src: "/event/assets/mg1.png",
@@ -290,6 +296,8 @@ export default function Hero({ event: activeEvent }: { event: any }) {
                             "absolute top-[calc(50%-20px)] left-[calc(50%-100px-132px)] z-10 h-[264px] w-[264px] -translate-y-1/2 rotate-[3deg] overflow-hidden rounded-[32px]",
                         delay: 0.55,
                         rotate: 8,
+                        cardRotate: "3deg",
+                        animDelay: "0.5s",
                     },
                     {
                         src: "/event/assets/pd1.png",
@@ -298,6 +306,8 @@ export default function Hero({ event: activeEvent }: { event: any }) {
                             "absolute top-[calc(50%+20px)] left-[calc(50%+100px-132px)] z-20 h-[264px] w-[264px] -translate-y-1/2 rotate-[-3deg] overflow-hidden rounded-[32px]",
                         delay: 0.7,
                         rotate: -8,
+                        cardRotate: "-3deg",
+                        animDelay: "1s",
                     },
                     {
                         src: "/event/assets/vg1.png",
@@ -306,11 +316,17 @@ export default function Hero({ event: activeEvent }: { event: any }) {
                             "absolute top-1/2 left-[calc(50%+300px-132px)] z-30 h-[264px] w-[264px] -translate-y-1/2 rotate-[3deg] overflow-hidden rounded-[32px]",
                         delay: 0.85,
                         rotate: 8,
+                        cardRotate: "3deg",
+                        animDelay: "1.5s",
                     },
                 ].map((card, i) => (
                     <motion.div
                         key={i}
                         className={card.className}
+                        style={{
+                            "--card-rotate": card.cardRotate,
+                            animation: `image-card-float 5s ease-in-out ${card.animDelay} infinite`,
+                        } as React.CSSProperties}
                         initial={{
                             opacity: 0,
                             scale: 0.7,
