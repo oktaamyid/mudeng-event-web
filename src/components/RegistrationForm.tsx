@@ -308,7 +308,7 @@ export default function RegistrationForm({ event }: { event: any }) {
                 className="flex min-h-[400px] flex-col"
             >
                 <div className="mb-6">
-                    <h2 className="font-display mb-1 text-2xl font-bold text-gray-900">
+                    <h2 className="font-display mb-1 text-2xl font-bold text-[#6849E1]">
                         Langkah {currentStep} dari {totalSteps}
                     </h2>
                     <p className="text-sm text-gray-500">

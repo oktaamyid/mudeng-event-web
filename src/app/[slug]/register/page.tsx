@@ -22,7 +22,7 @@ export default async function RegisterEventPage({
             <Navbar />
             <main className="flex-1 px-4 pt-32 pb-20 overflow-x-clip">
                 <div className="mb-10 text-center">
-                    <h1 className="font-display mb-2 text-4xl text-gray-900">
+                    <h1 className="font-display mb-2 text-4xl text-[#6849E1]">
                         Register to {event.title}
                     </h1>
                     <p className="text-gray-600">
