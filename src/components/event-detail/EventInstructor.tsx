@@ -2,10 +2,10 @@ import { EventData } from "@/data/events";
 
 export default function EventInstructor({ event }: { event: any }) {
     return (
-        <section className="py-[100px] md:py-[160px]" id="instructor">
+        <section className="py-[50px] sm:py-[80px] md:py-[160px]" id="instructor">
             <div className="mx-auto max-w-360 px-6 lg:px-[120px] xl:px-[240px]">
-                <div className="border-divider shadow-card flex flex-col items-center gap-10 rounded-[40px] border bg-white p-8 md:flex-row md:gap-[80px] md:p-16">
-                    <div className="h-[200px] w-[200px] flex-none overflow-hidden rounded-full border-4 border-[#f6f6fd] md:h-[300px] md:w-[300px]">
+                <div className="border-divider shadow-card flex flex-col items-center gap-6 sm:gap-10 rounded-[24px] sm:rounded-[40px] border bg-white p-6 sm:p-8 md:flex-row md:gap-[80px] md:p-16">
+                    <div className="h-[160px] w-[160px] sm:h-[200px] sm:w-[200px] flex-none overflow-hidden rounded-full border-4 border-[#f6f6fd] md:h-[300px] md:w-[300px]">
                         <img
                             src={event.instructor.avatar}
                             alt={event.instructor.name}
@@ -17,13 +17,13 @@ export default function EventInstructor({ event }: { event: any }) {
                         <span className="font-body text-brand text-sm font-semibold tracking-widest uppercase">
                             Lead Instructor
                         </span>
-                        <h2 className="font-display text-text-main text-[36px] leading-[40px] font-normal uppercase md:text-[50px] md:leading-[52px]">
+                        <h2 className="font-display text-text-main text-[28px] leading-[32px] font-normal uppercase sm:text-[36px] sm:leading-[40px] md:text-[50px] md:leading-[52px]">
                             {event.instructor.name}
                         </h2>
-                        <div className="font-body text-text-muted mb-4 text-[18px] font-semibold">
+                        <div className="font-body text-text-muted mb-2 sm:mb-4 text-[15px] sm:text-[18px] font-semibold">
                             {event.instructor.role}
                         </div>
-                        <p className="font-body text-text-muted max-w-[500px] text-[16px] leading-[28px] font-medium md:text-[18px] md:leading-[32px]">
+                        <p className="font-body text-text-muted max-w-[500px] text-[14px] leading-[24px] sm:text-[16px] sm:leading-[28px] font-medium md:text-[18px] md:leading-[32px]">
                             "{event.instructor.bio}"
                         </p>
                     </div>

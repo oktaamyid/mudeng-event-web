@@ -22,9 +22,7 @@ const pillStyle = {
 
 const contactBtnStyle = {
     background:
-        "linear-gradient(160deg, rgba(102,103,228,1) 0%, rgba(102,103,228,0.8) 100%)",
-    boxShadow:
-        "0 10px 20px rgba(31, 81, 218, 0.3), inset 0 2px 4px rgba(255,255,255,0.3)",
+        "linear-gradient(160deg, rgba(102,103,228,1) 0%, rgba(102,103,228,0.85) 100%)",
 };
 
 import { getActiveEvent } from "@/lib/actions/events";
@@ -93,24 +91,27 @@ export default function Navbar() {
 
     return (
         <nav
-            className="fixed top-4 left-1/2 z-50 -translate-x-1/2 px-4 transition-all duration-500 ease-in-out"
+            className="fixed top-4 inset-x-0 z-50 mx-auto px-4"
             style={{
                 width:
                     isMobile
-                        ? "calc(100% - 2rem)"
+                        ? "100%"
                         : isCompact
-                          ? "fit-content"
-                          : "calc(100% - 2rem)",
-                maxWidth: "1152px",
+                            ? "fit-content"
+                            : "100%",
+                maxWidth: "1184px",
+                transition: "width 700ms cubic-bezier(0.4, 0, 0.2, 1)",
             }}
         >
             <div
-                className="grid items-center rounded-full border border-white/10 px-6 py-3 backdrop-blur-xl transition-all duration-500"
+                className="grid items-center rounded-full border border-white/10 px-6 py-3 backdrop-blur-xl"
                 style={{
                     ...pillStyle,
-                    gridTemplateColumns: isCompact ? "1fr" : "auto 1fr auto",
+                    gridTemplateColumns: "auto 1fr auto",
+                    transition: "all 700ms cubic-bezier(0.4, 0, 0.2, 1)",
                 }}
             >
+                {/* Left logo — fades out when compact */}
                 <Link href={"/"}>
                     <img
                         src={logoMain}
@@ -119,26 +120,33 @@ export default function Navbar() {
                         style={{
                             height: "20px",
                             width: "auto",
-                            display: isCompact ? "none" : "block",
+                            opacity: isCompact ? 0 : 1,
+                            transform: isCompact ? "scale(0.8)" : "scale(1)",
+                            maxWidth: isCompact ? "0px" : "120px",
+                            overflow: "hidden",
+                            transition: "opacity 500ms cubic-bezier(0.4, 0, 0.2, 1), transform 500ms cubic-bezier(0.4, 0, 0.2, 1), max-width 600ms cubic-bezier(0.4, 0, 0.2, 1)",
                         }}
                     />
                 </Link>
 
                 <div className="flex items-center justify-center">
+                    {/* Compact view: logo + active section */}
                     <div
-                        className="flex items-center gap-3 overflow-hidden transition-all duration-300"
+                        className="flex items-center gap-3 overflow-hidden"
                         style={{
                             opacity: isCompact ? 1 : 0,
+                            transform: isCompact ? "scale(1)" : "scale(0.95)",
                             maxWidth: isCompact
                                 ? isMobile
                                     ? "100%"
-                                    : "fit-content"
+                                    : "400px"
                                 : "0px",
                             width: isCompact && isMobile ? "100%" : undefined,
                             pointerEvents: isCompact ? "auto" : "none",
                             justifyContent: isMobile
                                 ? "space-between"
                                 : "flex-start",
+                            transition: "opacity 500ms cubic-bezier(0.4, 0, 0.2, 1), transform 500ms cubic-bezier(0.4, 0, 0.2, 1), max-width 600ms cubic-bezier(0.4, 0, 0.2, 1)",
                         }}
                     >
                         <div className="flex shrink-0 items-center gap-3">
@@ -172,52 +180,53 @@ export default function Navbar() {
                         </button>
                     </div>
 
+                    {/* Expanded view: nav links */}
                     <div
-                        className="hidden items-center gap-6 overflow-hidden transition-all duration-300 md:flex"
+                        className="hidden items-center gap-6 overflow-hidden md:flex"
                         style={{
                             opacity: isCompact ? 0 : 1,
+                            transform: isCompact ? "translateY(-4px)" : "translateY(0)",
                             maxWidth: isCompact ? "0px" : "600px",
                             pointerEvents: isCompact ? "none" : "auto",
+                            transition: "opacity 400ms cubic-bezier(0.4, 0, 0.2, 1), transform 500ms cubic-bezier(0.4, 0, 0.2, 1), max-width 600ms cubic-bezier(0.4, 0, 0.2, 1)",
                         }}
                     >
                         {navLinks.map((link) => (
                             <Link
                                 key={link.label}
                                 href={link.href}
-                                className={`group relative pb-1 text-base whitespace-nowrap transition-colors duration-300 ease-out ${
-                                    activeSection === link.label
+                                className={`group relative pb-1 text-base whitespace-nowrap transition-colors duration-300 ease-out ${activeSection === link.label
                                         ? "!text-brand font-bold"
                                         : "!text-nav-link hover:!text-brand font-medium"
-                                }`}
+                                    }`}
                             >
                                 {link.label}
                                 <span
-                                    className={`bg-brand absolute bottom-0 left-0 h-[2px] w-full origin-center transition-transform duration-300 ease-out ${
-                                        activeSection === link.label
+                                    className={`bg-brand absolute bottom-0 left-0 h-[2px] w-full origin-center transition-transform duration-300 ease-out ${activeSection === link.label
                                             ? "scale-x-100"
                                             : "scale-x-0 group-hover:scale-x-100"
-                                    }`}
+                                        }`}
                                 />
                             </Link>
                         ))}
                     </div>
                 </div>
 
+                {/* CTA button — fades out when compact */}
                 <div
-                    className="flex items-center justify-end"
+                    className="flex items-center justify-end overflow-hidden"
                     style={{
-                        display: isCompact && !isMobile ? "none" : "flex",
+                        opacity: isCompact && !isMobile ? 0 : 1,
+                        transform: isCompact && !isMobile ? "scale(0.9)" : "scale(1)",
+                        maxWidth: isCompact && !isMobile ? "0px" : "250px",
+                        pointerEvents: isCompact && !isMobile ? "none" : "auto",
+                        transition: "opacity 400ms cubic-bezier(0.4, 0, 0.2, 1), transform 500ms cubic-bezier(0.4, 0, 0.2, 1), max-width 600ms cubic-bezier(0.4, 0, 0.2, 1)",
                     }}
                 >
                     <Link
                         href={ctaLink}
-                        className={`group relative z-10 hidden items-center justify-center overflow-hidden rounded-full border border-[#6667E4] px-8 py-2.5 text-xs font-bold tracking-[1.2px] whitespace-nowrap !text-white transition-all duration-300 hover:border-[#0082FF] md:flex ${isCompact ? "hidden" : ""}`}
-                        style={{
-                            ...contactBtnStyle,
-                            background: isCompact
-                                ? "transparent"
-                                : contactBtnStyle.background,
-                        }}
+                        className="group relative z-10 hidden items-center justify-center overflow-hidden rounded-full border border-[#6667E4] px-8 py-2.5 text-xs font-bold tracking-[1.2px] whitespace-nowrap !text-white transition-all duration-300 hover:border-[#0082FF] md:flex"
+                        style={contactBtnStyle}
                     >
                         <span className="absolute inset-0 -z-10 origin-bottom scale-y-0 rounded-full bg-[#0082FF] transition-all duration-300 ease-out group-hover:scale-y-100 group-hover:shadow-[0_0_30px_rgba(0,130,255,0.8),_inset_0_0_15px_rgba(255,255,255,0.4)]" />
                         <span className="transition-colors duration-300 group-hover:text-white group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]">

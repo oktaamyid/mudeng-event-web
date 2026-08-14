@@ -1,12 +1,17 @@
-import { neon } from "@neondatabase/serverless";
-import * as dotenv from "dotenv";
-dotenv.config({ path: ".env.local" });
+import { config } from "dotenv";
+config({ path: ".env" });
 
-const sql = neon(process.env.DATABASE_URL!);
+import mysql from "mysql2/promise";
 
 async function drop() {
-    await sql`DROP TABLE IF EXISTS registrations CASCADE`;
+    const connection = await mysql.createConnection(process.env.DATABASE_URL!);
+    await connection.execute("DROP TABLE IF EXISTS registrations");
     console.log("Registrations dropped");
+    await connection.execute("DROP TABLE IF EXISTS events");
+    console.log("Events dropped");
+    await connection.execute("DROP TABLE IF EXISTS users");
+    console.log("Users dropped");
+    await connection.end();
     process.exit(0);
 }
 drop();

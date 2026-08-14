@@ -48,7 +48,7 @@ export default function Footer() {
     ];
 
     return (
-        <footer className="border-divider border-t pt-[80px]" id="footer">
+        <footer className="border-divider border-t pt-[40px] sm:pt-[60px] md:pt-[80px]" id="footer">
             <div className="mx-auto max-w-360 px-6 lg:px-[120px] xl:px-[240px]">
                 <div className="mb-10 flex flex-col justify-between gap-10 md:flex-row">
                     <div className="flex max-w-[270px] flex-col gap-4">
@@ -67,13 +67,13 @@ export default function Footer() {
                                 className="h-[14px] w-auto"
                             />
                         </div>
-                        <p className="font-body text-text-muted text-base leading-[20.42px] font-medium">
+                        <p className="font-body text-text-muted text-sm sm:text-base leading-[20.42px] font-medium">
                             MUDENG membantu kreator membangun konten dengan
                             kejelasan, konsistensi, dan tujuan.
                         </p>
                     </div>
 
-                    <div className="flex flex-wrap gap-10 md:gap-[120px]">
+                    <div className="flex flex-wrap gap-8 sm:gap-10 md:gap-[120px]">
                         {footerLinks.map((column, i) => (
                             <div key={i} className="flex flex-col">
                                 <div className="font-body text-text-main mb-4 text-base font-semibold">

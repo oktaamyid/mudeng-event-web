@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import SmoothScroll from "@/components/SmoothScroll";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -35,13 +36,13 @@ export const metadata: Metadata = {
     ],
     icons: {
         icon: [
-            { url: "/favicon.ico" },
-            { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
-            { url: "/favicon.svg", type: "image/svg+xml" },
+            { url: "/event/favicon.ico" },
+            { url: "/event/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+            { url: "/event/favicon.svg", type: "image/svg+xml" },
         ],
-        apple: "/apple-touch-icon.png",
+        apple: "/event/apple-touch-icon.png",
     },
-    manifest: "/site.webmanifest",
+    manifest: "/event/site.webmanifest",
     openGraph: {
         title: "MUDENG Event - Pelatihan & Workshop Multimedia",
         description:
@@ -84,12 +85,21 @@ export default function RootLayout({
             className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
         >
             <head>
+                <script
+                    dangerouslySetInnerHTML={{
+                        __html: `if(history.scrollRestoration){history.scrollRestoration='manual'}`,
+                    }}
+                />
                 <link
                     href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600&display=swap"
                     rel="stylesheet"
                 />
             </head>
-            <body className="flex min-h-full flex-col">{children}</body>
+            <body className="flex min-h-full flex-col" suppressHydrationWarning>
+                <SmoothScroll>
+                    {children}
+                </SmoothScroll>
+            </body>
         </html>
     );
 }

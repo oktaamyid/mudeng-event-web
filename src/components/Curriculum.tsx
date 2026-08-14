@@ -1,4 +1,13 @@
+"use client";
+
 import Link from "next/link";
+import {
+    TextReveal,
+    FadeSlideIn,
+    StaggerContainer,
+    StaggerItem,
+    ScaleIn,
+} from "@/components/ui/motion-primitives";
 
 const modules = [
     {
@@ -29,7 +38,7 @@ const modules = [
     },
     {
         number: "02",
-        title: "Graphic Desain",
+        title: "Graphic Design",
         desc: "Pelajari seni visual untuk komunikasi brand yang berdampak dan menarik bagi audiens.",
         icon: (
             <svg viewBox="0 0 24 24">
@@ -86,21 +95,23 @@ export default function Curriculum() {
         <section className="curriculum section-spacing" id="curriculum">
             <div className="container">
                 <div className="curriculum__header">
-                    <p className="curriculum__subtitle text-subtitle">
-                        Kuasai berbagai keahlian digital kreatif mulai dari
-                        desain antarmuka, pembuatan konten visual, hingga
-                        kolaborasi proyek multimedia.
-                    </p>
-                    <h2 className="curriculum__heading">
-                        What this
-                        <br />
-                        teaches you
-                    </h2>
+                    <TextReveal as="h2" className="curriculum__heading">
+                        {"What this"}
+                        {<br />}
+                        {"teaches you"}
+                    </TextReveal>
+                    <FadeSlideIn delay={0.15}>
+                        <p className="curriculum__subtitle text-subtitle">
+                            Kuasai berbagai keahlian digital kreatif mulai dari
+                            desain antarmuka, pembuatan konten visual, hingga
+                            kolaborasi proyek multimedia.
+                        </p>
+                    </FadeSlideIn>
                 </div>
 
-                <div className="curriculum__grid">
+                <StaggerContainer className="curriculum__grid" stagger={0.15}>
                     {modules.map((mod, i) => (
-                        <div className="curriculum-card" key={i}>
+                        <StaggerItem className="curriculum-card" key={i}>
                             <div
                                 className={`curriculum-card__header ${mod.headerClass}`}
                             >
@@ -157,39 +168,41 @@ export default function Curriculum() {
                                     ))}
                                 </div>
                             </div>
-                        </div>
+                        </StaggerItem>
                     ))}
-                </div>
+                </StaggerContainer>
 
                 {/* Banner */}
-                <div className="curriculum__banner">
-                    <div className="">
-                        <img src="/event/assets/mask-group.svg" alt="" />
-                    </div>
-                    <div className="curriculum__banner-text">
-                        <div className="curriculum__banner-title">
-                            Sudah siap tingkatkan skill Kamu?
+                <ScaleIn>
+                    <div className="curriculum__banner !flex-col !items-center !text-center md:!flex-row md:!items-center md:!text-left">
+                        <div className="shrink-0">
+                            <img src="/event/assets/mask-group.svg" alt="" className="h-10 w-10 sm:h-12 sm:w-12" />
                         </div>
-                        <div className="curriculum__banner-desc">
-                            Pelatihan ini dirancang praktis agar Kamu bisa
-                            langsung praktek membuat karya portofolio.
+                        <div className="curriculum__banner-text">
+                            <div className="curriculum__banner-title !text-[20px] sm:!text-[24px]">
+                                Sudah siap tingkatkan skill Kamu?
+                            </div>
+                            <div className="curriculum__banner-desc !text-[14px] sm:!text-[16px] md:!text-[18px]">
+                                Pelatihan ini dirancang praktis agar Kamu bisa
+                                langsung praktek membuat karya portofolio.
+                            </div>
+                        </div>
+                        <div className="flex w-full flex-col items-center gap-2 sm:w-auto sm:flex-row">
+                            <Link
+                                href="/#events"
+                                className="bg-brand font-body w-full rounded-[100px] px-[28px] py-[13px] text-center text-[14px] sm:text-[16px] font-medium !text-white transition-transform hover:scale-105 sm:w-auto"
+                            >
+                                Daftar Sekarang
+                            </Link>
+                            <Link
+                                href="/#events"
+                                className="bg-brand-light text-text-main font-body w-full rounded-[100px] px-[28px] py-[13px] text-center text-[14px] sm:text-[16px] font-medium transition-transform hover:scale-105 sm:w-auto"
+                            >
+                                Lihat Detail
+                            </Link>
                         </div>
                     </div>
-                    <div className="flex items-center justify-center gap-2 md:flex-row">
-                        <Link
-                            href="/#events"
-                            className="bg-brand font-body inline-block rounded-[100px] px-[28px] py-[13px] text-[16px] font-medium !text-white transition-transform hover:scale-105"
-                        >
-                            Daftar Sekarang
-                        </Link>
-                        <Link
-                            href="/#events"
-                            className="bg-brand-light text-text-main font-body inline-block rounded-[100px] px-[28px] py-[13px] text-[16px] font-medium transition-transform hover:scale-105"
-                        >
-                            Lihat Detail
-                        </Link>
-                    </div>
-                </div>
+                </ScaleIn>
             </div>
         </section>
     );
