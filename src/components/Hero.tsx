@@ -170,7 +170,7 @@ export default function Hero({ event: activeEvent }: { event: any }) {
                 ].map((card, i) => (
                     <motion.div
                         key={i}
-                        className="h-[160px] w-[160px] shrink-0 overflow-hidden rounded-[20px] shadow-[0_12px_32px_rgba(0,0,0,0.12)] sm:h-[200px] sm:w-[200px] sm:rounded-[28px]"
+                        className="relative h-[160px] w-[160px] shrink-0 overflow-hidden rounded-[20px] shadow-[0_12px_32px_rgba(0,0,0,0.12)] sm:h-[200px] sm:w-[200px] sm:rounded-[28px]"
                         style={{
                             zIndex: card.zIndex,
                             marginLeft: i === 0 ? 0 : -24,
@@ -196,8 +196,9 @@ export default function Hero({ event: activeEvent }: { event: any }) {
                         <Image
                             src={card.src}
                             alt={card.alt}
-                            layout="fill"
-                            objectFit="cover"
+                            fill
+                            sizes="(max-width: 640px) 160px, 200px"
+                            style={{ objectFit: "cover" }}
                         />
                     </motion.div>
                 ))}
@@ -241,7 +242,7 @@ export default function Hero({ event: activeEvent }: { event: any }) {
                 ].map((card, i) => (
                     <motion.div
                         key={i}
-                        className="h-[180px] w-[180px] shrink-0 overflow-hidden rounded-[24px] shadow-[0_12px_32px_rgba(0,0,0,0.12)]"
+                        className="relative h-[180px] w-[180px] shrink-0 overflow-hidden rounded-[24px] shadow-[0_12px_32px_rgba(0,0,0,0.12)]"
                         style={{
                             zIndex: card.zIndex,
                             marginLeft: i === 0 ? 0 : -20,
@@ -267,8 +268,9 @@ export default function Hero({ event: activeEvent }: { event: any }) {
                         <Image
                             src={card.src}
                             alt={card.alt}
-                            layout="fill"
-                            objectFit="cover"
+                            fill
+                            sizes="180px"
+                            style={{ objectFit: "cover" }}
                         />
                     </motion.div>
                 ))}
@@ -344,8 +346,9 @@ export default function Hero({ event: activeEvent }: { event: any }) {
                         <Image
                             src={card.src}
                             alt={card.alt}
-                            layout="fill"
-                            objectFit="cover"
+                            fill
+                            sizes="264px"
+                            style={{ objectFit: "cover" }}
                         />
                     </motion.div>
                 ))}

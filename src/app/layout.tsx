@@ -36,13 +36,13 @@ export const metadata: Metadata = {
     ],
     icons: {
         icon: [
-            { url: "/favicon.ico" },
-            { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
-            { url: "/favicon.svg", type: "image/svg+xml" },
+            { url: "/event/favicon.ico" },
+            { url: "/event/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+            { url: "/event/favicon.svg", type: "image/svg+xml" },
         ],
-        apple: "/apple-touch-icon.png",
+        apple: "/event/apple-touch-icon.png",
     },
-    manifest: "/site.webmanifest",
+    manifest: "/event/site.webmanifest",
     openGraph: {
         title: "MUDENG Event - Pelatihan & Workshop Multimedia",
         description:
