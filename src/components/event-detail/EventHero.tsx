@@ -5,6 +5,7 @@ import {
     TextReveal,
     FadeSlideIn,
 } from "@/components/ui/motion-primitives";
+import SeamlessLoopVideo from "@/components/ui/SeamlessLoopVideo";
 
 const slugOrder = ["ui-craft", "creative-craft", "mucrex"];
 
@@ -34,10 +35,9 @@ export default function EventHero({ event }: { event: any }) {
     return (
         <section className="relative pt-[120px] pb-6 md:pt-[160px] md:pb-10" id="hero">
             {/* Background */}
-            <img
-                src="/event/assets/Background-Hero-Content.png"
-                alt=""
-                className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+            <SeamlessLoopVideo
+                src="/event/videos/Background-Hero-Content.mp4"
+                className="pointer-events-none absolute inset-0 h-full w-full"
             />
 
             <div className="relative z-10 mx-auto max-w-360 px-6 lg:px-[120px] xl:px-[240px]">

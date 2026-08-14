@@ -11,6 +11,7 @@ import {
     StaggerContainer,
     StaggerItem,
 } from "@/components/ui/motion-primitives";
+import SeamlessLoopVideo from "@/components/ui/SeamlessLoopVideo";
 
 export default function CourseDetail({ course }: { course: CourseData }) {
     const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -48,10 +49,9 @@ export default function CourseDetail({ course }: { course: CourseData }) {
         <>
             {/* ─── Hero ─── */}
             <section className="relative pt-[120px] pb-6 md:pt-[160px] md:pb-10" id="course-hero">
-                <img
-                    src="/event/assets/Background-Hero-Content.png"
-                    alt=""
-                    className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+                <SeamlessLoopVideo
+                    src="/event/videos/Background-Hero-Content.mp4"
+                    className="pointer-events-none absolute inset-0 h-full w-full"
                 />
 
                 <div className="relative z-10 mx-auto max-w-360 px-6 lg:px-[120px] xl:px-[240px]">
@@ -295,14 +295,12 @@ export default function CourseDetail({ course }: { course: CourseData }) {
                                         <span className="font-body inline-block rounded-full bg-[#6849E1] px-4 py-1 text-xs font-bold text-white">
                                             {item.week}
                                         </span>
-                                        <span className={`font-body inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold ${
-                                            item.mode === "Online"
-                                                ? "bg-emerald-100 text-emerald-700"
-                                                : "bg-blue-100 text-blue-700"
-                                        }`}>
-                                            <span className={`inline-block h-1.5 w-1.5 rounded-full ${
-                                                item.mode === "Online" ? "bg-emerald-500" : "bg-blue-500"
-                                            }`}></span>
+                                        <span className={`font-body inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold ${item.mode === "Online"
+                                            ? "bg-emerald-100 text-emerald-700"
+                                            : "bg-blue-100 text-blue-700"
+                                            }`}>
+                                            <span className={`inline-block h-1.5 w-1.5 rounded-full ${item.mode === "Online" ? "bg-emerald-500" : "bg-blue-500"
+                                                }`}></span>
                                             {item.mode}
                                         </span>
                                     </div>

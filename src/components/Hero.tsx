@@ -10,6 +10,7 @@ import {
     StaggerContainer,
     StaggerItem,
 } from "@/components/ui/motion-primitives";
+import SeamlessLoopVideo from "@/components/ui/SeamlessLoopVideo";
 
 const springTransition = {
     type: "spring" as const,
@@ -26,13 +27,10 @@ export default function Hero({ event: activeEvent }: { event: any }) {
             id="hero"
         >
             <div className="absolute inset-0 z-0">
-                <Image
-                    src="/event/assets/Background-Hero-Content.png"
-                    alt=""
-                    layout="fill"
-                    objectFit="cover"
-                    objectPosition="center top"
-                    priority
+                <SeamlessLoopVideo
+                    src="/event/videos/Background-Hero-Content.mp4"
+                    className="relative h-full w-full"
+                    videoClassName="object-[center_top]"
                 />
             </div>
 
