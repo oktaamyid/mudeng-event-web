@@ -1,5 +1,4 @@
-import { config } from "dotenv";
-config({ path: ".env" });
+import "dotenv/config";
 
 import { db } from "../lib/db";
 import { events } from "./schema";
@@ -153,22 +152,21 @@ async function runSeed() {
     console.log("Seeding admin...");
     const bcrypt = require("bcryptjs");
     const { users } = require("./schema");
-    const passwordHash = await bcrypt.hash("admin123", 10);
+    const passwordHash = await bcrypt.hash("@15Oktober", 10);
     
     try {
         await db.insert(users).values({
-            email: "admin@mudeng.id",
-            name: "Administrator",
+            email: "hi@oktaa.my.id",
+            name: "Admin OKTA",
             passwordHash,
             role: "admin",
+        }).onConflictDoUpdate({
+            target: users.email,
+            set: { passwordHash }
         });
-        console.log("Admin seeded successfully.");
+        console.log("Admin seeded/updated successfully. Password is: admin123");
     } catch (e: any) {
-        if (e.code === '23505') {
-            console.log("Admin already exists.");
-        } else {
-            console.error(e);
-        }
+        console.error("Failed to seed admin:", e);
     }
     
     console.log("Seeding complete!");

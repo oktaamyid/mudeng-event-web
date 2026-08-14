@@ -82,7 +82,7 @@ export default function SignInPage() {
                             <Button
                                 type="submit"
                                 variant="default"
-                                className="w-full"
+                                className="w-full text-black"
                                 disabled={isPending}
                             >
                                 {isPending && (
