@@ -61,7 +61,7 @@ export async function getActiveEvent() {
             .where(eq(events.isFeatured, true))
             .limit(1);
         if (event.length === 0) {
-            return { success: true, data: fallbackEvents.find((e) => e.isFeatured) || fallbackEvents[0] };
+            return { success: true, data: null };
         }
         return { success: true, data: event[0] };
     } catch (error: any) {
