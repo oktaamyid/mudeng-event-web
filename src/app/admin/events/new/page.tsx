@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createEvent } from "@/lib/actions/events";
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,11 @@ import {
 import Link from "next/link";
 import { UploadButton } from "@/lib/uploadthing";
 import { deleteUploadThingFile } from "@/lib/actions/upload";
+import dynamic from "next/dynamic";
+import "react-quill-new/dist/quill.snow.css";
+
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
+
 
 const FIELD_TYPES = [
     { value: "text", label: "Short Text" },
@@ -43,6 +48,7 @@ export default function NewEventPage() {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
+    const [isLoaded, setIsLoaded] = useState(false);
 
     const [eventData, setEventData] = useState({
         title: "",
@@ -61,6 +67,7 @@ export default function NewEventPage() {
         faqs: [] as { question: string; answer: string }[],
         isFeatured: false,
         confirmationMessage: "",
+        googleSheetId: "",
     });
 
     const [formFields, setFormFields] = useState<any[]>([
@@ -105,6 +112,37 @@ export default function NewEventPage() {
         ]);
     };
 
+    // Load draft on mount
+    useEffect(() => {
+        const draft = localStorage.getItem("mudeng_draft_new_event");
+        if (draft) {
+            try {
+                const parsed = JSON.parse(draft);
+                setTimeout(() => {
+                    if (parsed.eventData) setEventData(parsed.eventData);
+                    if (parsed.formFields) setFormFields(parsed.formFields);
+                    setIsLoaded(true);
+                }, 0);
+            } catch (e) {
+                console.error("Failed to load draft", e);
+                setTimeout(() => setIsLoaded(true), 0);
+            }
+        } else {
+            setTimeout(() => setIsLoaded(true), 0);
+        }
+    }, []);
+
+    // Save draft on change
+    useEffect(() => {
+        if (isLoaded) {
+            localStorage.setItem(
+                "mudeng_draft_new_event",
+                JSON.stringify({ eventData, formFields })
+            );
+        }
+    }, [eventData, formFields, isLoaded]);
+
+
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
@@ -113,6 +151,7 @@ export default function NewEventPage() {
         const res = await createEvent({ ...eventData, formFields });
 
         if (res.success) {
+            localStorage.removeItem("mudeng_draft_new_event");
             router.push("/admin/events");
         } else {
             setError(res.error || "Failed to create event");
@@ -165,7 +204,7 @@ export default function NewEventPage() {
                     <CardContent className="space-y-5">
                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                             <div className="space-y-2">
-                                <Label htmlFor="title">Event Title</Label>
+                                <Label htmlFor="title">Event Title <span className="text-red-500">*</span></Label>
                                 <Input
                                     id="title"
                                     required
@@ -178,7 +217,7 @@ export default function NewEventPage() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="slug">
-                                    URL Slug
+                                    URL Slug <span className="text-red-500">*</span>
                                     <span className="text-muted-foreground ml-2 text-xs font-normal">
                                         /events/{eventData.slug || "..."}
                                     </span>
@@ -197,7 +236,7 @@ export default function NewEventPage() {
                                 />
                             </div>
                             <div className="col-span-1 space-y-2 sm:col-span-2">
-                                <Label htmlFor="subtitle">Subtitle</Label>
+                                <Label htmlFor="subtitle">Subtitle <span className="text-red-500">*</span></Label>
                                 <textarea
                                     id="subtitle"
                                     rows={2}
@@ -258,7 +297,7 @@ export default function NewEventPage() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="kickoffDate">
-                                    Kickoff Date / Start Date
+                                    Kickoff Date / Start Date <span className="text-red-500">*</span>
                                 </Label>
                                 <Input
                                     id="kickoffDate"
@@ -274,7 +313,26 @@ export default function NewEventPage() {
                                 />
                             </div>
                             <div className="col-span-1 space-y-2 sm:col-span-2">
-                                <Label htmlFor="description">Description</Label>
+                                <Label htmlFor="googleSheetId">
+                                    Google Sheet ID (Optional)
+                                    <span className="text-muted-foreground ml-2 text-xs font-normal">
+                                        For semi-auto sync. E.g: 1BxiMvs0XRY...
+                                    </span>
+                                </Label>
+                                <Input
+                                    id="googleSheetId"
+                                    placeholder="Paste Spreadsheet ID here"
+                                    value={eventData.googleSheetId}
+                                    onChange={(e: any) =>
+                                        setEventData({
+                                            ...eventData,
+                                            googleSheetId: e.target.value,
+                                        })
+                                    }
+                                />
+                            </div>
+                            <div className="col-span-1 space-y-2 sm:col-span-2">
+                                <Label htmlFor="description">Description <span className="text-red-500">*</span></Label>
                                 <textarea
                                     id="description"
                                     required
@@ -322,7 +380,7 @@ export default function NewEventPage() {
                                 </div>
                             </div>
                             <div className="col-span-1 space-y-2 sm:col-span-2">
-                                <Label>Main Image URL</Label>
+                                <Label>Main Image URL <span className="text-red-500">*</span></Label>
                                 <div className="flex flex-col gap-3">
                                     <Input
                                         placeholder="https://..."
@@ -446,7 +504,7 @@ export default function NewEventPage() {
                             />
                         </div>
                         <div className="space-y-3">
-                            <Label>Overview Section</Label>
+                            <Label>Overview Section <span className="text-red-500">*</span></Label>
                             <Input
                                 placeholder="Section Title (e.g. Program overview)"
                                 value={eventData.overview.title}
@@ -460,21 +518,21 @@ export default function NewEventPage() {
                                     })
                                 }
                             />
-                            <textarea
-                                rows={4}
-                                placeholder="Overview description..."
-                                value={eventData.overview.description}
-                                onChange={(e) =>
-                                    setEventData({
-                                        ...eventData,
-                                        overview: {
-                                            ...eventData.overview,
-                                            description: e.target.value,
-                                        },
-                                    })
-                                }
-                                className="border-input placeholder:text-muted-foreground focus-visible:ring-ring w-full resize-none rounded-md border bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:ring-1 focus-visible:outline-none"
-                            />
+                            <div className="bg-white rounded-md">
+                                <ReactQuill
+                                    theme="snow"
+                                    value={eventData.overview.description}
+                                    onChange={(val) =>
+                                        setEventData({
+                                            ...eventData,
+                                            overview: {
+                                                ...eventData.overview,
+                                                description: val,
+                                            },
+                                        })
+                                    }
+                                />
+                            </div>
                         </div>
                         <Separator />
                         <div className="space-y-3">
@@ -492,21 +550,21 @@ export default function NewEventPage() {
                                     })
                                 }
                             />
-                            <textarea
-                                rows={4}
-                                placeholder="Process description..."
-                                value={eventData.process.description}
-                                onChange={(e) =>
-                                    setEventData({
-                                        ...eventData,
-                                        process: {
-                                            ...eventData.process,
-                                            description: e.target.value,
-                                        },
-                                    })
-                                }
-                                className="border-input placeholder:text-muted-foreground focus-visible:ring-ring w-full resize-none rounded-md border bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:ring-1 focus-visible:outline-none"
-                            />
+                            <div className="bg-white rounded-md">
+                                <ReactQuill
+                                    theme="snow"
+                                    value={eventData.process.description}
+                                    onChange={(val) =>
+                                        setEventData({
+                                            ...eventData,
+                                            process: {
+                                                ...eventData.process,
+                                                description: val,
+                                            },
+                                        })
+                                    }
+                                />
+                            </div>
                         </div>
                         <Separator />
                         <div className="space-y-3">
@@ -524,21 +582,21 @@ export default function NewEventPage() {
                                     })
                                 }
                             />
-                            <textarea
-                                rows={4}
-                                placeholder="Result description..."
-                                value={eventData.result.description}
-                                onChange={(e) =>
-                                    setEventData({
-                                        ...eventData,
-                                        result: {
-                                            ...eventData.result,
-                                            description: e.target.value,
-                                        },
-                                    })
-                                }
-                                className="border-input placeholder:text-muted-foreground focus-visible:ring-ring w-full resize-none rounded-md border bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:ring-1 focus-visible:outline-none"
-                            />
+                            <div className="bg-white rounded-md">
+                                <ReactQuill
+                                    theme="snow"
+                                    value={eventData.result.description}
+                                    onChange={(val) =>
+                                        setEventData({
+                                            ...eventData,
+                                            result: {
+                                                ...eventData.result,
+                                                description: val,
+                                            },
+                                        })
+                                    }
+                                />
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
@@ -737,15 +795,19 @@ export default function NewEventPage() {
                 </Card>
 
                 {/* Submit */}
-                <div className="flex justify-end gap-3">
+                <div className="flex justify-end gap-3 pt-6">
                     <Button
                         type="button"
                         variant="outline"
+                        className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium"
                         render={<Link href="/admin/events" />}
                     >
                         Cancel
                     </Button>
-                    <Button type="submit" disabled={isSubmitting}>
+                    <Button 
+                        type="submit" 
+                        disabled={isSubmitting}
+                    >
                         <Save className="mr-2 h-4 w-4" />
                         {isSubmitting ? "Creating..." : "Create Event"}
                     </Button>

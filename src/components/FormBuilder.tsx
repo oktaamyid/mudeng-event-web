@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 
-export type FormFieldType = "text" | "email" | "textarea" | "select" | "radio" | "checkbox" | "number" | "phone" | "date" | "file";
+export type FormFieldType = "text" | "email" | "textarea" | "select" | "radio" | "checkbox" | "number" | "phone" | "date";
 
 export interface FormFieldDef {
     id: string;
@@ -63,7 +63,6 @@ const FIELD_TYPES: { value: FormFieldType; label: string }[] = [
     { value: "number", label: "Number" },
     { value: "phone", label: "Phone Number" },
     { value: "date", label: "Date Picker" },
-    { value: "file", label: "File Upload" },
 ];
 
 function SortableField({

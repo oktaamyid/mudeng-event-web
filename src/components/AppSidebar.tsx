@@ -15,12 +15,13 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Calendar, Settings, LayoutDashboard, Zap } from "lucide-react";
+import { Calendar, Settings, LayoutDashboard, Users } from "lucide-react";
 import Image from "next/image";
 
 const adminItems = [
     { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
     { title: "Events", url: "/admin/events", icon: Calendar },
+    { title: "Users", url: "/admin/users", icon: Users },
     { title: "Settings", url: "/admin/settings", icon: Settings },
 ];
 

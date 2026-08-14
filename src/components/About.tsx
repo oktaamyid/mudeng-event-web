@@ -47,10 +47,10 @@ export default function About({ event }: { event?: any }) {
                 </TextReveal>
 
                 <FadeSlideIn delay={0.1}>
-                    <p className="mx-auto mb-[40px] sm:mb-[60px] max-w-[720px] font-['Inter'] text-[16px] leading-[24px] sm:text-[18px] sm:leading-[26px] md:text-[20px] md:leading-[28px] lg:text-[24px] lg:leading-[29.76px] font-medium tracking-[-0.48px] text-[#1A1A1A]/65">
-                        {event?.overview?.description ||
-                            "MUDENG adalah wadah kreatif modern yang fokus mengembangkan keahlian multimedia melalui pelatihan interaktif guna mempersiapkan talenta digital masa depan yang siap kerja."}
-                    </p>
+                    <div 
+                        className="mx-auto mb-[40px] sm:mb-[60px] max-w-[720px] font-['Inter'] text-[16px] leading-[24px] sm:text-[18px] sm:leading-[26px] md:text-[20px] md:leading-[28px] lg:text-[24px] lg:leading-[29.76px] font-medium tracking-[-0.48px] text-[#1A1A1A]/65 [&_ul]:list-disc [&_ul]:ml-6 [&_ol]:list-decimal [&_ol]:ml-6 [&_b]:font-bold [&_strong]:font-bold [&_i]:italic [&_em]:italic [&_p]:mb-3 last:[&_p]:mb-0 text-left md:text-center [&_ul]:text-left [&_ol]:text-left"
+                        dangerouslySetInnerHTML={{ __html: event?.overview?.description || "MUDENG adalah wadah kreatif modern yang fokus mengembangkan keahlian multimedia melalui pelatihan interaktif guna mempersiapkan talenta digital masa depan yang siap kerja." }}
+                    />
                 </FadeSlideIn>
 
                 <StaggerContainer

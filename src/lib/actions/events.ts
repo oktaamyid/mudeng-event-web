@@ -40,6 +40,7 @@ const fallbackEvents = coursesList.map((c, idx) => ({
     faqs: c.faqs || [],
     formFields: [],
     confirmationMessage: "",
+    googleSheetId: null as string | null,
     createdAt: new Date(),
 }));
 
@@ -180,6 +181,7 @@ export async function createEvent(data: any) {
             faqs: data.faqs,
             formFields: data.formFields,
             confirmationMessage: data.confirmationMessage || "",
+            googleSheetId: data.googleSheetId || "",
             isFeatured: data.isFeatured || false,
             status: "PUBLISHED",
         });
@@ -226,6 +228,97 @@ export async function getEventRegistrants(slug: string) {
     } catch (error) {
         console.error("Failed to fetch registrants:", error);
         return { success: false, error: "Failed to fetch registrants" };
+    }
+}
+
+export async function exportRegistrantsCSV(slug: string) {
+    try {
+        const session = await getSession();
+        const role = session?.role;
+
+        if (!session?.userId || role !== "admin") {
+            return { success: false, error: "Unauthorized" };
+        }
+
+        const event = await db
+            .select()
+            .from(events)
+            .where(eq(events.slug, slug))
+            .limit(1);
+
+        if (event.length === 0) {
+            return { success: false, error: "Event not found" };
+        }
+
+        const eventRegistrations = await db
+            .select()
+            .from(registrations)
+            .where(eq(registrations.eventId, event[0].id));
+
+        // Build CSV
+        // Step 1: Collect all possible headers
+        const headers = new Set<string>();
+        headers.add("Name");
+        headers.add("Email");
+        headers.add("Status");
+        headers.add("Registration Date");
+
+        const rowsData: Record<string, string>[] = [];
+
+        for (const reg of eventRegistrations) {
+            const row: Record<string, string> = {
+                "Name": reg.fullName,
+                "Email": reg.email,
+                "Status": reg.status,
+                "Registration Date": new Date(reg.registeredAt).toISOString(),
+            };
+
+            if (reg.answers && typeof reg.answers === "object") {
+                const answersObj = reg.answers as Record<string, any>;
+                for (const [key, item] of Object.entries(answersObj)) {
+                    const isComplex = typeof item === "object" && item !== null && !Array.isArray(item) && "value" in item;
+                    const value = isComplex ? item.value : item;
+                    const savedLabel = isComplex ? item.label : null;
+
+                    const fieldDef = (event[0].formFields as any[])?.find((f: any) => f.id === key);
+                    const label = savedLabel || (fieldDef ? fieldDef.label : key);
+                    
+                    const displayValue = Array.isArray(value) ? value.join(", ") : (value?.toString() || "");
+
+                    headers.add(label);
+                    row[label] = displayValue;
+                }
+            }
+            rowsData.push(row);
+        }
+
+        const headersArray = Array.from(headers);
+        
+        // Escape CSV values
+        const escapeCSV = (val: string) => {
+            if (!val) return "";
+            const str = String(val);
+            if (str.includes(",") || str.includes("\"") || str.includes("\n")) {
+                return `"${str.replace(/"/g, '""')}"`;
+            }
+            return str;
+        };
+
+        const csvRows = [];
+        // Header row
+        csvRows.push(headersArray.map(escapeCSV).join(","));
+
+        // Data rows
+        for (const row of rowsData) {
+            csvRows.push(headersArray.map(h => escapeCSV(row[h] || "")).join(","));
+        }
+
+        const csvContent = csvRows.join("\n");
+
+        return { success: true, data: csvContent, filename: `registrants-${slug}.csv` };
+    } catch (error) {
+        console.error("Failed to export registrants:", error);
+        return { success: false, error: "Failed to export registrants" };
     }
 }
 
@@ -298,6 +391,7 @@ export async function updateEvent(id: string, data: any) {
                 faqs: data.faqs,
                 formFields: data.formFields,
                 confirmationMessage: data.confirmationMessage || "",
+                googleSheetId: data.googleSheetId || "",
                 isFeatured:
                     data.isFeatured !== undefined ? data.isFeatured : false,
                 status: data.status,

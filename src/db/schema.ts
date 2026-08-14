@@ -30,6 +30,7 @@ export const events = pgTable("events", {
     faqs: jsonb("faqs"), // { question, answer }[]
     formFields: jsonb("form_fields"), // Dynamic form configuration
     confirmationMessage: text("confirmation_message"), // Custom success message
+    googleSheetId: varchar("google_sheet_id", { length: 255 }), // Google Sheet ID for sync
     status: varchar("status", { length: 50 }).default("PUBLISHED").notNull(),
     isFeatured: boolean("is_featured").default(false).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),

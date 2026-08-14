@@ -27,10 +27,10 @@ export default function EventOverview({ event }: { event: any }) {
                                 <h2 className="font-body text-text-main mb-2 sm:mb-3 text-[20px] sm:text-[24px] font-bold md:text-[28px]">
                                     {event.overview?.title || "Project overview"}
                                 </h2>
-                                <p className="font-body text-[14px] leading-[22px] sm:text-[15px] sm:leading-[24px] font-medium tracking-[-0.3px] text-[#1A1A1A]/65 md:text-[16px] md:leading-[26px]">
-                                    {event.overview?.description ||
-                                        event.description}
-                                </p>
+                                <div 
+                                    className="font-body text-[14px] leading-[22px] sm:text-[15px] sm:leading-[24px] font-medium tracking-[-0.3px] text-[#1A1A1A]/65 md:text-[16px] md:leading-[26px] [&_ul]:list-disc [&_ul]:ml-6 [&_ol]:list-decimal [&_ol]:ml-6 [&_b]:font-bold [&_strong]:font-bold [&_i]:italic [&_em]:italic [&_p]:mb-3 last:[&_p]:mb-0"
+                                    dangerouslySetInnerHTML={{ __html: event.overview?.description || event.description }}
+                                />
                             </div>
                         </StaggerItem>
 
@@ -39,9 +39,10 @@ export default function EventOverview({ event }: { event: any }) {
                                 <h2 className="font-body text-text-main mb-2 sm:mb-3 text-[20px] sm:text-[24px] font-bold md:text-[28px]">
                                     {event.process?.title || "Project process"}
                                 </h2>
-                                <p className="font-body text-[14px] leading-[22px] sm:text-[15px] sm:leading-[24px] font-medium tracking-[-0.3px] text-[#1A1A1A]/65 md:text-[16px] md:leading-[26px]">
-                                    {event.process?.description}
-                                </p>
+                                <div 
+                                    className="font-body text-[14px] leading-[22px] sm:text-[15px] sm:leading-[24px] font-medium tracking-[-0.3px] text-[#1A1A1A]/65 md:text-[16px] md:leading-[26px] [&_ul]:list-disc [&_ul]:ml-6 [&_ol]:list-decimal [&_ol]:ml-6 [&_b]:font-bold [&_strong]:font-bold [&_i]:italic [&_em]:italic [&_p]:mb-3 last:[&_p]:mb-0"
+                                    dangerouslySetInnerHTML={{ __html: event.process?.description || "" }}
+                                />
                             </div>
                         </StaggerItem>
 
@@ -50,9 +51,10 @@ export default function EventOverview({ event }: { event: any }) {
                                 <h2 className="font-body text-text-main mb-2 sm:mb-3 text-[20px] sm:text-[24px] font-bold md:text-[28px]">
                                     {event.result?.title || "Final result"}
                                 </h2>
-                                <p className="font-body text-[14px] leading-[22px] sm:text-[15px] sm:leading-[24px] font-medium tracking-[-0.3px] text-[#1A1A1A]/65 md:text-[16px] md:leading-[26px]">
-                                    {event.result?.description}
-                                </p>
+                                <div 
+                                    className="font-body text-[14px] leading-[22px] sm:text-[15px] sm:leading-[24px] font-medium tracking-[-0.3px] text-[#1A1A1A]/65 md:text-[16px] md:leading-[26px] [&_ul]:list-disc [&_ul]:ml-6 [&_ol]:list-decimal [&_ol]:ml-6 [&_b]:font-bold [&_strong]:font-bold [&_i]:italic [&_em]:italic [&_p]:mb-3 last:[&_p]:mb-0"
+                                    dangerouslySetInnerHTML={{ __html: event.result?.description || "" }}
+                                />
                             </div>
                         </StaggerItem>
                     </StaggerContainer>

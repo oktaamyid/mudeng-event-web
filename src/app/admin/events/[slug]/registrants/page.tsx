@@ -1,3 +1,4 @@
+import { ExportButton } from "./ExportButton";
 import {
     getEventRegistrants,
     updateRegistrationStatus,
@@ -28,8 +29,10 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Eye, Users, ArrowLeft } from "lucide-react";
+import { Eye, Users, ArrowLeft, Mail, Clock, CheckCircle2, FileText } from "lucide-react";
 import Link from "next/link";
+
+import { SyncSheetButton } from "./SyncSheetButton";
 
 export default async function RegistrantsPage({
     params,
@@ -70,13 +73,17 @@ export default async function RegistrantsPage({
                         {registrants.length !== 1 ? "s" : ""} registered
                     </p>
                 </div>
-                <Badge
-                    variant="secondary"
-                    className="flex items-center gap-1.5"
-                >
-                    <Users className="h-3.5 w-3.5" />
-                    {registrants.length} Registrants
-                </Badge>
+                <div className="flex items-center gap-2">
+                    <SyncSheetButton eventId={event.id} />
+                    <ExportButton slug={resolvedParams.slug} />
+                    <Badge
+                        variant="secondary"
+                        className="flex items-center gap-1.5"
+                    >
+                        <Users className="h-3.5 w-3.5" />
+                        {registrants.length} Registrants
+                    </Badge>
+                </div>
             </div>
 
             <Card>
@@ -155,58 +162,89 @@ export default async function RegistrantsPage({
                                                     <Eye className="mr-1.5 h-4 w-4" />
                                                     View
                                                 </DialogTrigger>
-                                                <DialogContent className="max-h-[80vh] max-w-lg overflow-y-auto">
-                                                    <DialogHeader>
-                                                        <DialogTitle>
-                                                            {reg.fullName}
-                                                        </DialogTitle>
-                                                    </DialogHeader>
-                                                    <Separator />
-                                                    <div className="space-y-4 pt-2">
-                                                        {Object.entries(
-                                                            reg.answers as Record<
-                                                                string,
-                                                                any
-                                                            >,
-                                                        ).map(
-                                                            ([key, value]) => {
-                                                                const fieldDef =
-                                                                    (
-                                                                        event.formFields as any[]
-                                                                    )?.find(
-                                                                        (
-                                                                            f: any,
-                                                                        ) =>
-                                                                            f.id ===
-                                                                            key,
-                                                                    );
-                                                                const label =
-                                                                    fieldDef
-                                                                        ? fieldDef.label
-                                                                        : key;
+                                                <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-y-auto p-0 sm:rounded-2xl border-0 shadow-2xl">
+                                                    <div className="bg-muted/10 px-6 py-6 sm:px-8 sm:py-8">
+                                                        <DialogHeader>
+                                                            <DialogTitle className="text-2xl font-bold flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                                                <span className="leading-tight">{reg.fullName}</span>
+                                                                <div>
+                                                                    {reg.status === "APPROVED" ? (
+                                                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20">
+                                                                            <CheckCircle2 className="h-4 w-4" /> Approved
+                                                                        </span>
+                                                                    ) : (
+                                                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20">
+                                                                            Pending
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            </DialogTitle>
+                                                        </DialogHeader>
+                                                        <div className="mt-6 flex flex-col gap-3 text-sm text-muted-foreground">
+                                                            <div className="flex items-center gap-2.5">
+                                                                <Mail className="h-4 w-4 text-brand" /> 
+                                                                <span className="font-medium text-foreground">{reg.email}</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-2.5">
+                                                                <Clock className="h-4 w-4 text-brand" /> 
+                                                                <span className="font-medium text-foreground">
+                                                                    {new Date(reg.registeredAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="px-6 py-6 sm:px-8 border-t bg-white">
+                                                        <h4 className="text-sm font-semibold tracking-tight mb-6 flex items-center gap-2 uppercase text-muted-foreground">
+                                                            <FileText className="h-4 w-4" /> Form Details
+                                                        </h4>
+                                                        <div className="flex flex-col gap-5">
+                                                            {Object.entries(
+                                                                reg.answers as Record<string, any>,
+                                                            ).map(([key, item]) => {
+                                                                // Handle Hybrid Snapshot vs Old Data
+                                                                const isComplex = typeof item === "object" && item !== null && !Array.isArray(item) && "value" in item;
+                                                                const value = isComplex ? item.value : item;
+                                                                const savedLabel = isComplex ? item.label : null;
+
+                                                                const fieldDef = (
+                                                                    event.formFields as any[]
+                                                                )?.find((f: any) => f.id === key);
+                                                                
+                                                                const label = savedLabel || (fieldDef ? fieldDef.label : key);
+                                                                
+                                                                let displayValue = "—";
+                                                                if (Array.isArray(value)) {
+                                                                    // Fix corrupted draft data where a string was spread into an array of characters
+                                                                    const singleChars = value.filter(v => typeof v === 'string' && v.length === 1).join("");
+                                                                    const normalStrings = value.filter(v => typeof v !== 'string' || v.length > 1);
+                                                                    
+                                                                    if (singleChars.length > 3 && value.length > 5) {
+                                                                        displayValue = [singleChars, ...normalStrings].filter(Boolean).join(", ");
+                                                                    } else {
+                                                                        displayValue = value.join(", ");
+                                                                    }
+                                                                } else {
+                                                                    displayValue = value?.toString() || "—";
+                                                                }
+
                                                                 return (
                                                                     <div
-                                                                        key={
-                                                                            key
-                                                                        }
-                                                                        className="space-y-1"
+                                                                        key={key}
+                                                                        className="flex flex-col gap-1.5 pb-5 border-b border-border/50 last:border-0 last:pb-0"
                                                                     >
-                                                                        <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-                                                                            {
-                                                                                label
-                                                                            }
-                                                                        </p>
-                                                                        <p className="text-foreground text-sm">
-                                                                            {value?.toString() ||
-                                                                                "—"}
-                                                                        </p>
+                                                                        <span className="text-[13px] font-semibold text-muted-foreground uppercase tracking-wider">
+                                                                            {label}
+                                                                        </span>
+                                                                        <span className="text-[15px] font-medium text-foreground leading-relaxed whitespace-pre-wrap">
+                                                                            {displayValue}
+                                                                        </span>
                                                                     </div>
                                                                 );
-                                                            },
-                                                        )}
+                                                            })}
+                                                        </div>
                                                     </div>
-                                                    <Separator className="my-2" />
-                                                    <div className="flex justify-end gap-2 pt-2">
+                                                    <div className="bg-muted/10 px-6 py-5 sm:px-8 border-t flex justify-end gap-3 rounded-b-2xl">
                                                         <form
                                                             action={async () => {
                                                                 "use server";
@@ -219,7 +257,7 @@ export default async function RegistrantsPage({
                                                             <Button
                                                                 type="submit"
                                                                 variant="outline"
-                                                                size="sm"
+                                                                className="w-full sm:w-auto"
                                                             >
                                                                 Set to Pending
                                                             </Button>
@@ -235,11 +273,10 @@ export default async function RegistrantsPage({
                                                         >
                                                             <Button
                                                                 type="submit"
-                                                                size="sm"
-                                                                className="bg-green-600 text-white hover:bg-green-700"
+                                                                style={{ backgroundColor: "var(--color-badge-green, #49C420)", color: "white" }}
+                                                                className="w-full sm:w-auto shadow-sm hover:opacity-90 transition-opacity border-0"
                                                             >
-                                                                Approve
-                                                                Registration
+                                                                Approve Registration
                                                             </Button>
                                                         </form>
                                                     </div>

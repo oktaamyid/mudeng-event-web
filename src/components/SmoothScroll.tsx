@@ -88,7 +88,12 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
 
     // Lenis smooth scroll — desktop only
     useEffect(() => {
-        if (!isDesktop) {
+        const isInteractiveRoute = 
+            pathname.includes("/dashboard") || 
+            pathname.includes("/admin") || 
+            pathname.includes("/register");
+
+        if (!isDesktop || isInteractiveRoute) {
             if (lenisRef.current) {
                 lenisRef.current.destroy();
                 lenisRef.current = null;
@@ -118,7 +123,7 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
             lenis.destroy();
             lenisRef.current = null;
         };
-    }, [isDesktop]);
+    }, [isDesktop, pathname]);
 
     return <>{children}</>;
 }

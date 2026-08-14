@@ -27,7 +27,7 @@ export default function EventsAnimated({ events }: { events: EventItem[] }) {
     };
 
     const getEventImage = (evt: EventItem) =>
-        localImageMap[evt.slug] || evt.imageUrl || "";
+        localImageMap[evt.slug] || evt.imageUrl || undefined;
 
     return (
         <section className="events section-spacing" id="events">

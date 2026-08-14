@@ -56,27 +56,50 @@ export interface FormField {
 const buildSchema = (fields: FormField[]) => {
     const shape: Record<string, z.ZodTypeAny> = {};
     for (const field of fields) {
-        if (field.required) {
-            if (field.type === "email") {
-                shape[field.id] = z.string().email("Email tidak valid");
-            } else if (field.type === "checkbox") {
-                shape[field.id] = z
-                    .array(z.string())
-                    .min(1, `${field.label} wajib diisi`);
-            } else {
-                shape[field.id] = z
-                    .string()
-                    .min(1, `${field.label} wajib diisi`);
-            }
+        if (field.type === "email") {
+            shape[field.id] = z.string().email("Email tidak valid").optional().or(z.literal(""));
+        } else if (field.type === "checkbox") {
+            shape[field.id] = z.array(z.string()).optional();
         } else {
-            if (field.type === "checkbox") {
-                shape[field.id] = z.array(z.string()).optional();
-            } else {
-                shape[field.id] = z.string().optional();
-            }
+            shape[field.id] = z.string().optional();
+        }
+
+        if (field.allowOtherOption) {
+            shape[`${field.id}_other`] = z.string().optional();
         }
     }
-    return z.object(shape);
+    
+    return z.object(shape).superRefine((val, ctx) => {
+        const isFieldVisible = (field: FormField) => {
+            if (!field.dependsOn) return true;
+            const parentValue = val[field.dependsOn];
+            if (!parentValue) return false;
+            if (field.dependsOnValue) {
+                if (Array.isArray(parentValue)) return parentValue.includes(field.dependsOnValue);
+                return parentValue === field.dependsOnValue;
+            }
+            return !!parentValue;
+        };
+
+        for (const field of fields) {
+            if (isFieldVisible(field) && field.required) {
+                const value = val[field.id];
+                const isEmpty = 
+                    value === undefined || 
+                    value === null || 
+                    value === "" || 
+                    (Array.isArray(value) && value.length === 0);
+                
+                if (isEmpty) {
+                    ctx.addIssue({
+                        code: z.ZodIssueCode.custom,
+                        message: `${field.label} wajib diisi`,
+                        path: [field.id]
+                    });
+                }
+            }
+        }
+    });
 };
 
 export default function RegistrationForm({ event }: { event: any }) {
@@ -96,6 +119,7 @@ export default function RegistrationForm({ event }: { event: any }) {
     >("idle");
     const [errorMessage, setErrorMessage] = useState("");
     const [isMounted, setIsMounted] = useState(false);
+    const [draftLoaded, setDraftLoaded] = useState(false);
 
     const schema = buildSchema(sortedFields);
     type FormData = z.infer<typeof schema>;
@@ -109,6 +133,7 @@ export default function RegistrationForm({ event }: { event: any }) {
         watch,
         reset,
         setValue,
+        clearErrors,
     } = useForm<FormData>({
         resolver: zodResolver(schema),
         defaultValues: {}, // Will be populated by localStorage
@@ -151,14 +176,17 @@ export default function RegistrationForm({ event }: { event: any }) {
                 console.error("Failed to parse draft", e);
             }
         }
+        // Small timeout to ensure reset finishes before allowing auto-save to overwrite
+        setTimeout(() => setDraftLoaded(true), 100);
     }, [event.id, reset]);
 
     useEffect(() => {
-        if (isMounted && status !== "success") {
+        // Only save draft if it has been loaded, to prevent overwriting with initial empty state
+        if (isMounted && draftLoaded && status !== "success") {
             const draftKey = `event_draft_${event.id}`;
             localStorage.setItem(draftKey, JSON.stringify(watchedValues));
         }
-    }, [watchedValues, event.id, isMounted, status]);
+    }, [watchedValues, event.id, isMounted, draftLoaded, status]);
 
     const nextStep = async () => {
         // Only validate visible fields in the current step
@@ -168,7 +196,17 @@ export default function RegistrationForm({ event }: { event: any }) {
 
         const isValid = await trigger(visibleFieldIdsInStep);
         if (isValid) {
-            setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
+            const nextStepNum = Math.min(currentStep + 1, totalSteps);
+            setCurrentStep(nextStepNum);
+            
+            // Clear errors for the next step so it doesn't show "Required" immediately
+            const fieldsInNextStep = sortedFields
+                .filter((f) => f.step === nextStepNum)
+                .map((f) => f.id as keyof FormData);
+            if (fieldsInNextStep.length > 0) {
+                clearErrors(fieldsInNextStep);
+            }
+
             window.scrollTo({ top: 0, behavior: "smooth" });
         }
     };
@@ -181,29 +219,60 @@ export default function RegistrationForm({ event }: { event: any }) {
     const onSubmit = async (data: FormData) => {
         // Clean up data based on conditional logic and "Other" fields
         const cleanedData = { ...data };
+        const finalAnswers: Record<string, any> = {};
+
         for (const field of sortedFields) {
             if (!isFieldVisible(field)) {
-                delete cleanedData[field.id];
-                delete cleanedData[`${field.id}_other`];
-            } else if (field.allowOtherOption) {
+                // Skip hidden fields
+                continue;
+            } 
+            
+            let finalValue = cleanedData[field.id];
+
+            if (field.allowOtherOption) {
                 if (field.type === "checkbox") {
                     const arr = (cleanedData[field.id] as string[]) || [];
                     if (arr.includes("__other__")) {
                         const otherVal = cleanedData[`${field.id}_other`];
-                        cleanedData[field.id] = arr.map((v) =>
+                        finalValue = arr.map((v) =>
                             v === "__other__" ? otherVal || "Lainnya" : v,
                         );
                     }
                 } else if (cleanedData[field.id] === "__other__") {
-                    cleanedData[field.id] =
-                        cleanedData[`${field.id}_other`] || "Lainnya";
+                    finalValue = cleanedData[`${field.id}_other`] || "Lainnya";
                 }
-                delete cleanedData[`${field.id}_other`]; // Clean up the auxiliary field
+            }
+
+            // Save using Hybrid Snapshot Pattern
+            if (finalValue !== undefined && finalValue !== "") {
+                finalAnswers[field.id] = {
+                    label: field.label,
+                    type: field.type,
+                    value: finalValue
+                };
             }
         }
 
+        // Extract email and fullName for the backend (which strictly requires them)
+        const emailField = sortedFields.find(
+            (f) => f.id === "email" || f.type === "email" || f.label.toLowerCase().includes("email")
+        );
+        const nameField = sortedFields.find(
+            (f) => f.id === "fullName" || f.label.toLowerCase().includes("nama") || f.label.toLowerCase().includes("name")
+        );
+
+        // We try to find their values directly from cleanedData
+        const email = emailField ? cleanedData[emailField.id] : "unknown@example.com";
+        const fullName = nameField ? cleanedData[nameField.id] : "Unknown User";
+
+        const submissionData = {
+            ...finalAnswers, // This goes into the JSONB 'answers' column
+            email,           // Explicit column
+            fullName,        // Explicit column
+        };
+
         setStatus("submitting");
-        const res = await registerEvent(event.id, cleanedData);
+        const res = await registerEvent(event.id, submissionData);
         if (res.success) {
             setStatus("success");
             localStorage.removeItem(`event_draft_${event.id}`);
@@ -334,16 +403,23 @@ export default function RegistrationForm({ event }: { event: any }) {
                             transition={{ duration: 0.3, ease: "easeOut" }}
                             className="flex flex-col gap-6 pb-8"
                         >
-                            {fieldsToRender.map((field) => (
-                                <div key={field.id} className="space-y-2">
-                                    <Label className="flex items-center gap-1 text-sm font-semibold text-gray-900">
-                                        {field.label}
-                                        {field.required && (
-                                            <span className="text-red-500">
-                                                *
-                                            </span>
-                                        )}
-                                    </Label>
+                            {/* We render ALL fields so React Hook Form doesn't lose their values when unmounting,
+                                but we visually hide them if they don't belong to the current step or are hidden by logic. */}
+                            {sortedFields.map((field) => {
+                                const isVisible = field.step === currentStep && isFieldVisible(field);
+                                        return (
+                                            <div 
+                                                key={field.id} 
+                                                className={`space-y-2 ${isVisible ? "block" : "hidden"}`}
+                                            >
+                                                <Label className="flex items-center gap-1 text-sm font-semibold text-gray-900">
+                                                    {field.label}
+                                                    {field.required && (
+                                                        <span className="text-red-500">
+                                                            *
+                                                        </span>
+                                                    )}
+                                                </Label>
 
                                     {field.description && (
                                         <p className="text-xs text-gray-500">
@@ -476,10 +552,8 @@ export default function RegistrationForm({ event }: { event: any }) {
                                                 }) => (
                                                     <div className="mt-2 flex flex-col gap-3">
                                                         <RadioGroup
-                                                            onValueChange={
-                                                                onChange
-                                                            }
-                                                            value={value}
+                                                            onValueChange={onChange}
+                                                            value={value || ""}
                                                             className="flex flex-col gap-3"
                                                         >
                                                             {field.options!.map(
@@ -688,7 +762,8 @@ export default function RegistrationForm({ event }: { event: any }) {
                                         </motion.span>
                                     )}
                                 </div>
-                            ))}
+                            );
+                        })}
                         </motion.div>
                     </AnimatePresence>
                 </div>
