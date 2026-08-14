@@ -8,6 +8,7 @@ import EventOverview from "@/components/event-detail/EventOverview";
 import EventGallery from "@/components/event-detail/EventGallery";
 import EventFAQ from "@/components/event-detail/EventFAQ";
 
+
 export async function generateStaticParams() {
     const res = await getEvents();
     if (!res.success || !res.data) return [];
@@ -66,9 +67,9 @@ export default async function EventDetail({
     const event = res.data;
 
     return (
-        <div className="flex min-h-screen flex-col">
+        <div className="flex min-h-screen flex-col overflow-x-clip">
             <Navbar />
-            <main className="flex-1">
+            <main className="flex-1 overflow-x-clip">
                 <EventHero event={event as any} />
                 <EventOverview event={event as any} />
                 <EventGallery event={event as any} />

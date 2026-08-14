@@ -1,15 +1,17 @@
 import {
-    pgTable,
-    uuid,
+    mysqlTable,
     varchar,
     text,
     timestamp,
-    jsonb,
+    json,
     boolean,
-} from "drizzle-orm/pg-core";
+} from "drizzle-orm/mysql-core";
+import { randomUUID } from "crypto";
 
-export const events = pgTable("events", {
-    id: uuid("id").defaultRandom().primaryKey(),
+export const events = mysqlTable("events", {
+    id: varchar("id", { length: 36 })
+        .$defaultFn(() => randomUUID())
+        .primaryKey(),
     slug: varchar("slug", { length: 255 }).notNull().unique(),
     title: varchar("title", { length: 255 }).notNull(),
     subtitle: text("subtitle"),
@@ -21,21 +23,25 @@ export const events = pgTable("events", {
     kickoffDate: varchar("kickoff_date", { length: 255 }),
     instructor: varchar("instructor", { length: 255 }),
     duration: varchar("duration", { length: 255 }),
-    overview: jsonb("overview"), // { title, description }
-    process: jsonb("process"), // { title, description }
-    result: jsonb("result"), // { title, description }
-    gallery: jsonb("gallery"), // string[]
-    faqs: jsonb("faqs"), // { question, answer }[]
-    formFields: jsonb("form_fields"), // Dynamic form configuration
+    overview: json("overview"), // { title, description }
+    process: json("process"), // { title, description }
+    result: json("result"), // { title, description }
+    gallery: json("gallery"), // string[]
+    focus: varchar("focus", { length: 255 }),
+    output: varchar("output", { length: 255 }),
+    faqs: json("faqs"), // { question, answer }[]
+    formFields: json("form_fields"), // Dynamic form configuration
     confirmationMessage: text("confirmation_message"), // Custom success message
     status: varchar("status", { length: 50 }).default("PUBLISHED").notNull(),
     isFeatured: boolean("is_featured").default(false).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const registrations = pgTable("registrations", {
-    id: uuid("id").defaultRandom().primaryKey(),
-    eventId: uuid("event_id")
+export const registrations = mysqlTable("registrations", {
+    id: varchar("id", { length: 36 })
+        .$defaultFn(() => randomUUID())
+        .primaryKey(),
+    eventId: varchar("event_id", { length: 36 })
         .references(() => events.id)
         .notNull(),
     userId: varchar("user_id", { length: 255 }),
@@ -45,15 +51,17 @@ export const registrations = pgTable("registrations", {
     fullName: varchar("full_name", { length: 255 }).notNull(),
 
     // Dynamic Answers
-    answers: jsonb("answers").notNull(),
+    answers: json("answers").notNull(),
 
     // Meta
     status: varchar("status", { length: 50 }).default("PENDING").notNull(),
     registeredAt: timestamp("registered_at").defaultNow().notNull(),
 });
 
-export const users = pgTable("users", {
-    id: uuid("id").defaultRandom().primaryKey(),
+export const users = mysqlTable("users", {
+    id: varchar("id", { length: 36 })
+        .$defaultFn(() => randomUUID())
+        .primaryKey(),
     email: varchar("email", { length: 255 }).notNull().unique(),
     name: varchar("name", { length: 255 }),
     passwordHash: text("password_hash").notNull(),
