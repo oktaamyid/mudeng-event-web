@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-page-custom-font */
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+// import "@uploadthing/react/styles.css";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 

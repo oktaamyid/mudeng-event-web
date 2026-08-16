@@ -871,6 +871,8 @@ export default function EditEventPage({
                     </Button>
                     <Button 
                         type="submit" 
+                        variant="outline"
+                        className="text-black border border-gray-300 hover:bg-gray-50 hover:text-gray-700 font-medium"
                         disabled={isSubmitting}
                     >
                         <Save className="mr-2 h-4 w-4" />

@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { motion, AnimatePresence } from "framer-motion";
+import { UploadButton } from "@/lib/uploadthing";
 
 export type FormFieldType =
     | "text"
@@ -748,6 +749,50 @@ export default function RegistrationForm({ event }: { event: any }) {
                                                 }}
                                             />
                                         )}
+
+                                    {/* FILE UPLOAD */}
+                                    {field.type === "file" && (
+                                        <Controller
+                                            control={control}
+                                            name={field.id}
+                                            render={({ field: { onChange, value } }) => (
+                                                <div className="mt-2 flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-50/50 p-6 text-center">
+                                                    {value ? (
+                                                        <div className="flex flex-col items-center gap-3">
+                                                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 text-green-600">
+                                                                <CheckCircle2 className="h-5 w-5" />
+                                                            </div>
+                                                            <p className="text-sm font-medium text-gray-700">File berhasil diunggah</p>
+                                                            <a href={value as string} target="_blank" rel="noreferrer" className="text-xs text-blue-500 hover:underline">
+                                                                Lihat File
+                                                            </a>
+                                                            <Button
+                                                                type="button"
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() => onChange("")}
+                                                                className="mt-2"
+                                                            >
+                                                                Hapus & Unggah Ulang
+                                                            </Button>
+                                                        </div>
+                                                    ) : (
+                                                        <UploadButton
+                                                            endpoint="publicUploader"
+                                                            onClientUploadComplete={(res) => {
+                                                                if (res && res.length > 0) {
+                                                                    onChange(res[0].url);
+                                                                }
+                                                            }}
+                                                            onUploadError={(error: Error) => {
+                                                                alert(`Gagal mengunggah: ${error.message}`);
+                                                            }}
+                                                        />
+                                                    )}
+                                                </div>
+                                            )}
+                                        />
+                                    )}
 
                                     {errors[field.id] && (
                                         <motion.span

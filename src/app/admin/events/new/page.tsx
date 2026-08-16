@@ -42,6 +42,7 @@ const FIELD_TYPES = [
     { value: "radio", label: "Radio Buttons" },
     { value: "number", label: "Number" },
     { value: "phone", label: "Phone Number" },
+    { value: "file", label: "File Upload" },
 ];
 
 export default function NewEventPage() {
@@ -806,6 +807,8 @@ export default function NewEventPage() {
                     </Button>
                     <Button 
                         type="submit" 
+                        variant="outline"
+                        className="text-black border border-gray-300 hover:bg-gray-50 hover:text-gray-700 font-medium"
                         disabled={isSubmitting}
                     >
                         <Save className="mr-2 h-4 w-4" />

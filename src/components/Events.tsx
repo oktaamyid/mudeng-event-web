@@ -4,7 +4,7 @@ import EventsAnimated from "./EventsAnimated";
 
 export default async function Events() {
     const { data } = await getEvents();
-    const events = data || [];
+    const events = (data || []).filter(e => e.status === "PUBLISHED");
 
     const slugOrder = ["ui-craft", "creative-craft", "mucrex"];
     const sortedEvents = [...events].sort((a, b) => {

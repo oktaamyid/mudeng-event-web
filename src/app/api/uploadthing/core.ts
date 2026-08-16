@@ -14,6 +14,14 @@ export const ourFileRouter = {
         .onUploadComplete(async ({ metadata, file }) => {
             return { uploadedBy: metadata.userId, url: file.ufsUrl };
         }),
+    publicUploader: f({
+        image: { maxFileSize: "4MB", maxFileCount: 1 },
+        pdf: { maxFileSize: "8MB", maxFileCount: 1 },
+        "application/zip": { maxFileSize: "8MB", maxFileCount: 1 },
+    })
+        .onUploadComplete(async ({ file }) => {
+            return { url: file.ufsUrl };
+        }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

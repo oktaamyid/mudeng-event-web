@@ -2,7 +2,7 @@
 
 import { db } from "../db";
 import { events, registrations } from "../../db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { getSession } from "../auth/session";
 
 import { coursesList } from "../../data/courses";
@@ -59,7 +59,12 @@ export async function getActiveEvent() {
         const event = await db
             .select()
             .from(events)
-            .where(eq(events.isFeatured, true))
+            .where(
+                and(
+                    eq(events.isFeatured, true),
+                    eq(events.status, "PUBLISHED")
+                )
+            )
             .limit(1);
         if (event.length === 0) {
             return { success: true, data: null };
