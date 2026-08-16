@@ -19,6 +19,7 @@ COPY . .
 # Environment variables must be present at build time
 # if you want to use them in Next.js build
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 RUN npm install -g pnpm@9 && pnpm run build
 
