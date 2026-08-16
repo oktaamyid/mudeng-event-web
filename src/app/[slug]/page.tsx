@@ -8,6 +8,7 @@ import EventOverview from "@/components/event-detail/EventOverview";
 import EventGallery from "@/components/event-detail/EventGallery";
 import EventFAQ from "@/components/event-detail/EventFAQ";
 
+export const revalidate = 0; // Disable static caching so it always fetches fresh data
 
 export async function generateStaticParams() {
     const res = await getEvents();

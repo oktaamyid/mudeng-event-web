@@ -12,6 +12,7 @@ import FAQ from "@/components/FAQ";
 import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
 import { getActiveEvent } from "@/lib/actions/events";
+export const revalidate = 0;
 
 export default async function Home() {
     const { data: activeEvent } = await getActiveEvent();

@@ -70,11 +70,15 @@ export default function EventHero({ event }: { event: any }) {
             <FadeSlideIn delay={0.3} className="relative z-10">
                 <div className="mx-auto max-w-360 px-6 lg:px-[120px] xl:px-[240px]">
                     <div className="w-full overflow-hidden rounded-[20px] sm:rounded-[32px] h-[250px] sm:h-[400px] md:h-[650px]">
-                        <img
-                            src={heroImage}
-                            alt={event.title}
-                            className="h-full w-full object-cover"
-                        />
+                        {heroImage ? (
+                            <img
+                                src={heroImage}
+                                alt={event.title}
+                                className="h-full w-full object-cover"
+                            />
+                        ) : (
+                            <div className="h-full w-full bg-[#7C7AEA]/10 animate-pulse" />
+                        )}
                     </div>
                 </div>
             </FadeSlideIn>

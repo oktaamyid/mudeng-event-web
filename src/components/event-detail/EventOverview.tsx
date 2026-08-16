@@ -21,14 +21,14 @@ export default function EventOverview({ event }: { event: any }) {
             <div className="mx-auto max-w-360 px-6 lg:px-[120px] xl:px-[240px]">
                 <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-12">
                     {/* Left Column: Text Blocks */}
-                    <StaggerContainer className="flex flex-col gap-10 lg:col-span-7" stagger={0.12}>
+                    <StaggerContainer className="flex flex-col gap-10 lg:col-span-7 min-w-0 overflow-hidden" stagger={0.12}>
                         <StaggerItem>
                             <div>
                                 <h2 className="font-body text-text-main mb-2 sm:mb-3 text-[20px] sm:text-[24px] font-bold md:text-[28px]">
                                     {event.overview?.title || "Project overview"}
                                 </h2>
                                 <div 
-                                    className="font-body text-[14px] leading-[22px] sm:text-[15px] sm:leading-[24px] font-medium tracking-[-0.3px] text-[#1A1A1A]/65 md:text-[16px] md:leading-[26px] [&_ul]:list-disc [&_ul]:ml-6 [&_ol]:list-decimal [&_ol]:ml-6 [&_b]:font-bold [&_strong]:font-bold [&_i]:italic [&_em]:italic [&_p]:mb-3 last:[&_p]:mb-0"
+                                    className="font-body text-[14px] leading-[22px] sm:text-[15px] sm:leading-[24px] font-medium tracking-[-0.3px] text-[#1A1A1A]/65 md:text-[16px] md:leading-[26px] break-words [&_ul]:list-disc [&_ul]:ml-6 [&_ol]:list-decimal [&_ol]:ml-6 [&_b]:font-bold [&_strong]:font-bold [&_i]:italic [&_em]:italic [&_p]:mb-3 last:[&_p]:mb-0"
                                     dangerouslySetInnerHTML={{ __html: event.overview?.description || event.description }}
                                 />
                             </div>
@@ -40,7 +40,7 @@ export default function EventOverview({ event }: { event: any }) {
                                     {event.process?.title || "Project process"}
                                 </h2>
                                 <div 
-                                    className="font-body text-[14px] leading-[22px] sm:text-[15px] sm:leading-[24px] font-medium tracking-[-0.3px] text-[#1A1A1A]/65 md:text-[16px] md:leading-[26px] [&_ul]:list-disc [&_ul]:ml-6 [&_ol]:list-decimal [&_ol]:ml-6 [&_b]:font-bold [&_strong]:font-bold [&_i]:italic [&_em]:italic [&_p]:mb-3 last:[&_p]:mb-0"
+                                    className="font-body text-[14px] leading-[22px] sm:text-[15px] sm:leading-[24px] font-medium tracking-[-0.3px] text-[#1A1A1A]/65 md:text-[16px] md:leading-[26px] break-words [&_ul]:list-disc [&_ul]:ml-6 [&_ol]:list-decimal [&_ol]:ml-6 [&_b]:font-bold [&_strong]:font-bold [&_i]:italic [&_em]:italic [&_p]:mb-3 last:[&_p]:mb-0"
                                     dangerouslySetInnerHTML={{ __html: event.process?.description || "" }}
                                 />
                             </div>
@@ -52,7 +52,7 @@ export default function EventOverview({ event }: { event: any }) {
                                     {event.result?.title || "Final result"}
                                 </h2>
                                 <div 
-                                    className="font-body text-[14px] leading-[22px] sm:text-[15px] sm:leading-[24px] font-medium tracking-[-0.3px] text-[#1A1A1A]/65 md:text-[16px] md:leading-[26px] [&_ul]:list-disc [&_ul]:ml-6 [&_ol]:list-decimal [&_ol]:ml-6 [&_b]:font-bold [&_strong]:font-bold [&_i]:italic [&_em]:italic [&_p]:mb-3 last:[&_p]:mb-0"
+                                    className="font-body text-[14px] leading-[22px] sm:text-[15px] sm:leading-[24px] font-medium tracking-[-0.3px] text-[#1A1A1A]/65 md:text-[16px] md:leading-[26px] break-words [&_ul]:list-disc [&_ul]:ml-6 [&_ol]:list-decimal [&_ol]:ml-6 [&_b]:font-bold [&_strong]:font-bold [&_i]:italic [&_em]:italic [&_p]:mb-3 last:[&_p]:mb-0"
                                     dangerouslySetInnerHTML={{ __html: event.result?.description || "" }}
                                 />
                             </div>
