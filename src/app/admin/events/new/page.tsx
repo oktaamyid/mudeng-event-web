@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { FormBuilder } from "@/components/FormBuilder";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import {
     Card,
     CardContent,
@@ -69,6 +71,8 @@ export default function NewEventPage() {
         isFeatured: false,
         confirmationMessage: "",
         googleSheetId: "",
+        isRegistrationOpen: true,
+        formDescription: "",
     });
 
     const [formFields, setFormFields] = useState<any[]>([
@@ -482,6 +486,42 @@ export default function NewEventPage() {
                         </div>
                     </CardHeader>
                     <CardContent className="space-y-6">
+                        <div className="flex items-center justify-between pb-6 border-b border-gray-100">
+                            <div className="space-y-0.5">
+                                <Label className="text-base font-semibold">Buka Pendaftaran (Active)</Label>
+                                <CardDescription>
+                                    Jika dimatikan, pendaftaran akan ditutup dan form tidak bisa diakses publik.
+                                </CardDescription>
+                            </div>
+                            <Switch
+                                checked={eventData.isRegistrationOpen}
+                                onCheckedChange={(checked) =>
+                                    setEventData({ ...eventData, isRegistrationOpen: checked })
+                                }
+                            />
+                        </div>
+
+                        <div className="space-y-3 pb-6 border-b border-gray-100">
+                            <div className="space-y-1">
+                                <Label className="text-base font-semibold">Deskripsi Formulir (Opsional)</Label>
+                                <CardDescription>
+                                    Instruksi atau informasi tambahan yang akan ditampilkan di atas form pendaftaran.
+                                </CardDescription>
+                            </div>
+                            <div className="bg-white rounded-md">
+                                <ReactQuill
+                                    theme="snow"
+                                    value={eventData.formDescription}
+                                    onChange={(val) =>
+                                        setEventData({
+                                            ...eventData,
+                                            formDescription: val,
+                                        })
+                                    }
+                                />
+                            </div>
+                        </div>
+
                         <FormBuilder fields={formFields} setFields={setFormFields} />
                         
                         <div className="pt-6 border-t space-y-3">

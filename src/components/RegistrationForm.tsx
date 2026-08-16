@@ -38,7 +38,8 @@ export type FormFieldType =
     | "number"
     | "phone"
     | "date"
-    | "file";
+    | "file"
+    | "step_break";
 
 export interface FormField {
     id: string;
@@ -61,6 +62,8 @@ const buildSchema = (fields: FormField[]) => {
             shape[field.id] = z.string().email("Email tidak valid").optional().or(z.literal(""));
         } else if (field.type === "checkbox") {
             shape[field.id] = z.array(z.string()).optional();
+        } else if (field.type === "step_break") {
+            continue; // Skip validation for dividers
         } else {
             shape[field.id] = z.string().optional();
         }
@@ -162,7 +165,7 @@ export default function RegistrationForm({ event }: { event: any }) {
 
     // Only render fields that belong to the current step AND are visible based on logic
     const fieldsToRender = sortedFields.filter(
-        (f) => f.step === currentStep && isFieldVisible(f),
+        (f) => f.step === currentStep && isFieldVisible(f) && f.type !== "step_break",
     );
 
     // Auto-save Draft
@@ -192,7 +195,7 @@ export default function RegistrationForm({ event }: { event: any }) {
     const nextStep = async () => {
         // Only validate visible fields in the current step
         const visibleFieldIdsInStep = sortedFields
-            .filter((f) => f.step === currentStep && isFieldVisible(f))
+            .filter((f) => f.step === currentStep && isFieldVisible(f) && f.type !== "step_break")
             .map((f) => f.id as keyof FormData);
 
         const isValid = await trigger(visibleFieldIdsInStep);

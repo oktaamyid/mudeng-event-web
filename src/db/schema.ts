@@ -31,6 +31,8 @@ export const events = pgTable("events", {
     formFields: jsonb("form_fields"), // Dynamic form configuration
     confirmationMessage: text("confirmation_message"), // Custom success message
     googleSheetId: varchar("google_sheet_id", { length: 255 }), // Google Sheet ID for sync
+    isRegistrationOpen: boolean("is_registration_open").default(true).notNull(), // Registration open/close toggle
+    formDescription: text("form_description"), // Optional description shown above the form
     status: varchar("status", { length: 50 }).default("PUBLISHED").notNull(),
     isFeatured: boolean("is_featured").default(false).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),

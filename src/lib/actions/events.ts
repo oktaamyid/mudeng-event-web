@@ -41,6 +41,8 @@ const fallbackEvents = coursesList.map((c, idx) => ({
     formFields: [],
     confirmationMessage: "",
     googleSheetId: null as string | null,
+    isRegistrationOpen: true,
+    formDescription: "",
     createdAt: new Date(),
 }));
 
@@ -187,6 +189,8 @@ export async function createEvent(data: any) {
             formFields: data.formFields,
             confirmationMessage: data.confirmationMessage || "",
             googleSheetId: data.googleSheetId || "",
+            isRegistrationOpen: data.isRegistrationOpen ?? true,
+            formDescription: data.formDescription || "",
             isFeatured: data.isFeatured || false,
             status: "PUBLISHED",
         });
@@ -397,6 +401,8 @@ export async function updateEvent(id: string, data: any) {
                 formFields: data.formFields,
                 confirmationMessage: data.confirmationMessage || "",
                 googleSheetId: data.googleSheetId || "",
+                isRegistrationOpen: data.isRegistrationOpen ?? true,
+                formDescription: data.formDescription || "",
                 isFeatured:
                     data.isFeatured !== undefined ? data.isFeatured : false,
                 status: data.status,

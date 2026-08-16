@@ -29,6 +29,8 @@ import { use } from "react";
 import { UploadButton } from "@/lib/uploadthing";
 import { deleteUploadThingFile } from "@/lib/actions/upload";
 import { FormBuilder } from "@/components/FormBuilder";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import dynamic from "next/dynamic";
 import "react-quill-new/dist/quill.snow.css";
 
@@ -69,6 +71,8 @@ export default function EditEventPage({
         isFeatured: false,
         confirmationMessage: "",
         googleSheetId: "",
+        isRegistrationOpen: true,
+        formDescription: "",
     });
 
     const [formFields, setFormFields] = useState<any[]>([]);
@@ -106,6 +110,8 @@ export default function EditEventPage({
                     isFeatured: res.data.isFeatured || false,
                     confirmationMessage: res.data.confirmationMessage || "",
                     googleSheetId: res.data.googleSheetId || "",
+                    isRegistrationOpen: res.data.isRegistrationOpen ?? true,
+                    formDescription: res.data.formDescription || "",
                 };
                 let initialFields = (res.data.formFields as any[]) || [];
 
@@ -834,6 +840,42 @@ export default function EditEventPage({
                         </div>
                     </CardHeader>
                     <CardContent>
+                        <div className="flex items-center justify-between pb-6 border-b border-gray-100 mb-6">
+                            <div className="space-y-0.5">
+                                <Label className="text-base font-semibold">Buka Pendaftaran (Active)</Label>
+                                <CardDescription>
+                                    Jika dimatikan, pendaftaran akan ditutup dan form tidak bisa diakses publik.
+                                </CardDescription>
+                            </div>
+                            <Switch
+                                checked={eventData.isRegistrationOpen}
+                                onCheckedChange={(checked) =>
+                                    setEventData({ ...eventData, isRegistrationOpen: checked })
+                                }
+                            />
+                        </div>
+
+                        <div className="space-y-3 pb-6 border-b border-gray-100 mb-6">
+                            <div className="space-y-1">
+                                <Label className="text-base font-semibold">Deskripsi Formulir (Opsional)</Label>
+                                <CardDescription>
+                                    Instruksi atau informasi tambahan yang akan ditampilkan di atas form pendaftaran.
+                                </CardDescription>
+                            </div>
+                            <div className="bg-white rounded-md">
+                                <ReactQuill
+                                    theme="snow"
+                                    value={eventData.formDescription}
+                                    onChange={(val) =>
+                                        setEventData({
+                                            ...eventData,
+                                            formDescription: val,
+                                        })
+                                    }
+                                />
+                            </div>
+                        </div>
+
                         <FormBuilder fields={formFields} setFields={setFormFields} />
                         
                         <div className="pt-6 border-t space-y-3 mt-6">

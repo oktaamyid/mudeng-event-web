@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 
-export type FormFieldType = "text" | "email" | "textarea" | "select" | "radio" | "checkbox" | "number" | "phone" | "date" | "file";
+export type FormFieldType = "text" | "email" | "textarea" | "select" | "radio" | "checkbox" | "number" | "phone" | "date" | "file" | "step_break";
 
 export interface FormFieldDef {
     id: string;
@@ -94,6 +94,49 @@ function SortableField({
 
     const [isExpanded, setIsExpanded] = useState(false);
 
+    if (field.type === "step_break") {
+        return (
+            <div
+                ref={setNodeRef}
+                style={style}
+                className={`relative rounded-xl border-2 border-dashed bg-muted/30 py-3 transition-all ${isDragging ? "ring-2 ring-[#6849E1] border-[#6849E1]" : "border-border"
+                    }`}
+            >
+                <div className="flex items-center justify-between px-4">
+                    <div className="flex items-center gap-3">
+                        <div
+                            {...attributes}
+                            {...listeners}
+                            className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground p-1 rounded-md"
+                        >
+                            <GripVertical className="h-5 w-5" />
+                        </div>
+                        <Badge variant="outline" className="font-mono text-xs w-8 justify-center">
+                            {index + 1}
+                        </Badge>
+                        <div className="font-medium text-sm text-[#6849E1] flex items-center gap-2">
+                            <span className="h-px w-12 bg-[#6849E1]/30 block"></span>
+                            Step Divider (Next is Step {field.step + 1})
+                            <span className="h-px w-12 bg-[#6849E1]/30 block"></span>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-1">
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeField(field.id)}
+                            className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                            title="Delete Divider"
+                        >
+                            <Trash className="h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div
             ref={setNodeRef}
@@ -125,11 +168,9 @@ function SortableField({
                             Required
                         </Badge>
                     )}
-                    {field.step > 1 && (
-                        <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
-                            Step {field.step}
-                        </Badge>
-                    )}
+                    <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                        Step {field.step}
+                    </Badge>
                     {field.dependsOn && (
                         <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-200">
                             Conditional
@@ -368,6 +409,22 @@ export function FormBuilder({ fields, setFields }: FormBuilderProps) {
         })
     );
 
+    const recalculateSteps = (currentFields: FormFieldDef[]) => {
+        let currentStep = 1;
+        return currentFields.map((f) => {
+            if (f.type === "step_break") {
+                const stepForBreak = currentStep;
+                currentStep++;
+                return { ...f, step: stepForBreak };
+            }
+            return { ...f, step: currentStep };
+        });
+    };
+
+    const handleFieldsChange = (newFields: FormFieldDef[]) => {
+        setFields(recalculateSteps(newFields));
+    };
+
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
 
@@ -375,23 +432,34 @@ export function FormBuilder({ fields, setFields }: FormBuilderProps) {
             const oldIndex = fields.findIndex((f) => f.id === active.id);
             const newIndex = fields.findIndex((f) => f.id === over.id);
 
-            setFields(arrayMove(fields, oldIndex, newIndex));
+            handleFieldsChange(arrayMove(fields, oldIndex, newIndex));
         }
     };
 
     const addField = () => {
         const newField: FormFieldDef = {
             id: `field_${Date.now()}`,
-            step: 1,
+            step: 1, // Will be recalculated immediately
             type: "text",
             label: "New Field",
             required: false,
         };
-        setFields([...fields, newField]);
+        handleFieldsChange([...fields, newField]);
+    };
+
+    const addStepBreak = () => {
+        const newField: FormFieldDef = {
+            id: `field_${Date.now()}`,
+            step: 1,
+            type: "step_break",
+            label: "Step Divider",
+            required: false,
+        };
+        handleFieldsChange([...fields, newField]);
     };
 
     const removeField = (id: string) => {
-        setFields(fields.filter((f) => f.id !== id));
+        handleFieldsChange(fields.filter((f) => f.id !== id));
     };
 
     const duplicateField = (id: string) => {
@@ -404,19 +472,26 @@ export function FormBuilder({ fields, setFields }: FormBuilderProps) {
             const index = fields.findIndex((f) => f.id === id);
             const newFields = [...fields];
             newFields.splice(index + 1, 0, newField);
-            setFields(newFields);
+            handleFieldsChange(newFields);
         }
     };
 
     const updateField = (id: string, key: keyof FormFieldDef, value: any) => {
-        setFields(
-            fields.map((f) => {
-                if (f.id === id) {
-                    return { ...f, [key]: value };
-                }
-                return f;
-            })
-        );
+        const newFields = fields.map((f) => {
+            if (f.id === id) {
+                return { ...f, [key]: value };
+            }
+            return f;
+        });
+        
+        // If type changed to step_break, we need to recalculate
+        if (key === "type" && value === "step_break") {
+            handleFieldsChange(newFields);
+        } else {
+            // For normal edits (label, required, etc), we don't strictly need to recalculate steps, 
+            // but it's safe to do so. To avoid bugs, we just pass it through the wrapper.
+            handleFieldsChange(newFields);
+        }
     };
 
     return (
@@ -431,9 +506,14 @@ export function FormBuilder({ fields, setFields }: FormBuilderProps) {
                     <p className="text-sm text-muted-foreground mt-1 mb-4">
                         Start building your registration form by adding fields.
                     </p>
-                    <Button type="button" onClick={addField} variant="outline">
-                        Add First Field
-                    </Button>
+                    <div className="flex gap-2 justify-center">
+                        <Button type="button" onClick={addField} variant="outline">
+                            Add First Field
+                        </Button>
+                        <Button type="button" onClick={addStepBreak} variant="outline" className="text-[#6849E1] border-[#6849E1]/30 hover:bg-[#6849E1]/5">
+                            Add Page Break
+                        </Button>
+                    </div>
                 </div>
             ) : (
                 <DndContext
@@ -460,6 +540,17 @@ export function FormBuilder({ fields, setFields }: FormBuilderProps) {
                         </div>
                     </SortableContext>
                 </DndContext>
+            )}
+
+            {fields.length > 0 && (
+                <div className="flex items-center gap-3 mt-4">
+                    <Button type="button" onClick={addField} variant="outline" className="flex-1 border-dashed">
+                        <Plus className="h-4 w-4 mr-2" /> Add Field
+                    </Button>
+                    <Button type="button" onClick={addStepBreak} variant="outline" className="flex-1 border-dashed text-[#6849E1] border-[#6849E1]/30 hover:bg-[#6849E1]/5">
+                        <Plus className="h-4 w-4 mr-2" /> Add Page Break
+                    </Button>
+                </div>
             )}
         </div>
     );
