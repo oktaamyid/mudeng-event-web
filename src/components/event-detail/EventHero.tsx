@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 import { EventData } from "@/data/events";
 import {
     TextReveal,
@@ -69,15 +71,21 @@ export default function EventHero({ event }: { event: any }) {
             {/* Hero Image */}
             <FadeSlideIn delay={0.3} className="relative z-10">
                 <div className="mx-auto max-w-360 px-6 lg:px-[120px] xl:px-[240px]">
-                    <div className="w-full overflow-hidden rounded-[20px] sm:rounded-[32px] h-[250px] sm:h-[400px] md:h-[650px]">
+                    <div className="relative w-full overflow-hidden rounded-[20px] sm:rounded-[32px] h-[250px] sm:h-[400px] md:h-[650px]">
                         {heroImage ? (
                             <img
                                 src={heroImage}
                                 alt={event.title}
-                                className="h-full w-full object-cover"
+                                className="w-full h-full object-cover"
+                                className="object-cover"
+                                
                             />
                         ) : (
-                            <div className="h-full w-full bg-[#7C7AEA]/10 animate-pulse" />
+                            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#6849E1] to-[#7C7AEA] p-6 sm:p-12 text-center shadow-inner">
+                                <h2 className="font-['Anton'] text-[40px] leading-tight text-white/90 sm:text-[60px] md:text-[80px]">
+                                    {event.title}
+                                </h2>
+                            </div>
                         )}
                     </div>
                 </div>

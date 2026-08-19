@@ -39,7 +39,7 @@ export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
                             render={<Link href="/admin" />}
                         >
                             <div className="flex aspect-square size-8 items-center justify-center">
-                                <Image
+                                <img
                                     src="https://cdn.mudeng.oktaa.my.id/logo/logo-monogram.svg"
                                     alt="Mudeng"
                                     width={32}

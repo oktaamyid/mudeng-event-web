@@ -4,6 +4,7 @@ import { db } from "../db";
 import { events, registrations } from "../../db/schema";
 import { eq, and } from "drizzle-orm";
 import { getSession } from "../auth/session";
+import { revalidatePath } from "next/cache";
 
 import { coursesList } from "../../data/courses";
 
@@ -114,6 +115,25 @@ export async function registerEvent(
             };
         }
 
+        // Check for duplicate registration
+        const existing = await db
+            .select()
+            .from(registrations)
+            .where(
+                and(
+                    eq(registrations.eventId, eventId),
+                    eq(registrations.email, email)
+                )
+            )
+            .limit(1);
+
+        if (existing.length > 0) {
+            return {
+                success: false,
+                error: "Email ini sudah terdaftar untuk acara ini.",
+            };
+        }
+
         await db.insert(registrations).values({
             eventId,
             userId: null, // Public registration
@@ -194,6 +214,9 @@ export async function createEvent(data: any) {
             isFeatured: data.isFeatured || false,
             status: "PUBLISHED",
         });
+
+        revalidatePath("/");
+        revalidatePath("/[slug]", "page");
 
         return { success: true };
     } catch (error) {
@@ -409,6 +432,10 @@ export async function updateEvent(id: string, data: any) {
             })
             .where(eq(events.id, id));
 
+        revalidatePath("/");
+        revalidatePath(`/${data.slug || id}`, "page");
+        revalidatePath("/[slug]", "page");
+
         return { success: true };
     } catch (error) {
         console.error("Failed to update event:", error);
@@ -431,6 +458,9 @@ export async function deleteEvent(id: string) {
         // Then delete the event
         await db.delete(events).where(eq(events.id, id));
 
+        revalidatePath("/");
+        revalidatePath("/[slug]", "page");
+
         return { success: true };
     } catch (error) {
         console.error("Failed to delete event:", error);
@@ -438,7 +468,6 @@ export async function deleteEvent(id: string) {
     }
 }
 
-import { revalidatePath } from "next/cache";
 
 export async function updateRegistrationStatus(id: string, status: string) {
     try {

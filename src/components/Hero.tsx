@@ -43,7 +43,7 @@ export default function Hero({ event: activeEvent }: { event: any }) {
                     fromY={-20}
                     style={{ "--badge-rotate": "-10deg", animation: "hero-badge-float-1 5s ease-in-out infinite" } as React.CSSProperties}
                 >
-                    <Image
+                    <img
                         src="/event/assets/icon-eyes.png"
                         alt=""
                         width="14"
@@ -60,7 +60,7 @@ export default function Hero({ event: activeEvent }: { event: any }) {
                     fromY={20}
                     style={{ "--badge-rotate": "10deg", animation: "hero-badge-float-2 5s ease-in-out 0.5s infinite" } as React.CSSProperties}
                 >
-                    <Image
+                    <img
                         src="/event/assets/icon-heart.png"
                         alt=""
                         width="14"
@@ -77,7 +77,7 @@ export default function Hero({ event: activeEvent }: { event: any }) {
                     fromY={-20}
                     style={{ "--badge-rotate": "10deg", animation: "hero-badge-float-1 5s ease-in-out 1s infinite" } as React.CSSProperties}
                 >
-                    <Image
+                    <img
                         src="/event/assets/icon-save.png"
                         alt=""
                         width="14"
@@ -94,7 +94,7 @@ export default function Hero({ event: activeEvent }: { event: any }) {
                     fromY={20}
                     style={{ "--badge-rotate": "-10deg", animation: "hero-badge-float-2 5s ease-in-out 1.5s infinite" } as React.CSSProperties}
                 >
-                    <Image
+                    <img
                         src="/event/assets/icon-chat.png"
                         alt=""
                         width="14"
@@ -193,12 +193,12 @@ export default function Hero({ event: activeEvent }: { event: any }) {
                             delay: card.delay,
                         }}
                     >
-                        <Image
+                        <img
                             src={card.src}
                             alt={card.alt}
-                            fill
-                            sizes="(max-width: 640px) 160px, 200px"
-                            style={{ objectFit: "cover" }}
+                            className="w-full h-full object-cover"
+                            
+                            
                         />
                     </motion.div>
                 ))}
@@ -265,12 +265,12 @@ export default function Hero({ event: activeEvent }: { event: any }) {
                             delay: card.delay,
                         }}
                     >
-                        <Image
+                        <img
                             src={card.src}
                             alt={card.alt}
-                            fill
-                            sizes="180px"
-                            style={{ objectFit: "cover" }}
+                            className="w-full h-full object-cover"
+                            
+                            
                         />
                     </motion.div>
                 ))}
@@ -343,12 +343,12 @@ export default function Hero({ event: activeEvent }: { event: any }) {
                             delay: card.delay,
                         }}
                     >
-                        <Image
+                        <img
                             src={card.src}
                             alt={card.alt}
-                            fill
-                            sizes="264px"
-                            style={{ objectFit: "cover" }}
+                            className="w-full h-full object-cover"
+                            
+                            
                         />
                     </motion.div>
                 ))}
