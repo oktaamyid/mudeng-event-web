@@ -6,54 +6,15 @@ import { eq, and } from "drizzle-orm";
 import { getSession } from "../auth/session";
 import { revalidatePath } from "next/cache";
 
-import { coursesList } from "../../data/courses";
-
-const fallbackEvents = coursesList.map((c, idx) => ({
-    id: String(idx + 1),
-    slug: c.slug,
-    title: c.title,
-    subtitle: c.description,
-    category: c.tag,
-    description: c.description,
-    imageUrl: c.image,
-    timeline: "4 Minggu",
-    service: c.title,
-    kickoffDate: "Juli 2025",
-    instructor: "Tim MUDENG",
-    duration: "4 Minggu",
-    status: "PUBLISHED",
-    isFeatured: c.slug === "ui-craft",
-    overview: {
-        title: "Project overview",
-        description: c.overview,
-    },
-    process: {
-        title: "Project process",
-        description: "Peserta akan melalui proses pembelajaran komprehensif mulai dari pemahaman dasar hingga eksekusi proyek akhir.",
-    },
-    result: {
-        title: "Final result",
-        description: "Hasil akhir berupa karya dan portofolio profesional yang siap digunakan untuk dunia kerja atau pameran.",
-    },
-    gallery: c.heroImages || [],
-    focus: "Penguasaan " + c.title,
-    output: "Karya & Portofolio",
-    faqs: c.faqs || [],
-    formFields: [],
-    confirmationMessage: "",
-    googleSheetId: null as string | null,
-    isRegistrationOpen: true,
-    formDescription: "",
-    createdAt: new Date(),
-}));
+// Fallback data removed as part of course legacy cleanup
 
 export async function getEvents() {
     try {
         const allEvents = await db.select().from(events);
         return { success: true, data: allEvents };
     } catch (error: any) {
-        console.warn(`[Fallback Activated] Failed to fetch events from DB: ${error?.message || "ETIMEDOUT"}`);
-        return { success: true, data: fallbackEvents };
+        console.warn(`Failed to fetch events from DB: ${error?.message || "ETIMEDOUT"}`);
+        return { success: true, data: [] };
     }
 }
 
@@ -74,8 +35,8 @@ export async function getActiveEvent() {
         }
         return { success: true, data: event[0] };
     } catch (error: any) {
-        console.warn(`[Fallback Activated] Failed to fetch active event from DB: ${error?.message || "ETIMEDOUT"}`);
-        return { success: true, data: fallbackEvents.find((e) => e.isFeatured) || fallbackEvents[0] };
+        console.warn(`Failed to fetch active event from DB: ${error?.message || "ETIMEDOUT"}`);
+        return { success: true, data: null };
     }
 }
 
@@ -87,15 +48,11 @@ export async function getEventBySlug(slug: string) {
             .where(eq(events.slug, slug))
             .limit(1);
         if (event.length === 0) {
-            const fallback = fallbackEvents.find((e) => e.slug === slug);
-            if (fallback) return { success: true, data: fallback };
             return { success: false, error: "Event not found" };
         }
         return { success: true, data: event[0] };
     } catch (error: any) {
-        console.warn(`[Fallback Activated] Failed to fetch event by slug from DB: ${error?.message || "ETIMEDOUT"}`);
-        const fallback = fallbackEvents.find((e) => e.slug === slug);
-        if (fallback) return { success: true, data: fallback };
+        console.warn(`Failed to fetch event by slug from DB: ${error?.message || "ETIMEDOUT"}`);
         return { success: false, error: "Failed to fetch event" };
     }
 }

@@ -77,8 +77,6 @@ export default function EventHero({ event }: { event: any }) {
                                 src={heroImage}
                                 alt={event.title}
                                 className="w-full h-full object-cover"
-                                className="object-cover"
-                                
                             />
                         ) : (
                             <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#6849E1] to-[#7C7AEA] p-6 sm:p-12 text-center shadow-inner">
