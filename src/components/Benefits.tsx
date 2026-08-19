@@ -75,7 +75,7 @@ export default function Benefits() {
                 <StaggerContainer className="benefits__grid" stagger={0.12}>
                     {benefitCards.map((card, i) => (
                         <StaggerItem className="benefit-card" key={i}>
-                            <Link href={`/course/${card.slug}`} scroll={true} className="block h-full">
+                            <Link href={`/${card.slug}`} scroll={true} className="block h-full">
                                 <div className="benefit-card__image">
                                     <img src={card.image} alt={card.title} style={card.objectPosition ? { objectPosition: card.objectPosition } : undefined} />
                                 </div>
