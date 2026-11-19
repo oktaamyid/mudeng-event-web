@@ -142,17 +142,8 @@ export default function EditEventPage({
                 const dbData = structuredClone(initialData);
                 const dbFields = structuredClone(initialFields);
 
-                // Check for draft
-                const draft = localStorage.getItem("mudeng_draft_edit_" + resolvedParams.slug);
-                if (draft) {
-                    try {
-                        const parsed = JSON.parse(draft);
-                        if (parsed.eventData) initialData = parsed.eventData;
-                        if (parsed.formFields) initialFields = parsed.formFields;
-                    } catch (e) {
-                        console.error("Failed to load draft", e);
-                    }
-                }
+                // Clear any stale local draft on fresh load so edit always starts clean from DB
+                localStorage.removeItem("mudeng_draft_edit_" + resolvedParams.slug);
 
                 setBaselineState({ eventData: dbData, formFields: dbFields });
                 setEventData(initialData);
