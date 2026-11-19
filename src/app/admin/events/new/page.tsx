@@ -551,12 +551,13 @@ export default function NewEventPage() {
                                     theme="snow"
                                     placeholder="e.g. Pendaftaran Berhasil! Silakan gabung grup WhatsApp di sini..."
                                     value={eventData.confirmationMessage}
-                                    onChange={(val) =>
+                                    onChange={(val, _delta, source) => {
+                                        if (source !== "user") return;
                                         setEventData({
                                             ...eventData,
                                             confirmationMessage: val,
-                                        })
-                                    }
+                                        });
+                                    }}
                                 />
                             </div>
                         </div>
@@ -579,15 +580,16 @@ export default function NewEventPage() {
                                 <ReactQuill
                                     theme="snow"
                                     value={eventData.overview.description}
-                                    onChange={(val) =>
+                                    onChange={(val, _delta, source) => {
+                                        if (source !== "user") return;
                                         setEventData({
                                             ...eventData,
                                             overview: {
                                                 ...eventData.overview,
                                                 description: val,
                                             },
-                                        })
-                                    }
+                                        });
+                                    }}
                                 />
                             </div>
                         </div>
@@ -611,15 +613,16 @@ export default function NewEventPage() {
                                 <ReactQuill
                                     theme="snow"
                                     value={eventData.process.description}
-                                    onChange={(val) =>
+                                    onChange={(val, _delta, source) => {
+                                        if (source !== "user") return;
                                         setEventData({
                                             ...eventData,
                                             process: {
                                                 ...eventData.process,
                                                 description: val,
                                             },
-                                        })
-                                    }
+                                        });
+                                    }}
                                 />
                             </div>
                         </div>
@@ -643,15 +646,16 @@ export default function NewEventPage() {
                                 <ReactQuill
                                     theme="snow"
                                     value={eventData.result.description}
-                                    onChange={(val) =>
+                                    onChange={(val, _delta, source) => {
+                                        if (source !== "user") return;
                                         setEventData({
                                             ...eventData,
                                             result: {
                                                 ...eventData.result,
                                                 description: val,
                                             },
-                                        })
-                                    }
+                                        });
+                                    }}
                                 />
                             </div>
                         </div>

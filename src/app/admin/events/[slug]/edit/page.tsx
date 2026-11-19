@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter, useParams } from "next/navigation";
 import { getEventBySlug, updateEvent, deleteEvent } from "@/lib/actions/events";
@@ -165,15 +165,22 @@ export default function EditEventPage({
         loadEvent();
     }, [resolvedParams.slug]);
 
-    // Save draft on change
+    const hasChanges = baselineState
+        ? JSON.stringify({ eventData, formFields }) !==
+          JSON.stringify(baselineState)
+        : false;
+
+    // Save draft only when there are unsaved changes
     useEffect(() => {
-        if (!isLoading) {
-            localStorage.setItem(
-                "mudeng_draft_edit_" + resolvedParams.slug,
-                JSON.stringify({ eventData, formFields })
-            );
+        if (!isLoading && baselineState) {
+            const key = "mudeng_draft_edit_" + resolvedParams.slug;
+            if (hasChanges) {
+                localStorage.setItem(key, JSON.stringify({ eventData, formFields }));
+            } else {
+                localStorage.removeItem(key);
+            }
         }
-    }, [eventData, formFields, isLoading, resolvedParams.slug]);
+    }, [eventData, formFields, isLoading, baselineState, hasChanges, resolvedParams.slug]);
 
     const handleTitleChange = (value: string) => {
         setEventData({
@@ -188,14 +195,6 @@ export default function EditEventPage({
     };
 
 
-
-    const hasChanges = useMemo(() => {
-        if (!baselineState) return false;
-        return (
-            JSON.stringify({ eventData, formFields }) !==
-            JSON.stringify(baselineState)
-        );
-    }, [eventData, formFields, baselineState]);
 
     const handleResetChanges = () => {
         if (!baselineState) return;
@@ -590,15 +589,16 @@ export default function EditEventPage({
                                 <ReactQuill
                                     theme="snow"
                                     value={eventData.overview.description}
-                                    onChange={(val) =>
+                                    onChange={(val, _delta, source) => {
+                                        if (source !== "user") return;
                                         setEventData({
                                             ...eventData,
                                             overview: {
                                                 ...eventData.overview,
                                                 description: val,
                                             },
-                                        })
-                                    }
+                                        });
+                                    }}
                                 />
                             </div>
                         </div>
@@ -622,15 +622,16 @@ export default function EditEventPage({
                                 <ReactQuill
                                     theme="snow"
                                     value={eventData.process.description}
-                                    onChange={(val) =>
+                                    onChange={(val, _delta, source) => {
+                                        if (source !== "user") return;
                                         setEventData({
                                             ...eventData,
                                             process: {
                                                 ...eventData.process,
                                                 description: val,
                                             },
-                                        })
-                                    }
+                                        });
+                                    }}
                                 />
                             </div>
                         </div>
@@ -654,15 +655,16 @@ export default function EditEventPage({
                                 <ReactQuill
                                     theme="snow"
                                     value={eventData.result.description}
-                                    onChange={(val) =>
+                                    onChange={(val, _delta, source) => {
+                                        if (source !== "user") return;
                                         setEventData({
                                             ...eventData,
                                             result: {
                                                 ...eventData.result,
                                                 description: val,
                                             },
-                                        })
-                                    }
+                                        });
+                                    }}
                                 />
                             </div>
                         </div>
@@ -960,12 +962,13 @@ export default function EditEventPage({
                                     theme="snow"
                                     placeholder="e.g. Pendaftaran Berhasil! Silakan gabung grup WhatsApp di sini..."
                                     value={eventData.confirmationMessage}
-                                    onChange={(val) =>
+                                    onChange={(val, _delta, source) => {
+                                        if (source !== "user") return;
                                         setEventData({
                                             ...eventData,
                                             confirmationMessage: val,
-                                        })
-                                    }
+                                        });
+                                    }}
                                 />
                             </div>
                         </div>
