@@ -32,6 +32,7 @@ import { UploadButton } from "@/lib/uploadthing";
 import { deleteUploadThingFile } from "@/lib/actions/upload";
 import { FormBuilder } from "@/components/FormBuilder";
 import { EventInfoEditor, createDefaultInfoItems, type EventInfoItem } from "@/components/EventInfoEditor";
+import { AdminFormSkeleton } from "@/components/admin/AdminSkeletons";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import dynamic from "next/dynamic";
@@ -139,13 +140,10 @@ export default function EditEventPage({
                 };
                 let initialFields = (res.data.formFields as any[]) || [];
 
-                const dbData = structuredClone(initialData);
-                const dbFields = structuredClone(initialFields);
-
                 // Clear any stale local draft on fresh load so edit always starts clean from DB
                 localStorage.removeItem("mudeng_draft_edit_" + resolvedParams.slug);
 
-                setBaselineState({ eventData: dbData, formFields: dbFields });
+                setBaselineState(null);
                 setEventData(initialData);
                 setFormFields(initialFields);
             } else {
@@ -155,6 +153,19 @@ export default function EditEventPage({
         }
         loadEvent();
     }, [resolvedParams.slug]);
+
+    // Capture baselineState after dynamic editors (ReactQuill) finish mounting
+    useEffect(() => {
+        if (!isLoading && !baselineState) {
+            const timer = setTimeout(() => {
+                setBaselineState({
+                    eventData: structuredClone(eventData),
+                    formFields: structuredClone(formFields),
+                });
+            }, 150);
+            return () => clearTimeout(timer);
+        }
+    }, [isLoading, baselineState, eventData, formFields]);
 
     const hasChanges = baselineState
         ? JSON.stringify({ eventData, formFields }) !==
@@ -243,11 +254,7 @@ export default function EditEventPage({
     };
 
     if (isLoading) {
-        return (
-            <div className="text-muted-foreground flex justify-center py-20">
-                Loading event...
-            </div>
-        );
+        return <AdminFormSkeleton />;
     }
 
     return (
@@ -967,7 +974,7 @@ export default function EditEventPage({
                 </Card>
 
                 {/* Sticky Submit Action Bar (only appears when there are unsaved changes) */}
-                <AnimatePresence>
+                <AnimatePresence initial={false}>
                     {hasChanges && (
                         <motion.div
                             initial={{ opacity: 0, y: 24, scale: 0.98 }}

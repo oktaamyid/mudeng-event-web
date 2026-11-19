@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { createEvent } from "@/lib/actions/events";
@@ -123,34 +123,29 @@ export default function NewEventPage() {
         ]);
     };
 
-    const [baselineSnapshot] = useState(() =>
-        JSON.stringify({ eventData, formFields }),
-    );
+    const [baselineSnapshot, setBaselineSnapshot] = useState<string | null>(null);
 
-    const hasChanges = useMemo(() => {
-        if (!isLoaded) return false;
-        return JSON.stringify({ eventData, formFields }) !== baselineSnapshot;
-    }, [eventData, formFields, baselineSnapshot, isLoaded]);
+    const hasChanges =
+        isLoaded && baselineSnapshot !== null
+            ? JSON.stringify({ eventData, formFields }) !== baselineSnapshot
+            : false;
 
     // Load draft on mount
     useEffect(() => {
-        const draft = localStorage.getItem("mudeng_draft_new_event");
-        if (draft) {
-            try {
-                const parsed = JSON.parse(draft);
-                setTimeout(() => {
-                    if (parsed.eventData) setEventData(parsed.eventData);
-                    if (parsed.formFields) setFormFields(parsed.formFields);
-                    setIsLoaded(true);
-                }, 0);
-            } catch (e) {
-                console.error("Failed to load draft", e);
-                setTimeout(() => setIsLoaded(true), 0);
-            }
-        } else {
-            setTimeout(() => setIsLoaded(true), 0);
-        }
+        localStorage.removeItem("mudeng_draft_new_event");
+        const timer = setTimeout(() => setIsLoaded(true), 0);
+        return () => clearTimeout(timer);
     }, []);
+
+    // Capture baseline after dynamic editors settle
+    useEffect(() => {
+        if (isLoaded && baselineSnapshot === null) {
+            const timer = setTimeout(() => {
+                setBaselineSnapshot(JSON.stringify({ eventData, formFields }));
+            }, 150);
+            return () => clearTimeout(timer);
+        }
+    }, [isLoaded, baselineSnapshot, eventData, formFields]);
 
     // Save draft on change
     useEffect(() => {
@@ -870,7 +865,7 @@ export default function NewEventPage() {
                 </Card>
 
                 {/* Sticky Submit Action Bar */}
-                <AnimatePresence>
+                <AnimatePresence initial={false}>
                     {hasChanges && (
                         <motion.div
                             initial={{ opacity: 0, y: 24, scale: 0.98 }}
