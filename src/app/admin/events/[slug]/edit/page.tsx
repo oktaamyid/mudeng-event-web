@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useRouter, useParams } from "next/navigation";
 import { getEventBySlug, updateEvent, deleteEvent } from "@/lib/actions/events";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,7 @@ import {
     GripVertical,
     AlertCircle,
     X,
+    CheckCircle2,
 } from "lucide-react";
 import Link from "next/link";
 import { use } from "react";
@@ -81,6 +83,11 @@ export default function EditEventPage({
     });
 
     const [formFields, setFormFields] = useState<any[]>([]);
+    const [baselineState, setBaselineState] = useState<{
+        eventData: typeof eventData;
+        formFields: any[];
+    } | null>(null);
+    const [saveSuccess, setSaveSuccess] = useState(false);
 
     useEffect(() => {
         async function loadEvent() {
@@ -132,6 +139,9 @@ export default function EditEventPage({
                 };
                 let initialFields = (res.data.formFields as any[]) || [];
 
+                const dbData = structuredClone(initialData);
+                const dbFields = structuredClone(initialFields);
+
                 // Check for draft
                 const draft = localStorage.getItem("mudeng_draft_edit_" + resolvedParams.slug);
                 if (draft) {
@@ -144,6 +154,7 @@ export default function EditEventPage({
                     }
                 }
 
+                setBaselineState({ eventData: dbData, formFields: dbFields });
                 setEventData(initialData);
                 setFormFields(initialFields);
             } else {
@@ -178,16 +189,44 @@ export default function EditEventPage({
 
 
 
+    const hasChanges = useMemo(() => {
+        if (!baselineState) return false;
+        return (
+            JSON.stringify({ eventData, formFields }) !==
+            JSON.stringify(baselineState)
+        );
+    }, [eventData, formFields, baselineState]);
+
+    const handleResetChanges = () => {
+        if (!baselineState) return;
+        setEventData(structuredClone(baselineState.eventData));
+        setFormFields(structuredClone(baselineState.formFields));
+        localStorage.removeItem("mudeng_draft_edit_" + resolvedParams.slug);
+        setError("");
+    };
+
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
         setError("");
+        setSaveSuccess(false);
 
         const res = await updateEvent(eventId, { ...eventData, formFields });
 
         if (res.success) {
             localStorage.removeItem("mudeng_draft_edit_" + resolvedParams.slug);
-            router.push("/admin/events");
+            setBaselineState({
+                eventData: structuredClone(eventData),
+                formFields: structuredClone(formFields),
+            });
+            setIsSubmitting(false);
+            setSaveSuccess(true);
+            setTimeout(() => setSaveSuccess(false), 4000);
+            if (eventData.slug !== resolvedParams.slug) {
+                router.replace(`/admin/events/${eventData.slug}/edit`);
+            } else {
+                router.refresh();
+            }
         } else {
             setError(res.error || "Failed to update event");
             setIsSubmitting(false);
@@ -933,39 +972,67 @@ export default function EditEventPage({
                     </CardContent>
                 </Card>
 
-                {/* Sticky Submit Action Bar */}
-                <div className="bg-background/95 sticky bottom-4 z-30 flex items-center justify-between gap-3 rounded-xl border p-3.5 shadow-lg backdrop-blur-sm">
-                    <span className="text-muted-foreground hidden text-xs sm:inline">
-                        Local draft auto-saved ·{" "}
-                        <span className="text-foreground font-medium">
-                            {eventData.status === "PUBLISHED"
-                                ? "Published"
-                                : "Draft"}
-                        </span>
-                    </span>
-                    <div className="flex w-full justify-end gap-2.5 sm:w-auto">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            className="bg-white"
-                            render={<Link href="/admin/events" />}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            type="submit"
-                            style={{
-                                backgroundColor: "#6849E1",
-                                color: "#ffffff",
+                {/* Sticky Submit Action Bar (only appears when there are unsaved changes) */}
+                <AnimatePresence>
+                    {hasChanges && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 24, scale: 0.98 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 24, scale: 0.98 }}
+                            transition={{
+                                duration: 0.22,
+                                ease: [0.22, 1, 0.36, 1],
                             }}
-                            className="border-0 shadow-sm transition-opacity hover:opacity-90"
-                            disabled={isSubmitting}
+                            className="bg-background/95 sticky bottom-4 z-30 flex items-center justify-between gap-3 rounded-xl border p-3.5 shadow-lg backdrop-blur-sm"
                         >
-                            <Save className="mr-2 h-4 w-4" />
-                            {isSubmitting ? "Saving..." : "Save Changes"}
-                        </Button>
-                    </div>
-                </div>
+                            <span className="text-muted-foreground hidden text-xs sm:inline">
+                                Unsaved changes ·{" "}
+                                <span className="text-foreground font-medium">
+                                    {eventData.status === "PUBLISHED"
+                                        ? "Published"
+                                        : "Draft"}
+                                </span>
+                            </span>
+                            <div className="flex w-full justify-end gap-2.5 sm:w-auto">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    className="bg-white"
+                                    onClick={handleResetChanges}
+                                    disabled={isSubmitting}
+                                >
+                                    Discard
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    style={{
+                                        backgroundColor: "#6849E1",
+                                        color: "#ffffff",
+                                    }}
+                                    className="border-0 shadow-sm transition-opacity hover:opacity-90"
+                                    disabled={isSubmitting}
+                                >
+                                    <Save className="mr-2 h-4 w-4" />
+                                    {isSubmitting ? "Saving..." : "Save Changes"}
+                                </Button>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                <AnimatePresence>
+                    {saveSuccess && !hasChanges && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 16 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 16 }}
+                            className="sticky bottom-4 z-30 ml-auto flex w-fit items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-medium text-emerald-700 shadow-md"
+                        >
+                            <CheckCircle2 className="h-4 w-4 shrink-0" />
+                            <span>Changes saved</span>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </form>
         </div>
     );

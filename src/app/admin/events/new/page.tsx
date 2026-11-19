@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { createEvent } from "@/lib/actions/events";
 import { Button } from "@/components/ui/button";
@@ -121,6 +122,15 @@ export default function NewEventPage() {
             },
         ]);
     };
+
+    const [baselineSnapshot] = useState(() =>
+        JSON.stringify({ eventData, formFields }),
+    );
+
+    const hasChanges = useMemo(() => {
+        if (!isLoaded) return false;
+        return JSON.stringify({ eventData, formFields }) !== baselineSnapshot;
+    }, [eventData, formFields, baselineSnapshot, isLoaded]);
 
     // Load draft on mount
     useEffect(() => {
@@ -856,33 +866,48 @@ export default function NewEventPage() {
                 </Card>
 
                 {/* Sticky Submit Action Bar */}
-                <div className="bg-background/95 sticky bottom-4 z-30 flex items-center justify-between gap-3 rounded-xl border p-3.5 shadow-lg backdrop-blur-sm">
-                    <span className="text-muted-foreground hidden text-xs sm:inline">
-                        Local draft auto-saved
-                    </span>
-                    <div className="flex w-full justify-end gap-2.5 sm:w-auto">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            className="bg-white"
-                            render={<Link href="/admin/events" />}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            type="submit"
-                            style={{
-                                backgroundColor: "#6849E1",
-                                color: "#ffffff",
+                <AnimatePresence>
+                    {hasChanges && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 24, scale: 0.98 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 24, scale: 0.98 }}
+                            transition={{
+                                duration: 0.22,
+                                ease: [0.22, 1, 0.36, 1],
                             }}
-                            className="border-0 shadow-sm transition-opacity hover:opacity-90"
-                            disabled={isSubmitting}
+                            className="bg-background/95 sticky bottom-4 z-30 flex items-center justify-between gap-3 rounded-xl border p-3.5 shadow-lg backdrop-blur-sm"
                         >
-                            <Save className="mr-2 h-4 w-4" />
-                            {isSubmitting ? "Creating..." : "Create Event"}
-                        </Button>
-                    </div>
-                </div>
+                            <span className="text-muted-foreground hidden text-xs sm:inline">
+                                Local draft auto-saved
+                            </span>
+                            <div className="flex w-full justify-end gap-2.5 sm:w-auto">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    className="bg-white"
+                                    render={<Link href="/admin/events" />}
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    style={{
+                                        backgroundColor: "#6849E1",
+                                        color: "#ffffff",
+                                    }}
+                                    className="border-0 shadow-sm transition-opacity hover:opacity-90"
+                                    disabled={isSubmitting}
+                                >
+                                    <Save className="mr-2 h-4 w-4" />
+                                    {isSubmitting
+                                        ? "Creating..."
+                                        : "Create Event"}
+                                </Button>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </form>
         </div>
     );
