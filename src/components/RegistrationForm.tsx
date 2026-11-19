@@ -27,6 +27,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { motion, AnimatePresence } from "framer-motion";
 import { UploadButton } from "@/lib/uploadthing";
+import { FilePreview } from "@/components/ui/file-preview";
 
 export type FormFieldType =
     | "text"
@@ -312,10 +313,19 @@ export default function RegistrationForm({ event }: { event: any }) {
                 <h3 className="font-display mb-4 text-3xl text-gray-900">
                     Pendaftaran Berhasil!
                 </h3>
-                <p className="text-lg whitespace-pre-wrap text-gray-600">
-                    {event.confirmationMessage ||
-                        "Terima kasih telah mendaftar. Kami akan memproses pendaftaran Anda dan menghubungi Anda lebih lanjut."}
-                </p>
+                {event.confirmationMessage &&
+                event.confirmationMessage.replace(/<[^>]*>/g, "").trim() !== "" ? (
+                    <div
+                        className="mx-auto max-w-xl text-left sm:text-center text-base sm:text-lg leading-relaxed text-gray-600 break-words [&_a]:font-medium [&_a]:text-[#6849E1] [&_a]:underline hover:[&_a]:text-[#5738CC] [&_b]:font-semibold [&_strong]:font-semibold [&_i]:italic [&_em]:italic [&_ul]:my-2 [&_ul]:ml-6 [&_ul]:list-disc [&_ul]:text-left [&_ol]:my-2 [&_ol]:ml-6 [&_ol]:list-decimal [&_ol]:text-left [&_p]:mb-2 last:[&_p]:mb-0"
+                        dangerouslySetInnerHTML={{
+                            __html: event.confirmationMessage,
+                        }}
+                    />
+                ) : (
+                    <p className="text-lg whitespace-pre-wrap text-gray-600">
+                        Terima kasih telah mendaftar. Kami akan memproses pendaftaran Anda dan menghubungi Anda lebih lanjut.
+                    </p>
+                )}
                 <Button
                     className="mt-8 rounded-full bg-[#6849E1] px-8 text-white hover:bg-[#5a3ec5]"
                     onClick={() => window.location.reload()}
@@ -766,9 +776,11 @@ export default function RegistrationForm({ event }: { event: any }) {
                                                                 <CheckCircle2 className="h-5 w-5" />
                                                             </div>
                                                             <p className="text-sm font-medium text-gray-700">File berhasil diunggah</p>
-                                                            <a href={value as string} target="_blank" rel="noreferrer" className="text-xs text-blue-500 hover:underline">
-                                                                Lihat File
-                                                            </a>
+                                                            <FilePreview
+                                                                url={value as string}
+                                                                label={field.label}
+                                                                compact
+                                                            />
                                                             <Button
                                                                 type="button"
                                                                 variant="outline"

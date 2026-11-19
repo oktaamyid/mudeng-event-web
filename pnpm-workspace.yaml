@@ -1,9 +1,0 @@
-packages:
-  - "."
-allowBuilds:
-    esbuild: false
-    msgpackr-extract: false
-    sharp: true
-    unrs-resolver: false
-minimumReleaseAgeExclude:
-    - lucide-react@1.20.0

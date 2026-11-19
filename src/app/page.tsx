@@ -12,18 +12,25 @@ import FAQ from "@/components/FAQ";
 import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
 import { getActiveEvent } from "@/lib/actions/events";
+import { getHomeCmsContent } from "@/lib/actions/cms";
+
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
-    const { data: activeEvent } = await getActiveEvent();
+    const [{ data: activeEvent }, cms] = await Promise.all([
+        getActiveEvent(),
+        getHomeCmsContent(),
+    ]);
+
     return (
         <main>
             <Navbar />
 
             <Hero event={activeEvent} />
 
-            <About event={activeEvent} />
+            <About event={activeEvent} stats={cms.about.stats} />
 
-            <Benefits />
+            <Benefits cards={cms.benefits} />
 
             <Approach />
 
@@ -35,9 +42,9 @@ export default async function Home() {
 
             <Preview />
 
-            <Testimonials />
+            <Testimonials config={cms.testimonials} />
 
-            <FAQ />
+            <FAQ items={cms.faqs} />
 
             <CTA />
 

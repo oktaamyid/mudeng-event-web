@@ -1,5 +1,3 @@
-import { EventData } from "@/data/events";
-
 export default function EventCurriculum({ event }: { event: any }) {
     return (
         <section

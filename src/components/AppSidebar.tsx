@@ -15,12 +15,13 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Calendar, Settings, LayoutDashboard, Users } from "lucide-react";
+import { Calendar, Settings, LayoutDashboard, Users, LayoutTemplate } from "lucide-react";
 import Image from "next/image";
 
 const adminItems = [
     { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
     { title: "Events", url: "/admin/events", icon: Calendar },
+    { title: "Home CMS", url: "/admin/content", icon: LayoutTemplate },
     { title: "Users", url: "/admin/users", icon: Users },
     { title: "Settings", url: "/admin/settings", icon: Settings },
 ];
@@ -91,10 +92,16 @@ export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
             </SidebarContent>
 
             <SidebarFooter>
-                <div className="px-2 py-2">
+                <div className="flex items-center justify-between gap-2 px-2 py-2 group-data-[collapsible=icon]:hidden">
                     <p className="text-muted-foreground text-xs">
                         © {new Date().getFullYear()} Mudeng Events
                     </p>
+                    <span
+                        className="text-muted-foreground/70 font-mono text-[11px]"
+                        title="Git commit hash"
+                    >
+                        v{process.env.NEXT_PUBLIC_GIT_HASH || "dev"}
+                    </span>
                 </div>
             </SidebarFooter>
         </Sidebar>

@@ -29,6 +29,7 @@ import { use } from "react";
 import { UploadButton } from "@/lib/uploadthing";
 import { deleteUploadThingFile } from "@/lib/actions/upload";
 import { FormBuilder } from "@/components/FormBuilder";
+import { EventInfoEditor, createDefaultInfoItems, type EventInfoItem } from "@/components/EventInfoEditor";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import dynamic from "next/dynamic";
@@ -63,7 +64,11 @@ export default function EditEventPage({
         category: "",
         instructor: "",
         duration: "",
-        overview: { title: "Program overview", description: "" },
+        overview: {
+            title: "Program overview",
+            description: "",
+            infoItems: [] as EventInfoItem[],
+        },
         process: { title: "Learning process", description: "" },
         result: { title: "Final result", description: "" },
         gallery: [] as string[],
@@ -93,9 +98,21 @@ export default function EditEventPage({
                     category: res.data.category || "",
                     instructor: res.data.instructor || "",
                     duration: res.data.duration || "",
-                    overview: (res.data.overview as any) || {
-                        title: "Program overview",
-                        description: "",
+                    overview: {
+                        title: (res.data.overview as any)?.title || "Program overview",
+                        description: (res.data.overview as any)?.description || "",
+                        infoItems:
+                            Array.isArray((res.data.overview as any)?.infoItems) &&
+                            (res.data.overview as any).infoItems.length > 0
+                                ? (res.data.overview as any).infoItems
+                                : createDefaultInfoItems({
+                                      title: res.data.title,
+                                      category: res.data.category || res.data.service || "",
+                                      duration: res.data.duration || "",
+                                      kickoffDate: res.data.kickoffDate || "",
+                                      focus: res.data.focus || "",
+                                      output: res.data.output || "",
+                                  }),
                     },
                     process: (res.data.process as any) || {
                         title: "Learning process",
@@ -610,6 +627,20 @@ export default function EditEventPage({
                                 />
                             </div>
                         </div>
+                        <Separator />
+                        <EventInfoEditor
+                            items={eventData.overview.infoItems || []}
+                            onChange={(items) =>
+                                setEventData({
+                                    ...eventData,
+                                    overview: {
+                                        ...eventData.overview,
+                                        infoItems: items,
+                                    },
+                                })
+                            }
+                            eventFallback={eventData}
+                        />
                     </CardContent>
                 </Card>
 
@@ -885,18 +916,19 @@ export default function EditEventPage({
                                     This message will be shown to users after they successfully submit this form.
                                 </CardDescription>
                             </div>
-                            <textarea
-                                rows={3}
-                                placeholder="e.g. Pendaftaran Berhasil! Terima kasih telah mendaftar. Kami akan menghubungi Anda segera."
-                                value={eventData.confirmationMessage}
-                                onChange={(e) =>
-                                    setEventData({
-                                        ...eventData,
-                                        confirmationMessage: e.target.value,
-                                    })
-                                }
-                                className="border-input placeholder:text-muted-foreground focus-visible:ring-ring w-full resize-none rounded-md border bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:ring-1 focus-visible:outline-none"
-                            />
+                            <div className="bg-white rounded-md">
+                                <ReactQuill
+                                    theme="snow"
+                                    placeholder="e.g. Pendaftaran Berhasil! Silakan gabung grup WhatsApp di sini..."
+                                    value={eventData.confirmationMessage}
+                                    onChange={(val) =>
+                                        setEventData({
+                                            ...eventData,
+                                            confirmationMessage: val,
+                                        })
+                                    }
+                                />
+                            </div>
                         </div>
                     </CardContent>
                 </Card>

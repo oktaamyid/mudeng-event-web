@@ -8,53 +8,17 @@ import {
     StaggerItem,
 } from "@/components/ui/motion-primitives";
 
-const benefitCards = [
-    {
-        slug: "ui-craft",
-        image: "/event/assets/uiux1.png",
-        tag: "Real momentum",
-        title: "UI Craft",
-        desc: "Pelatihan pembuatan desain antarmuka aplikasi dan website modern.",
-    },
-    {
-        slug: "graphic-desain",
-        image: "/event/assets/gd1.png",
-        tag: "No more falling off",
-        title: "Graphic Design",
-        desc: "Pelatihan eksklusif komunikasi visual dan desain grafis modern.",
-    },
-    {
-        slug: "photography",
-        image: "/event/assets/pd1.png",
-        tag: "Never stuck again",
-        title: "Photography",
-        desc: "Pelatihan eksklusif teknik fotografi digital dan komposisi visual.",
-    },
-    {
-        slug: "videography",
-        image: "/event/assets/vg1.png",
-        tag: "Growth with payoff",
-        title: "Videography",
-        desc: "Pelatihan eksklusif produksi video kreatif dan teknik sinematografi.",
-    },
-    {
-        slug: "digital-art",
-        image: "/event/assets/dg1.png",
-        tag: "Likes, comments, saves",
-        title: "Digital ART",
-        desc: "Pelatihan eksklusif ilustrasi digital dan seni visual modern.",
-        objectPosition: "right center",
-    },
-    {
-        slug: "motion-graphic",
-        image: "/event/assets/mg1.png",
-        tag: "You're ready now",
-        title: "Motion Graphic",
-        desc: "Pelatihan eksklusif animasi grafis dan efek visual modern.",
-    },
-];
+import {
+    DEFAULT_BENEFIT_CARDS,
+    type BenefitCardItem,
+} from "@/lib/cms-defaults";
 
-export default function Benefits() {
+export default function Benefits({
+    cards = DEFAULT_BENEFIT_CARDS,
+}: {
+    cards?: BenefitCardItem[];
+}) {
+    const benefitCards = cards.length > 0 ? cards : DEFAULT_BENEFIT_CARDS;
     return (
         <section className="benefits section-spacing" id="services">
             <div className="container px-4 lg:px-6 xl:px-[240px]">

@@ -6,7 +6,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Calendar, Users, Activity, Clock } from "lucide-react";
+import { Calendar, Users, Activity, Clock, Plus, ArrowUpRight } from "lucide-react";
 import {
     Table,
     TableBody,
@@ -17,6 +17,8 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default async function AdminDashboardPage() {
     const { data, success } = await getAdminDashboardStats();
@@ -37,154 +39,215 @@ export default async function AdminDashboardPage() {
         );
     }
 
-    const { totalEvents, totalRegistrations, recentRegistrations } = data;
+    const {
+        totalEvents,
+        publishedEvents = 0,
+        totalRegistrations,
+        pendingRegistrations = 0,
+        recentRegistrations,
+    } = data;
 
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-2xl font-semibold tracking-tight">
-                    Dashboard
-                </h1>
-                <p className="text-muted-foreground mt-1 text-sm">
-                    Overview of your events and registrations.
-                </p>
+            {/* Header */}
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h1 className="text-2xl font-semibold tracking-tight">
+                        Dashboard
+                    </h1>
+                    <p className="text-muted-foreground mt-1 text-sm">
+                        Ringkasan event dan pendaftaran peserta Mudeng.
+                    </p>
+                </div>
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        render={<Link href="/admin/events" />}
+                    >
+                        Manage Events
+                    </Button>
+                    <Button
+                        size="sm"
+                        className="bg-[#6849E1] text-white hover:bg-[#5738CC]"
+                        render={<Link href="/admin/events/new" />}
+                    >
+                        <Plus className="mr-1.5 h-4 w-4" />
+                        New Event
+                    </Button>
+                </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <Card>
+            {/* Minimalist Stat Cards */}
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <Card className="border-border/60 shadow-xs">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">
+                        <CardTitle className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
                             Total Events
                         </CardTitle>
-                        <Calendar className="text-muted-foreground h-4 w-4" />
+                        <div className="bg-muted flex h-8 w-8 items-center justify-center rounded-lg">
+                            <Calendar className="text-foreground h-4 w-4" />
+                        </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{totalEvents}</div>
+                        <div className="text-2xl font-semibold tracking-tight">
+                            {totalEvents}
+                        </div>
                         <p className="text-muted-foreground mt-1 text-xs">
-                            Events created so far
+                            {publishedEvents} published · {totalEvents - publishedEvents} draft
                         </p>
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="border-border/60 shadow-xs">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">
+                        <CardTitle className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
                             Total Registrations
                         </CardTitle>
-                        <Users className="text-muted-foreground h-4 w-4" />
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#6849E1]/10">
+                            <Users className="h-4 w-4 text-[#6849E1]" />
+                        </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">
+                        <div className="text-2xl font-semibold tracking-tight">
                             {totalRegistrations}
                         </div>
                         <p className="text-muted-foreground mt-1 text-xs">
-                            Total participants across all events
-                    </p>
+                            Total peserta di seluruh event
+                        </p>
                     </CardContent>
                 </Card>
 
-                <Card className="border-primary/20 bg-primary/5 md:col-span-2 lg:col-span-1">
+                <Card className="border-border/60 shadow-xs sm:col-span-2 lg:col-span-1">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">
-                            System Status
+                        <CardTitle className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+                            Pending Review
                         </CardTitle>
-                        <Activity className="text-primary h-4 w-4" />
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/10">
+                            <Clock className="h-4 w-4 text-amber-600" />
+                        </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex items-center gap-2">
-                            <div className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
-                            <div className="text-sm font-medium text-green-600">
-                                All systems operational
-                            </div>
+                        <div className="text-2xl font-semibold tracking-tight">
+                            {pendingRegistrations}
                         </div>
-                        <p className="text-muted-foreground mt-2 text-xs">
-                            Accepting new registrations normally
+                        <p className="text-muted-foreground mt-1 text-xs">
+                            Menunggu persetujuan admin
                         </p>
                     </CardContent>
                 </Card>
             </div>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>Recent Registrations</CardTitle>
-                    <CardDescription>
-                        The latest 5 participants who registered for your
-                        events.
-                    </CardDescription>
+            {/* Recent Registrations */}
+            <Card className="border-border/60 shadow-xs">
+                <CardHeader className="flex flex-row items-center justify-between">
+                    <div>
+                        <CardTitle className="text-base font-semibold">
+                            Recent Registrations
+                        </CardTitle>
+                        <CardDescription>
+                            5 pendaftar terbaru dari seluruh event.
+                        </CardDescription>
+                    </div>
                 </CardHeader>
                 <CardContent>
                     {recentRegistrations.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-10 text-center">
                             <Clock className="text-muted-foreground/30 mb-4 h-10 w-10" />
                             <p className="text-foreground text-sm font-medium">
-                                No recent registrations
+                                Belum ada pendaftaran terbaru
                             </p>
                             <p className="text-muted-foreground mt-1 text-xs">
-                                When people register, they'll show up here.
+                                Peserta yang mendaftar akan muncul di sini.
                             </p>
                         </div>
                     ) : (
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Participant</TableHead>
-                                    <TableHead>Event</TableHead>
-                                    <TableHead>Date</TableHead>
-                                    <TableHead>Status</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {recentRegistrations.map((reg: any) => (
-                                    <TableRow
-                                        key={reg.id}
-                                        className="hover:bg-muted/50 transition-colors"
-                                    >
-                                        <TableCell>
-                                            <div className="flex items-center gap-3">
-                                                <Avatar className="h-9 w-9">
-                                                    <AvatarFallback className="bg-primary/10 text-primary">
-                                                        {reg.fullName
-                                                            .substring(0, 2)
-                                                            .toUpperCase()}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                                <div>
-                                                    <div className="font-medium">
-                                                        {reg.fullName}
-                                                    </div>
-                                                    <div className="text-muted-foreground text-xs">
-                                                        {reg.email}
+                        <div className="overflow-x-auto">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Participant</TableHead>
+                                        <TableHead>Event</TableHead>
+                                        <TableHead>Date</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead className="text-right">
+                                            Action
+                                        </TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {recentRegistrations.map((reg: any) => (
+                                        <TableRow
+                                            key={reg.id}
+                                            className="hover:bg-muted/40 transition-colors"
+                                        >
+                                            <TableCell>
+                                                <div className="flex items-center gap-3">
+                                                    <Avatar className="h-8 w-8">
+                                                        <AvatarFallback className="bg-[#6849E1]/10 text-xs font-medium text-[#6849E1]">
+                                                            {reg.fullName
+                                                                .substring(0, 2)
+                                                                .toUpperCase()}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                    <div className="min-w-0">
+                                                        <div className="truncate font-medium">
+                                                            {reg.fullName}
+                                                        </div>
+                                                        <div className="text-muted-foreground truncate text-xs">
+                                                            {reg.email}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="text-muted-foreground text-sm">
-                                            {reg.eventTitle}
-                                        </TableCell>
-                                        <TableCell className="text-muted-foreground text-sm">
-                                            {new Date(
-                                                reg.registeredAt,
-                                            ).toLocaleDateString("id-ID", {
-                                                day: "numeric",
-                                                month: "short",
-                                                year: "numeric",
-                                            })}
-                                        </TableCell>
-                                        <TableCell>
-                                            {reg.status === "APPROVED" ? (
-                                                <Badge className="border-green-200 bg-green-500/15 text-green-700 hover:bg-green-500/20">
-                                                    Approved
-                                                </Badge>
-                                            ) : (
-                                                <Badge variant="secondary">
-                                                    Pending
-                                                </Badge>
-                                            )}
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+                                            </TableCell>
+                                            <TableCell className="text-muted-foreground text-sm">
+                                                {reg.eventTitle}
+                                            </TableCell>
+                                            <TableCell className="text-muted-foreground text-sm whitespace-nowrap">
+                                                {new Date(
+                                                    reg.registeredAt,
+                                                ).toLocaleDateString("id-ID", {
+                                                    day: "numeric",
+                                                    month: "short",
+                                                    year: "numeric",
+                                                })}
+                                            </TableCell>
+                                            <TableCell>
+                                                {reg.status === "APPROVED" ? (
+                                                    <Badge className="border-emerald-200 bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/20">
+                                                        Approved
+                                                    </Badge>
+                                                ) : (
+                                                    <Badge
+                                                        variant="secondary"
+                                                        className="border-amber-200 bg-amber-500/15 text-amber-700 hover:bg-amber-500/20"
+                                                    >
+                                                        Pending
+                                                    </Badge>
+                                                )}
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                {reg.eventSlug ? (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="h-8 px-2.5 text-xs"
+                                                        render={
+                                                            <Link
+                                                                href={`/admin/events/${reg.eventSlug}/registrants`}
+                                                            />
+                                                        }
+                                                    >
+                                                        Detail
+                                                        <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
+                                                    </Button>
+                                                ) : null}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
                     )}
                 </CardContent>
             </Card>

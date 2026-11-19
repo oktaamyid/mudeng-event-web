@@ -1,8 +1,5 @@
 "use client";
 
-import Image from "next/image";
-
-import { EventData } from "@/data/events";
 import {
     TextReveal,
     FadeSlideIn,
@@ -17,13 +14,6 @@ const localImageMap: Record<string, string> = {
     "mucrex": "/event/assets/mucrexx.png",
 };
 
-// Badge labels per slug
-const badgeLabelsMap: Record<string, string[]> = {
-    "ui-craft": ["01", "UI/UX Design"],
-    "creative-craft": ["02", "MotionCraft & VisioCraft"],
-    "mucrex": ["03", "Show Case Karya & Talk Show"],
-};
-
 export default function EventHero({ event }: { event: any }) {
     const eventNumber = slugOrder.indexOf(event.slug) + 1;
     const displayNumber =
@@ -31,8 +21,11 @@ export default function EventHero({ event }: { event: any }) {
             ? eventNumber.toString().padStart(2, "0")
             : "01";
 
-    const heroImage = localImageMap[event.slug] || event.imageUrl;
-    const badgeLabels = badgeLabelsMap[event.slug] || [displayNumber, event.category || event.service];
+    const heroImage = event.imageUrl || localImageMap[event.slug];
+    const badgeLabels = [
+        displayNumber,
+        event.category || event.service || "Event",
+    ];
 
     return (
         <section className="relative pt-[120px] pb-6 md:pt-[160px] md:pb-10" id="hero">

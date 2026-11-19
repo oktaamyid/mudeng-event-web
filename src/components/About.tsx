@@ -11,13 +11,22 @@ import {
     ScaleIn,
 } from "@/components/ui/motion-primitives";
 
-export default function About({ event }: { event?: any }) {
-    const stats = [
-        { number: "500", suffix: "+", label: "Peserta Berpartisipasi" },
-        { number: "3", suffix: "", label: "Kategori Pelatihan Utama" },
-        { number: "10", suffix: "+", label: "Mentor Berpengalaman" },
-        { number: "100", suffix: "%", label: "Berorientasi Portofolio" },
-    ];
+import {
+    DEFAULT_ABOUT_CONTENT,
+    type AboutStatItem,
+} from "@/lib/cms-defaults";
+
+export default function About({
+    event,
+    stats: customStats,
+}: {
+    event?: any;
+    stats?: AboutStatItem[];
+}) {
+    const stats =
+        customStats && customStats.length > 0
+            ? customStats
+            : DEFAULT_ABOUT_CONTENT.stats;
 
     const videoRef = useRef<HTMLVideoElement>(null);
 

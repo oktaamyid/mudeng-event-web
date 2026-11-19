@@ -1,18 +1,21 @@
-/* eslint-disable @next/next/no-page-custom-font */
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Anton, Inter } from "next/font/google";
 // import "@uploadthing/react/styles.css";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 
-const geistSans = Geist({
-    variable: "--font-geist-sans",
+const anton = Anton({
+    weight: "400",
+    variable: "--font-anton",
     subsets: ["latin"],
+    display: "swap",
 });
 
-const geistMono = Geist_Mono({
-    variable: "--font-geist-mono",
+const inter = Inter({
+    weight: ["400", "500", "600"],
+    variable: "--font-inter",
     subsets: ["latin"],
+    display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -83,7 +86,7 @@ export default function RootLayout({
     return (
         <html
             lang="en"
-            className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+            className={`${anton.variable} ${inter.variable} antialiased`}
         >
             <head>
                 <script
@@ -91,12 +94,8 @@ export default function RootLayout({
                         __html: `if(history.scrollRestoration){history.scrollRestoration='manual'}`,
                     }}
                 />
-                <link
-                    href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600&display=swap"
-                    rel="stylesheet"
-                />
             </head>
-            <body className="flex min-h-full flex-col" suppressHydrationWarning>
+            <body className="flex min-h-screen flex-col" suppressHydrationWarning>
                 <SmoothScroll>
                     {children}
                 </SmoothScroll>

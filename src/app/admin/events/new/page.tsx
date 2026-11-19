@@ -30,6 +30,7 @@ import {
 import Link from "next/link";
 import { UploadButton } from "@/lib/uploadthing";
 import { deleteUploadThingFile } from "@/lib/actions/upload";
+import { EventInfoEditor, createDefaultInfoItems, type EventInfoItem } from "@/components/EventInfoEditor";
 import dynamic from "next/dynamic";
 import "react-quill-new/dist/quill.snow.css";
 
@@ -63,7 +64,11 @@ export default function NewEventPage() {
         category: "",
         instructor: "",
         duration: "",
-        overview: { title: "Program overview", description: "" },
+        overview: {
+            title: "Program overview",
+            description: "",
+            infoItems: createDefaultInfoItems({}) as EventInfoItem[],
+        },
         process: { title: "Learning process", description: "" },
         result: { title: "Final result", description: "" },
         gallery: [] as string[],
@@ -531,18 +536,19 @@ export default function NewEventPage() {
                                     This message will be shown to users after they successfully submit this form.
                                 </CardDescription>
                             </div>
-                            <textarea
-                                rows={3}
-                                placeholder="e.g. Pendaftaran Berhasil! Terima kasih telah mendaftar. Kami akan menghubungi Anda segera."
-                                value={eventData.confirmationMessage}
-                                onChange={(e) =>
-                                    setEventData({
-                                        ...eventData,
-                                        confirmationMessage: e.target.value,
-                                    })
-                                }
-                                className="border-input placeholder:text-muted-foreground focus-visible:ring-ring w-full resize-none rounded-md border bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:ring-1 focus-visible:outline-none"
-                            />
+                            <div className="bg-white rounded-md">
+                                <ReactQuill
+                                    theme="snow"
+                                    placeholder="e.g. Pendaftaran Berhasil! Silakan gabung grup WhatsApp di sini..."
+                                    value={eventData.confirmationMessage}
+                                    onChange={(val) =>
+                                        setEventData({
+                                            ...eventData,
+                                            confirmationMessage: val,
+                                        })
+                                    }
+                                />
+                            </div>
                         </div>
                         <div className="space-y-3">
                             <Label>Overview Section <span className="text-red-500">*</span></Label>
@@ -639,6 +645,20 @@ export default function NewEventPage() {
                                 />
                             </div>
                         </div>
+                        <Separator />
+                        <EventInfoEditor
+                            items={eventData.overview.infoItems || []}
+                            onChange={(items) =>
+                                setEventData({
+                                    ...eventData,
+                                    overview: {
+                                        ...eventData.overview,
+                                        infoItems: items,
+                                    },
+                                })
+                            }
+                            eventFallback={eventData}
+                        />
                     </CardContent>
                 </Card>
 

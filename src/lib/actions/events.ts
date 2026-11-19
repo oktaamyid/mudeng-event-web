@@ -158,6 +158,8 @@ export async function createEvent(data: any) {
             kickoffDate: data.kickoffDate,
             instructor: data.instructor,
             duration: data.duration,
+            timeline: data.duration,
+            service: data.category,
             overview: data.overview,
             process: data.process,
             result: data.result,
@@ -198,10 +200,6 @@ export async function getEventRegistrants(slug: string) {
             .limit(1);
 
         if (event.length === 0) {
-            console.log(
-                "[DEBUG getEventRegistrants] Event not found for slug:",
-                slug,
-            );
             return { success: false, error: "Event not found" };
         }
 
@@ -332,17 +330,30 @@ export async function getAdminDashboardStats() {
             )
             .slice(0, 5);
 
-        // Populate event titles for recent registrations
+        // Populate event titles and slugs for recent registrations
         const enrichedRecent = recentRegistrations.map((reg) => {
             const evt = allEvents.find((e) => e.id === reg.eventId);
-            return { ...reg, eventTitle: evt?.title || "Unknown Event" };
+            return {
+                ...reg,
+                eventTitle: evt?.title || "Unknown Event",
+                eventSlug: evt?.slug || "",
+            };
         });
+
+        const publishedEvents = allEvents.filter(
+            (e) => e.status === "PUBLISHED",
+        ).length;
+        const pendingRegistrations = allRegistrations.filter(
+            (r) => r.status === "PENDING",
+        ).length;
 
         return {
             success: true,
             data: {
                 totalEvents: allEvents.length,
+                publishedEvents,
                 totalRegistrations: allRegistrations.length,
+                pendingRegistrations,
                 recentRegistrations: enrichedRecent,
             },
         };
@@ -373,6 +384,8 @@ export async function updateEvent(id: string, data: any) {
                 kickoffDate: data.kickoffDate,
                 instructor: data.instructor,
                 duration: data.duration,
+                timeline: data.duration,
+                service: data.category,
                 overview: data.overview,
                 process: data.process,
                 result: data.result,
@@ -441,6 +454,7 @@ export async function updateRegistrationStatus(id: string, status: string) {
             .where(eq(registrations.id, id));
 
         revalidatePath("/admin/events/[slug]/registrants", "page");
+        revalidatePath("/admin", "page");
 
         return { success: true };
     } catch (error) {
@@ -448,6 +462,81 @@ export async function updateRegistrationStatus(id: string, status: string) {
         return {
             success: false,
             error: "Failed to update registration status",
+        };
+    }
+}
+
+/**
+ * Update a registrant's core details, status, and form answers (Admin only).
+ */
+export async function updateRegistration(
+    id: string,
+    payload: {
+        fullName: string;
+        email: string;
+        status: string;
+        answers: Record<string, unknown>;
+    },
+) {
+    try {
+        const session = await getSession();
+        if (!session?.userId || session.role !== "admin") {
+            return { success: false, error: "Unauthorized" };
+        }
+
+        const trimmedName = payload.fullName.trim();
+        const trimmedEmail = payload.email.trim();
+        if (!trimmedName || !trimmedEmail) {
+            return {
+                success: false,
+                error: "Nama lengkap dan email wajib diisi.",
+            };
+        }
+
+        await db
+            .update(registrations)
+            .set({
+                fullName: trimmedName,
+                email: trimmedEmail,
+                status: payload.status,
+                answers: payload.answers,
+            })
+            .where(eq(registrations.id, id));
+
+        revalidatePath("/admin/events/[slug]/registrants", "page");
+        revalidatePath("/admin", "page");
+
+        return { success: true };
+    } catch (error) {
+        console.error("Failed to update registration:", error);
+        return {
+            success: false,
+            error: "Failed to update registration",
+        };
+    }
+}
+
+/**
+ * Delete a registration record permanently (Admin only).
+ */
+export async function deleteRegistration(id: string) {
+    try {
+        const session = await getSession();
+        if (!session?.userId || session.role !== "admin") {
+            return { success: false, error: "Unauthorized" };
+        }
+
+        await db.delete(registrations).where(eq(registrations.id, id));
+
+        revalidatePath("/admin/events/[slug]/registrants", "page");
+        revalidatePath("/admin", "page");
+
+        return { success: true };
+    } catch (error) {
+        console.error("Failed to delete registration:", error);
+        return {
+            success: false,
+            error: "Failed to delete registration",
         };
     }
 }

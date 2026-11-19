@@ -65,3 +65,9 @@ export const users = pgTable("users", {
     role: varchar("role", { length: 50 }).default("user").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export const siteContent = pgTable("site_content", {
+    key: varchar("key", { length: 100 }).primaryKey(),
+    data: jsonb("data").notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});

@@ -27,7 +27,7 @@ export default function EventsAnimated({ events }: { events: EventItem[] }) {
     };
 
     const getEventImage = (evt: EventItem) =>
-        localImageMap[evt.slug] || evt.imageUrl || undefined;
+        evt.imageUrl || localImageMap[evt.slug] || undefined;
 
     return (
         <section className="events section-spacing" id="events">
@@ -110,35 +110,45 @@ export default function EventsAnimated({ events }: { events: EventItem[] }) {
                                 </Link>
                             </div>
 
-                            {/* Bottom-right info strip */}
-                            <div className="absolute right-4 bottom-4 left-4 z-30 sm:right-6 sm:bottom-6 sm:left-6 md:right-9 md:bottom-9 md:left-auto md:w-[calc(100%-72px)] lg:w-167.5">
-                                <div className="flex items-center justify-between py-1.75">
-                                    <span className="font-body text-[13px] sm:text-[15px] leading-6.75 font-medium text-white/70 md:text-[17px]">
-                                        Timeline
-                                    </span>
-                                    <span className="font-body text-right text-[13px] sm:text-[15px] leading-6.75 font-medium text-white md:text-[17px]">
-                                        {evt.timeline}
-                                    </span>
-                                </div>
-                                <div className="h-px w-full bg-white/15" />
-                                <div className="flex items-center justify-between py-1.75">
-                                    <span className="font-body text-[13px] sm:text-[15px] leading-6.75 font-medium text-white/70 md:text-[17px]">
-                                        Service
-                                    </span>
-                                    <span className="font-body text-right text-[13px] sm:text-[15px] leading-6.75 font-medium text-white md:text-[17px]">
-                                        {evt.service}
-                                    </span>
-                                </div>
-                                <div className="h-px w-full bg-white/15" />
-                                <div className="flex items-center justify-between py-1.75">
-                                    <span className="font-body text-[13px] sm:text-[15px] leading-6.75 font-medium text-white/70 md:text-[17px]">
-                                        Project Kickoff
-                                    </span>
-                                    <span className="font-body text-right text-[13px] sm:text-[15px] leading-6.75 font-medium text-white md:text-[17px]">
-                                        {evt.kickoffDate}
-                                    </span>
-                                </div>
-                            </div>
+                            {/* Bottom-right info strip (dynamic from DB) */}
+                            {(() => {
+                                const infoRows = [
+                                    {
+                                        label: "Duration",
+                                        value: evt.duration || evt.timeline,
+                                    },
+                                    {
+                                        label: "Category",
+                                        value: evt.category || evt.service,
+                                    },
+                                    {
+                                        label: "Kickoff",
+                                        value: evt.kickoffDate,
+                                    },
+                                ].filter((r) => Boolean(r.value));
+
+                                if (infoRows.length === 0) return null;
+
+                                return (
+                                    <div className="absolute right-4 bottom-4 left-4 z-30 sm:right-6 sm:bottom-6 sm:left-6 md:right-9 md:bottom-9 md:left-auto md:w-[calc(100%-72px)] lg:w-167.5">
+                                        {infoRows.map((row, rIdx) => (
+                                            <div key={row.label}>
+                                                {rIdx > 0 && (
+                                                    <div className="h-px w-full bg-white/15" />
+                                                )}
+                                                <div className="flex items-center justify-between py-1.75">
+                                                    <span className="font-body text-[13px] sm:text-[15px] leading-6.75 font-medium text-white/70 md:text-[17px]">
+                                                        {row.label}
+                                                    </span>
+                                                    <span className="font-body text-right text-[13px] sm:text-[15px] leading-6.75 font-medium text-white md:text-[17px]">
+                                                        {row.value}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                );
+                            })()}
                         </div>
                     </div>
                 ))}

@@ -19,6 +19,11 @@ export default [
                 ecmaFeatures: { jsx: true },
             },
         },
+        settings: {
+            react: {
+                version: "detect",
+            },
+        },
         rules: {
             ...reactPlugin.configs.recommended.rules,
             ...hooksPlugin.configs.recommended.rules,

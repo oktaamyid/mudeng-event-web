@@ -1,6 +1,5 @@
 "use client";
 
-import { EventData } from "@/data/events";
 import Link from "next/link";
 import {
     FadeSlideIn,
@@ -10,7 +9,7 @@ import {
 
 const slugOrder = ["ui-craft", "creative-craft", "mucrex"];
 
-// Map slug to local gallery images
+// Fallback local gallery images when event.gallery in DB is empty
 const localGalleryMap: Record<string, string[]> = {
     "ui-craft": [
         "/event/assets/ui-craft1.png",
@@ -40,8 +39,10 @@ export default function EventGallery({ event }: { event: any }) {
             ? slugOrder[currentIdx + 1]
             : slugOrder[0];
 
-    // Use local gallery images if available, fallback to database
-    const galleryImages = localGalleryMap[event.slug] || event.gallery || [];
+    // Prioritize database gallery, fallback to local assets
+    const dbGallery = Array.isArray(event.gallery) ? event.gallery : [];
+    const galleryImages =
+        dbGallery.length > 0 ? dbGallery : localGalleryMap[event.slug] || [];
 
     return (
         <section className="pb-25 md:pb-40" id="gallery">

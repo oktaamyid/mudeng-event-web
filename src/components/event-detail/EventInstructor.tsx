@@ -1,5 +1,3 @@
-import { EventData } from "@/data/events";
-
 export default function EventInstructor({ event }: { event: any }) {
     return (
         <section className="py-[50px] sm:py-[80px] md:py-[160px]" id="instructor">

@@ -17,7 +17,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { PlusCircle, Edit, Users, Calendar, FileText } from "lucide-react";
+import { PlusCircle, Edit, Users, Calendar, FileText, ExternalLink } from "lucide-react";
 
 export default async function AdminEventsPage() {
     const { data: eventsList, success } = await getEvents();
@@ -39,9 +39,12 @@ export default async function AdminEventsPage() {
                         forms.
                     </p>
                 </div>
-                <Button render={<Link href="/admin/events/new" />}>
-                    <PlusCircle className="mr-2 h-4 w-4 text-white" />
-                    <p className="text-white">New Event</p>
+                <Button
+                    className="bg-[#6849E1] text-white hover:bg-[#5738CC]"
+                    render={<Link href="/admin/events/new" />}
+                >
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    New Event
                 </Button>
             </div>
 
@@ -152,6 +155,19 @@ export default async function AdminEventsPage() {
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-1">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    render={
+                                                        <Link
+                                                            href={`/${evt.slug}`}
+                                                            target="_blank"
+                                                        />
+                                                    }
+                                                    title="Lihat Halaman Publik"
+                                                >
+                                                    <ExternalLink className="h-4 w-4" />
+                                                </Button>
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"

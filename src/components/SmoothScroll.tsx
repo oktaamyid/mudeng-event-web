@@ -110,6 +110,12 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
 
         lenisRef.current = lenis;
 
+        // Keep Lenis scroll limit synced when async embeds (e.g. Instagram) resize the page
+        const resizeObserver = new ResizeObserver(() => {
+            lenis.resize();
+        });
+        resizeObserver.observe(document.body);
+
         let rafId: number;
         function raf(time: number) {
             lenis.raf(time);
@@ -119,6 +125,7 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
         rafId = requestAnimationFrame(raf);
 
         return () => {
+            resizeObserver.disconnect();
             cancelAnimationFrame(rafId);
             lenis.destroy();
             lenisRef.current = null;

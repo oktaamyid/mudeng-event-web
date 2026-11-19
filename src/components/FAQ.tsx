@@ -8,33 +8,17 @@ import {
     StaggerItem,
 } from "@/components/ui/motion-primitives";
 
-const faqItems = [
-    {
-        question: "Apakah materi MUDENG ini cocok untuk pemula??",
-        answer: "Ya, kursus ini dirancang untuk pemula hingga intermediate. Semua materi disampaikan secara bertahap dan mudah dipahami, bahkan jika kamu belum punya pengalaman di bidang digital kreatif sebelumnya.",
-    },
-    {
-        question:
-            "Program belajar multimedia mana yang paling sesuai untuk saya?",
-        answer: "Setiap program memiliki fokus yang berbeda. Jika Anda belum yakin, konsultasikan kebutuhan Anda dengan tim kami agar mendapatkan rekomendasi program yang paling sesuai.",
-    },
-    {
-        question: "Apakah materi kelas digital ini bisa diakses lewat HP?",
-        answer: "Ya. Materi dapat diakses melalui HP, tablet, maupun laptop. Namun, untuk praktik menggunakan software multimedia, kami menyarankan menggunakan laptop atau PC agar proses belajar lebih optimal.",
-    },
-    {
-        question:
-            "Apakah ada sesi konsultasi langsung dengan mentor jika saya menemui kesulitan?",
-        answer: "Ya. Anda dapat berkonsultasi langsung dengan mentor selama proses pembelajaran untuk bertanya, berdiskusi, dan mendapatkan solusi ketika mengalami kesulitan.",
-    },
-    {
-        question:
-            "Bagaimana portofolio MUDENG ini dapat membantu saya dalam melamar kerja?",
-        answer: "Portofolio yang Anda bangun selama mengikuti program dapat menjadi bukti kemampuan dan pengalaman Anda, sehingga meningkatkan kepercayaan perusahaan saat melamar pekerjaan atau mencari peluang freelance.",
-    },
-];
+import {
+    DEFAULT_HOME_FAQS,
+    type HomeFaqItem,
+} from "@/lib/cms-defaults";
 
-export default function FAQ() {
+export default function FAQ({
+    items = DEFAULT_HOME_FAQS,
+}: {
+    items?: HomeFaqItem[];
+}) {
+    const faqItems = items.length > 0 ? items : DEFAULT_HOME_FAQS;
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
     const toggleItem = useCallback((index: number | null) => {
