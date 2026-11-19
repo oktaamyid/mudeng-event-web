@@ -936,7 +936,12 @@ export default function EditEventPage({
                 {/* Sticky Submit Action Bar */}
                 <div className="bg-background/95 sticky bottom-4 z-30 flex items-center justify-between gap-3 rounded-xl border p-3.5 shadow-lg backdrop-blur-sm">
                     <span className="text-muted-foreground hidden text-xs sm:inline">
-                        Simpan perubahan kapan saja tanpa perlu scroll ke bawah.
+                        Local draft auto-saved ·{" "}
+                        <span className="text-foreground font-medium">
+                            {eventData.status === "PUBLISHED"
+                                ? "Published"
+                                : "Draft"}
+                        </span>
                     </span>
                     <div className="flex w-full justify-end gap-2.5 sm:w-auto">
                         <Button
@@ -949,7 +954,11 @@ export default function EditEventPage({
                         </Button>
                         <Button
                             type="submit"
-                            className="bg-[#6849E1] text-white hover:bg-[#5738CC]"
+                            style={{
+                                backgroundColor: "#6849E1",
+                                color: "#ffffff",
+                            }}
+                            className="border-0 shadow-sm transition-opacity hover:opacity-90"
                             disabled={isSubmitting}
                         >
                             <Save className="mr-2 h-4 w-4" />
