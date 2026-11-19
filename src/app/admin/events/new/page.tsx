@@ -266,32 +266,18 @@ export default function NewEventPage() {
                                     className="border-input placeholder:text-muted-foreground focus-visible:ring-ring w-full resize-none rounded-md border bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:ring-1 focus-visible:outline-none"
                                 />
                             </div>
-                            <div className="space-y-2">
+                            <div className="col-span-1 space-y-2 sm:col-span-2">
                                 <Label htmlFor="category">
                                     Category / Badge
                                 </Label>
                                 <Input
                                     id="category"
-                                    placeholder="e.g. 01 UI/UX Design"
+                                    placeholder="e.g. UI/UX Design"
                                     value={eventData.category}
                                     onChange={(e: any) =>
                                         setEventData({
                                             ...eventData,
                                             category: e.target.value,
-                                        })
-                                    }
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="instructor">Instructor</Label>
-                                <Input
-                                    id="instructor"
-                                    placeholder="e.g. Budi Santoso"
-                                    value={eventData.instructor}
-                                    onChange={(e: any) =>
-                                        setEventData({
-                                            ...eventData,
-                                            instructor: e.target.value,
                                         })
                                     }
                                 />
