@@ -855,25 +855,29 @@ export default function NewEventPage() {
                     </CardContent>
                 </Card>
 
-                {/* Submit */}
-                <div className="flex justify-end gap-3 pt-6">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium"
-                        render={<Link href="/admin/events" />}
-                    >
-                        Cancel
-                    </Button>
-                    <Button 
-                        type="submit" 
-                        variant="outline"
-                        className="text-black border border-gray-300 hover:bg-gray-50 hover:text-gray-700 font-medium"
-                        disabled={isSubmitting}
-                    >
-                        <Save className="mr-2 h-4 w-4" />
-                        {isSubmitting ? "Creating..." : "Create Event"}
-                    </Button>
+                {/* Sticky Submit Action Bar */}
+                <div className="bg-background/95 sticky bottom-4 z-30 flex items-center justify-between gap-3 rounded-xl border p-3.5 shadow-lg backdrop-blur-sm">
+                    <span className="text-muted-foreground hidden text-xs sm:inline">
+                        Buat event kapan saja tanpa perlu scroll ke paling bawah.
+                    </span>
+                    <div className="flex w-full justify-end gap-2.5 sm:w-auto">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            className="bg-white"
+                            render={<Link href="/admin/events" />}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            className="bg-[#6849E1] text-white hover:bg-[#5738CC]"
+                            disabled={isSubmitting}
+                        >
+                            <Save className="mr-2 h-4 w-4" />
+                            {isSubmitting ? "Creating..." : "Create Event"}
+                        </Button>
+                    </div>
                 </div>
             </form>
         </div>
