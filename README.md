@@ -1,81 +1,80 @@
 # Mudeng Event Web
 
-Mudeng Event Web is the official platform for MUDENG (Multimedia Digital Engagement) STT Terpadu Nurul Fikri to showcase, manage, and register for various creative events, such as UI Craft, Creative Craft, and MuCreX.
+Official event showcase, dynamic registration, and mini-CMS platform for **MUDENG (Multimedia Digital Engagement)** STT Terpadu Nurul Fikri.
 
-This project is built with **Next.js (App Router)** and styled using **Tailwind CSS**, with smooth animations powered by **Framer Motion**.
+Built with **Next.js 16 (App Router + Turbopack)**, **React 19**, **Tailwind CSS v4**, **Drizzle ORM**, and **Bun**.
 
-## 🚀 Tech Stack
+## Tech Stack
 
-- **Framework:** [Next.js](https://nextjs.org/) (App Router)
-- **Language:** [TypeScript](https://www.typescriptlang.org/)
-- **Styling:** [Tailwind CSS v4](https://tailwindcss.com/)
-- **Animations:** [Framer Motion](https://www.framer.com/motion/)
-- **Icons:** [Lucide React](https://lucide.dev/)
+- **Framework:** [Next.js 16](https://nextjs.org/) (`basePath: /event`, `output: standalone`)
+- **Runtime & Package Manager:** [Bun](https://bun.sh/) (`bun.lock`) + Node.js 20 (Docker production runner)
+- **Language:** [TypeScript](https://www.typescriptlang.org/) (`strict` mode)
+- **Database & ORM:** PostgreSQL ([Neon Serverless](https://neon.tech/)) + [Drizzle ORM](https://orm.drizzle.team/)
+- **Styling & UI:** [Tailwind CSS v4](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/) + [Lucide React](https://lucide.dev/)
+- **Animations & Scroll:** [Framer Motion](https://www.framer.com/motion/) + [Lenis](https://lenis.darkroom.engineering/)
 - **Forms & Validation:** [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
-- **Database (Serverless):** [@neondatabase/serverless](https://neon.tech/)
-- **Package Manager:** [pnpm](https://pnpm.io/)
+- **Rich Text & File Uploads:** [ReactQuill](https://github.com/zenoamaro/react-quill) (`react-quill-new`) + [UploadThing](https://uploadthing.com/)
+- **Integrations:** Google Sheets API (`googleapis`)
 
-## 📂 Project Structure
+## Key Features
 
-- `src/app/`: Next.js App Router pages (e.g., `/`, `/events/[slug]`).
-- `src/components/`: Reusable React components used across the website.
-    - `event-detail/`: Specific components for the individual event pages.
-- `src/data/`: Static data sources like `events.ts` containing the event catalog.
-- `src/lib/`: Utility libraries and database configuration (`db.ts`).
-- `public/`: Static assets such as images and icons.
+- **Public Event Showcase & Registration (`/[slug]`, `/[slug]/register`)**:
+  - Dynamic event pages with customizable **Event Info Card** (`Nama Proker`, `Kategori`, `Format`, `Fokus`, `Output`, etc.).
+  - Multi-step dynamic registration form with conditional logic, file upload + inline image preview, and rich-text confirmation messages.
+  - Instagram profile embed (`@mudengsttnf`) for auto-latest social proof on the home page.
+- **Admin Dashboard (`/admin`)**:
+  - **Events & Form Builder (`/admin/events`)**: Create/edit events with drag-and-drop form builder, rich text sections, UploadThing image management (with auto-delete), and dirty-state sticky action bar.
+  - **Registrants Management (`/admin/events/[slug]/registrants`)**: Search, status filtering, view/edit/delete registrants, inline file preview, CSV export, and **Sync to Google Sheets** with automatic report-ready table formatting.
+  - **Home CMS (`/admin/content`)**: Manage home Course Cards, Testimonials / Instagram feed mode, Home FAQs, and About stats from the database (`site_content`).
+  - **Users Management (`/admin/users`)**: Role-based access control (`admin` / `user`).
 
-## 🛠️ Getting Started
+## Project Structure
+
+- `src/app/`: Next.js App Router pages (`/`, `/[slug]`, `/[slug]/register`, `/admin/*`, `/dashboard`, `/api/uploadthing`).
+- `src/components/`: UI components (`Hero`, `Benefits`, `Testimonials`, `FormBuilder`, `RegistrationForm`, `EventInfoEditor`, `event-detail/*`, `ui/*`).
+- `src/db/`: Drizzle schema (`schema.ts`), migrations, and seed scripts.
+- `src/lib/`: Server Actions (`actions/events.ts`, `actions/cms.ts`, `actions/sheets.ts`, `actions/upload.ts`, `actions/users.ts`), auth session, and CMS defaults.
+- `docs/`: Architecture (`architect.md`), Technical Spec (`tech-spec.md`), PRD (`prd.md`), and changelog (`changelog/pending.md`).
+
+## Getting Started
 
 ### Prerequisites
 
-Make sure you have Node.js installed on your machine. We recommend using `pnpm` as the package manager.
-
-```bash
-npm install -g pnpm
-```
+- [Bun](https://bun.sh/) (`>= 1.3`)
+- PostgreSQL database (e.g. Neon)
 
 ### Installation
 
-1. Clone the repository and navigate into the `event-web` directory:
+1. Navigate into `event-web` and install dependencies:
+   ```bash
+   cd event-web
+   bun install
+   ```
 
-    ```bash
-    cd event-web
-    ```
+2. Configure `.env` (database URL, JWT secret, UploadThing token, Google Sheets credentials).
 
-2. Install the project dependencies:
-    ```bash
-    pnpm install
-    ```
+3. Push database schema:
+   ```bash
+   bunx drizzle-kit push
+   ```
 
-### Running the Development Server
-
-Start the local development server:
-
-```bash
-pnpm dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result. The page will auto-update as you edit the files.
-
-### Building for Production
-
-To create an optimized production build:
+### Development
 
 ```bash
-pnpm build
+bun dev
 ```
 
-To start the production server locally:
+Open [http://localhost:3000/event](http://localhost:3000/event) in your browser.
+
+### Verification & Production Build
 
 ```bash
-pnpm start
+bun run lint
+bunx tsc --noEmit
+bun run build
+bun run start
 ```
 
-## 🎨 Design & Assets
+### Docker
 
-The website implements modern web design practices including interactive hover states, beautiful gradients, and micro-animations via Framer Motion to ensure an engaging user experience.
-Assets and visual references are stored in the `public/assets` folder.
-
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome! Feel free to check the issues page or submit a pull request.
+The `Dockerfile` uses Bun (`oven/bun:1-alpine`) for dependency installation and Next.js build, and `node:20-alpine` for the standalone production server on port `4000`.
