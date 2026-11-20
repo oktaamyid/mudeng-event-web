@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@/lib/db";
+import { db, ensureSchema } from "@/lib/db";
 import { siteContent } from "@/db/schema";
 import { getSession } from "@/lib/auth/session";
 import { revalidatePath } from "next/cache";
@@ -36,6 +36,7 @@ export async function getHomeCmsContent(): Promise<HomeCmsContent> {
     };
 
     try {
+        await ensureSchema();
         const rows = await db.select().from(siteContent);
         const byKey = new Map<string, unknown>(rows.map((r) => [r.key, r.data]));
 
@@ -100,6 +101,7 @@ export async function updateHomeCmsSection(
     data: unknown,
 ): Promise<{ success: boolean; error?: string }> {
     try {
+        await ensureSchema();
         const session = await getSession();
         if (!session?.userId || session.role !== "admin") {
             return { success: false, error: "Unauthorized" };

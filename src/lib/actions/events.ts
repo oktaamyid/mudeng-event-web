@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "../db";
+import { db, ensureSchema } from "../db";
 import { events, registrations } from "../../db/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { getSession } from "../auth/session";
@@ -10,6 +10,7 @@ import { revalidatePath } from "next/cache";
 
 export async function getEvents() {
     try {
+        await ensureSchema();
         const allEvents = await db.select().from(events);
         return { success: true, data: allEvents };
     } catch (error: any) {
@@ -20,6 +21,7 @@ export async function getEvents() {
 
 export async function getActiveEvent() {
     try {
+        await ensureSchema();
         const event = await db
             .select()
             .from(events)
@@ -42,6 +44,7 @@ export async function getActiveEvent() {
 
 export async function getEventBySlug(slug: string) {
     try {
+        await ensureSchema();
         const event = await db
             .select()
             .from(events)
@@ -141,6 +144,7 @@ export async function getUserRegistrations() {
 
 export async function createEvent(data: any) {
     try {
+        await ensureSchema();
         const session = await getSession();
         const role = session?.role;
 
@@ -186,6 +190,7 @@ export async function createEvent(data: any) {
 
 export async function getEventRegistrants(slug: string) {
     try {
+        await ensureSchema();
         const session = await getSession();
         const role = session?.role;
 
@@ -311,6 +316,7 @@ export async function exportRegistrantsCSV(slug: string) {
 
 export async function getAdminDashboardStats() {
     try {
+        await ensureSchema();
         const session = await getSession();
         const role = session?.role;
 
@@ -365,6 +371,7 @@ export async function getAdminDashboardStats() {
 
 export async function updateEvent(id: string, data: any) {
     try {
+        await ensureSchema();
         const session = await getSession();
         const role = session?.role;
 
