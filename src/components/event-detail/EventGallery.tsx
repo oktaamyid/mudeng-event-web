@@ -45,7 +45,7 @@ export default function EventGallery({ event }: { event: any }) {
         dbGallery.length > 0 ? dbGallery : localGalleryMap[event.slug] || [];
 
     return (
-        <section className="pb-25 md:pb-40" id="gallery">
+        <section className="pb-12 sm:pb-16 md:pb-20" id="gallery">
             <div className="mx-auto max-w-360 px-6 lg:px-[120px] xl:px-[240px]">
                 <StaggerContainer className="grid grid-cols-1 gap-6 md:grid-cols-2" stagger={0.1}>
                     {galleryImages.map((img: string, idx: number) => (
@@ -62,7 +62,7 @@ export default function EventGallery({ event }: { event: any }) {
                 </StaggerContainer>
 
                 <FadeSlideIn delay={0.4}>
-                    <div className="mt-12 flex justify-start">
+                    <div className="mt-8 flex justify-start sm:mt-10">
                         <Link
                             href={`/${nextSlug}`}
                             className="font-body text-text-main inline-flex rounded-full bg-[#7C7AEA]/10 px-8 py-3 text-sm font-medium transition-colors hover:bg-[#7C7AEA]/15"

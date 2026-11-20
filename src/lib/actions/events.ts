@@ -5,6 +5,7 @@ import { events, registrations } from "../../db/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { getSession } from "../auth/session";
 import { revalidatePath } from "next/cache";
+import { deleteUploadThingFiles } from "./upload";
 
 // Fallback data removed as part of course legacy cleanup
 
@@ -465,11 +466,52 @@ export async function deleteEvent(id: string) {
             return { success: false, error: "Unauthorized" };
         }
 
+        // Collect UploadThing URLs from event & registrations before deleting
+        const [evtRows, regRows] = await Promise.all([
+            db
+                .select({ imageUrl: events.imageUrl, gallery: events.gallery })
+                .from(events)
+                .where(eq(events.id, id))
+                .limit(1),
+            db
+                .select({ answers: registrations.answers })
+                .from(registrations)
+                .where(eq(registrations.eventId, id)),
+        ]);
+
+        const urlsToDelete: string[] = [];
+        if (evtRows[0]?.imageUrl) urlsToDelete.push(evtRows[0].imageUrl);
+        if (Array.isArray(evtRows[0]?.gallery)) {
+            for (const g of evtRows[0].gallery) {
+                if (typeof g === "string") urlsToDelete.push(g);
+            }
+        }
+        for (const r of regRows) {
+            if (r.answers && typeof r.answers === "object") {
+                for (const item of Object.values(r.answers as Record<string, unknown>)) {
+                    const val =
+                        typeof item === "object" &&
+                        item !== null &&
+                        !Array.isArray(item) &&
+                        "value" in item
+                            ? (item as { value: unknown }).value
+                            : item;
+                    if (typeof val === "string" && val.startsWith("http")) {
+                        urlsToDelete.push(val);
+                    }
+                }
+            }
+        }
+
         // First delete all registrations for this event
         await db.delete(registrations).where(eq(registrations.eventId, id));
 
         // Then delete the event
         await db.delete(events).where(eq(events.id, id));
+
+        if (urlsToDelete.length > 0) {
+            await deleteUploadThingFiles(urlsToDelete);
+        }
 
         revalidatePath("/");
         revalidatePath("/[slug]", "page");
@@ -589,7 +631,30 @@ export async function deleteRegistration(id: string) {
             return { success: false, error: "Unauthorized" };
         }
 
-        await db.delete(registrations).where(eq(registrations.id, id));
+        const deleted = await db
+            .delete(registrations)
+            .where(eq(registrations.id, id))
+            .returning({ answers: registrations.answers });
+
+        const regAnswers = deleted[0]?.answers;
+        if (regAnswers && typeof regAnswers === "object") {
+            const urlsToDelete: string[] = [];
+            for (const item of Object.values(regAnswers as Record<string, unknown>)) {
+                const val =
+                    typeof item === "object" &&
+                    item !== null &&
+                    !Array.isArray(item) &&
+                    "value" in item
+                        ? (item as { value: unknown }).value
+                        : item;
+                if (typeof val === "string" && val.startsWith("http")) {
+                    urlsToDelete.push(val);
+                }
+            }
+            if (urlsToDelete.length > 0) {
+                await deleteUploadThingFiles(urlsToDelete);
+            }
+        }
 
         revalidatePath("/admin/events/[slug]/registrants", "page");
         revalidatePath("/admin", "page");

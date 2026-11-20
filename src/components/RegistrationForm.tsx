@@ -27,6 +27,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { motion, AnimatePresence } from "framer-motion";
 import { UploadButton } from "@/lib/uploadthing";
 import { FilePreview } from "@/components/ui/file-preview";
+import { deletePublicUploadedFile } from "@/lib/actions/upload";
 
 export type FormFieldType =
     | "text"
@@ -385,7 +386,7 @@ export default function RegistrationForm({ event }: { event: any }) {
     const progressPercentage = ((currentStep - 1) / totalSteps) * 100;
 
     return (
-        <div className="relative mx-auto w-full max-w-3xl overflow-hidden rounded-3xl border border-gray-200 bg-white p-6 text-left shadow-2xl sm:p-10">
+        <div className="relative mx-auto w-full max-w-3xl overflow-hidden rounded-2xl border border-gray-200 bg-white p-4 text-left shadow-lg sm:rounded-3xl sm:p-10 sm:shadow-2xl">
             {/* Progress Bar Top */}
             <div className="absolute top-0 left-0 h-1.5 w-full bg-gray-100">
                 <div
@@ -395,7 +396,7 @@ export default function RegistrationForm({ event }: { event: any }) {
             </div>
 
             {/* Stepper Indicator */}
-            <div className="mt-2 mb-10">
+            <div className="mt-2 mb-6 sm:mb-10">
                 <div className="relative flex items-center justify-between">
                     <div className="absolute top-1/2 left-0 z-0 h-[2px] w-full -translate-y-1/2 bg-gray-100"></div>
                     <div
@@ -413,7 +414,7 @@ export default function RegistrationForm({ event }: { event: any }) {
                         return (
                             <div
                                 key={stepNumber}
-                                className={`relative z-10 flex h-10 w-10 items-center justify-center rounded-full font-bold transition-all duration-300 ${
+                                className={`relative z-10 flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-all duration-300 sm:h-10 sm:w-10 sm:text-sm ${
                                     isActive
                                         ? "bg-[#6849E1] text-white shadow-md ring-4 ring-[#6849E1]/20"
                                         : isCompleted
@@ -831,7 +832,17 @@ export default function RegistrationForm({ event }: { event: any }) {
                                                                 type="button"
                                                                 variant="outline"
                                                                 size="sm"
-                                                                onClick={() => onChange("")}
+                                                                onClick={async () => {
+                                                                    const oldUrl = value as string;
+                                                                    onChange("");
+                                                                    if (
+                                                                        oldUrl &&
+                                                                        (oldUrl.includes("utfs.io") ||
+                                                                            oldUrl.includes("ufs.sh"))
+                                                                    ) {
+                                                                        await deletePublicUploadedFile(oldUrl);
+                                                                    }
+                                                                }}
                                                                 className="mt-2"
                                                             >
                                                                 Hapus & Unggah Ulang
@@ -875,25 +886,25 @@ export default function RegistrationForm({ event }: { event: any }) {
                 </div>
 
                 {/* Fixed Navigation Buttons at the bottom */}
-                <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-6">
+                <div className="mt-4 flex flex-col-reverse gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:items-center sm:justify-between">
                     {currentStep > 1 ? (
                         <Button
                             type="button"
                             onClick={prevStep}
                             variant="outline"
-                            className="flex h-12 items-center gap-2 rounded-full px-6 font-medium hover:bg-gray-50"
+                            className="flex h-11 w-full items-center justify-center gap-2 rounded-full px-6 font-medium hover:bg-gray-50 sm:h-12 sm:w-auto"
                         >
                             <ChevronLeft className="h-4 w-4" /> Kembali
                         </Button>
                     ) : (
-                        <div></div>
+                        <div className="hidden sm:block"></div>
                     )}
 
                     {currentStep < totalSteps ? (
                         <Button
                             type="button"
                             onClick={nextStep}
-                            className="flex h-12 items-center gap-2 rounded-full px-8 font-medium shadow-md transition-all hover:opacity-90 hover:shadow-lg"
+                            className="flex h-11 w-full items-center justify-center gap-2 rounded-full px-8 font-medium shadow-md transition-all hover:opacity-90 hover:shadow-lg sm:h-12 sm:w-auto"
                             style={{
                                 backgroundColor: "#6849E1",
                                 color: "white",

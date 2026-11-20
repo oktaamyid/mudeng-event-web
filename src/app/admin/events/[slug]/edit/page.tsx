@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter, useParams } from "next/navigation";
 import { getEventBySlug, updateEvent, deleteEvent } from "@/lib/actions/events";
@@ -29,7 +29,7 @@ import {
 import Link from "next/link";
 import { use } from "react";
 import { UploadButton } from "@/lib/uploadthing";
-import { deleteUploadThingFile } from "@/lib/actions/upload";
+import { deleteUploadThingFile, deleteUploadThingFiles } from "@/lib/actions/upload";
 import { FormBuilder } from "@/components/FormBuilder";
 import { EventInfoEditor, createDefaultInfoItems, type EventInfoItem } from "@/components/EventInfoEditor";
 import { AdminFormSkeleton } from "@/components/admin/AdminSkeletons";
@@ -49,6 +49,7 @@ export default function EditEventPage({
 }) {
     const router = useRouter();
     const resolvedParams = use(params);
+    const sessionUploadedUrlsRef = useRef<string[]>([]);
 
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -291,8 +292,18 @@ export default function EditEventPage({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [eventId, hasChanges]);
 
-    const handleResetChanges = () => {
+    const handleResetChanges = async () => {
         if (!baselineState) return;
+        const baselineUrls = new Set<string>(
+            [baselineState.eventData.imageUrl, ...baselineState.eventData.gallery].filter(Boolean),
+        );
+        const orphanedUrls = sessionUploadedUrlsRef.current.filter(
+            (url) => !baselineUrls.has(url),
+        );
+        sessionUploadedUrlsRef.current = [];
+        if (orphanedUrls.length > 0) {
+            await deleteUploadThingFiles(orphanedUrls);
+        }
         setEventData(structuredClone(baselineState.eventData));
         setFormFields(structuredClone(baselineState.formFields));
         localStorage.removeItem("mudeng_draft_edit_" + resolvedParams.slug);
@@ -313,6 +324,7 @@ export default function EditEventPage({
         });
 
         if (res.success) {
+            sessionUploadedUrlsRef.current = [];
             const nextVersion =
                 typeof res.version === "number" ? res.version : eventVersion + 1;
             setEventVersion(nextVersion);
@@ -660,12 +672,26 @@ export default function EditEventPage({
                                         </p>
                                         <UploadButton
                                             endpoint="imageUploader"
-                                            onClientUploadComplete={(res) => {
+                                            onClientUploadComplete={async (res) => {
                                                 if (res && res.length > 0) {
+                                                    const newUrl = res[0].url;
+                                                    const prevUrl = eventData.imageUrl;
+                                                    sessionUploadedUrlsRef.current.push(newUrl);
                                                     setEventData({
                                                         ...eventData,
-                                                        imageUrl: res[0].url,
+                                                        imageUrl: newUrl,
                                                     });
+                                                    const isBaselineUrl =
+                                                        baselineState?.eventData.imageUrl === prevUrl ||
+                                                        baselineState?.eventData.gallery.includes(prevUrl);
+                                                    if (
+                                                        prevUrl &&
+                                                        prevUrl !== newUrl &&
+                                                        !isBaselineUrl &&
+                                                        (prevUrl.includes("utfs.io") || prevUrl.includes("ufs.sh"))
+                                                    ) {
+                                                        await deleteUploadThingFile(prevUrl);
+                                                    }
                                                 }
                                             }}
                                             onUploadError={(error: Error) => {
@@ -884,6 +910,7 @@ export default function EditEventPage({
                                 onClientUploadComplete={(res) => {
                                     if (res && res.length > 0) {
                                         const newUrls = res.map((r) => r.url);
+                                        sessionUploadedUrlsRef.current.push(...newUrls);
                                         setEventData({
                                             ...eventData,
                                             gallery: [

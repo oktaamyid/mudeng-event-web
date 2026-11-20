@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
     FadeSlideIn,
     StaggerContainer,
@@ -168,6 +169,20 @@ export default function EventOverview({ event }: { event: any }) {
                                             </div>
                                         );
                                     })}
+                                    <div className="border-divider mt-6 border-t pt-5">
+                                        {event.isRegistrationOpen !== false ? (
+                                            <Link
+                                                href={`/${event.slug}/register`}
+                                                className="font-body inline-flex min-h-[44px] w-full items-center justify-center rounded-full bg-[#6849E1] px-6 py-3 text-sm font-semibold tracking-wide text-white transition-colors hover:bg-[#5738CF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6849E1] focus-visible:ring-offset-2"
+                                            >
+                                                Daftar Sekarang
+                                            </Link>
+                                        ) : (
+                                            <span className="font-body inline-flex min-h-[44px] w-full items-center justify-center rounded-full bg-[#F4F4F5] px-6 py-3 text-sm font-semibold text-[#52525B]">
+                                                Pendaftaran Ditutup
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                             </FadeSlideIn>
                         </div>

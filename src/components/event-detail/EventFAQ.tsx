@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import {
     TextReveal,
     FadeSlideIn,
@@ -67,12 +68,12 @@ export default function EventFAQ({
 
     return (
         <section
-            className="border-divider border-t bg-white py-[50px] sm:py-[80px] md:py-[160px]"
+            className="border-divider border-t bg-white py-12 sm:py-16 md:py-24"
             id="faq"
         >
             <div className="mx-auto max-w-360 px-6 lg:px-[120px] xl:px-[240px]">
                 {/* Heading */}
-                <div className="mb-[40px] sm:mb-[60px] md:mb-[80px] text-center">
+                <div className="mb-8 text-center sm:mb-12 md:mb-14">
                     <TextReveal as="h2" className="font-display text-brand mx-auto mb-4 sm:mb-6 max-w-[700px] text-[28px] leading-[30px] font-normal uppercase sm:text-[40px] sm:leading-[42px] md:text-[56px] md:leading-[58px]">
                         {"Frequently asked questions about our service"}
                     </TextReveal>
@@ -86,33 +87,40 @@ export default function EventFAQ({
                 </div>
 
                 {/* Content Grid */}
-                <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+                <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12 lg:gap-10">
                     {/* CTA Card */}
-                    <FadeSlideIn delay={0.2} className="lg:col-span-5">
-                        <div className="relative flex h-[280px] sm:h-[350px] w-full flex-col justify-end overflow-hidden rounded-[20px] sm:rounded-[32px] p-5 sm:p-8 lg:h-full">
-                            {/* Background image */}
-                            <img
-                                src="/event/assets/Gradient V26.png"
-                                alt=""
-                                className="absolute inset-0 h-full w-full object-cover"
-                            />
+                    <FadeSlideIn
+                        delay={0.2}
+                        className="lg:col-span-5 lg:sticky lg:top-28"
+                    >
+                        <div className="relative flex w-full flex-col overflow-hidden rounded-[20px] bg-gradient-to-br from-[#6F52E8] via-[#6849E1] to-[#4A2EB8] p-6 shadow-[0_16px_40px_rgba(104,73,225,0.22)] sm:rounded-[28px] sm:p-8">
+                            {/* Subtle purple depth accents */}
+                            <div className="pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full bg-[#8E76FF]/35 blur-2xl" />
+                            <div className="pointer-events-none absolute -bottom-16 -left-16 h-40 w-40 rounded-full bg-[#3A2099]/45 blur-2xl" />
 
-                            {/* Glass card */}
-                            <div className="relative z-10 w-full rounded-2xl border border-white/30 bg-white/20 p-4 sm:p-6 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] backdrop-blur-md">
-                                <h3 className="font-body mb-2 text-[17px] sm:text-[20px] font-semibold text-white">
+                            <div className="relative z-10 flex flex-col">
+                                <span className="font-body mb-4 inline-flex w-fit items-center rounded-full border border-white/20 bg-white/12 px-3.5 py-1 text-xs font-medium text-white/95">
+                                    {event?.category || event?.service || "Program Mudeng"}
+                                </span>
+                                <h3 className="font-body mb-2.5 text-[20px] leading-snug font-semibold text-white sm:text-[24px]">
                                     Daftar {event?.title || "Event"}
                                 </h3>
-                                <p className="font-body mb-4 sm:mb-6 text-[13px] sm:text-sm font-medium text-white/90">
+                                <p className="font-body mb-6 text-[14px] leading-relaxed font-normal text-white/85 sm:text-[15px]">
                                     {ctaDescription}
                                 </p>
-                                <Link
-                                    href={`/${event?.slug || ""}/register`}
-                                    className="block"
-                                >
-                                    <button className="font-body w-full rounded-full bg-[#6849E1] py-3.5 text-sm font-bold uppercase tracking-wider text-white shadow-[0_10px_20px_rgba(104,73,225,0.4)] transition-all hover:bg-[#5a3dcf] hover:shadow-[0_12px_24px_rgba(104,73,225,0.5)]">
-                                        Daftar Sekarang
-                                    </button>
-                                </Link>
+                                {event?.isRegistrationOpen !== false ? (
+                                    <Link
+                                        href={`/${event?.slug || ""}/register`}
+                                        className="font-body inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-bold tracking-wider text-[#6849E1] uppercase shadow-sm transition-all hover:bg-[#F5F3FF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#6849E1] active:scale-[0.99]"
+                                    >
+                                        <span>Daftar Sekarang</span>
+                                        <ArrowRight className="h-4 w-4" />
+                                    </Link>
+                                ) : (
+                                    <span className="font-body inline-flex min-h-[44px] w-full items-center justify-center rounded-full bg-white/15 px-6 py-3.5 text-sm font-semibold tracking-wide text-white/90">
+                                        Pendaftaran Ditutup
+                                    </span>
+                                )}
                             </div>
                         </div>
                     </FadeSlideIn>

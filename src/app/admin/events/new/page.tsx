@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { createEvent } from "@/lib/actions/events";
@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { UploadButton } from "@/lib/uploadthing";
-import { deleteUploadThingFile } from "@/lib/actions/upload";
+import { deleteUploadThingFile, deleteUploadThingFiles } from "@/lib/actions/upload";
 import { EventInfoEditor, createDefaultInfoItems, type EventInfoItem } from "@/components/EventInfoEditor";
 import dynamic from "next/dynamic";
 import "react-quill-new/dist/quill.snow.css";
@@ -51,6 +51,7 @@ const FIELD_TYPES = [
 
 export default function NewEventPage() {
     const router = useRouter();
+    const sessionUploadedUrlsRef = useRef<string[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
     const [isLoaded, setIsLoaded] = useState(false);
@@ -399,12 +400,22 @@ export default function NewEventPage() {
                                         </p>
                                         <UploadButton
                                             endpoint="imageUploader"
-                                            onClientUploadComplete={(res) => {
+                                            onClientUploadComplete={async (res) => {
                                                 if (res && res.length > 0) {
+                                                    const newUrl = res[0].url;
+                                                    const prevUrl = eventData.imageUrl;
+                                                    sessionUploadedUrlsRef.current.push(newUrl);
                                                     setEventData({
                                                         ...eventData,
-                                                        imageUrl: res[0].url,
+                                                        imageUrl: newUrl,
                                                     });
+                                                    if (
+                                                        prevUrl &&
+                                                        prevUrl !== newUrl &&
+                                                        (prevUrl.includes("utfs.io") || prevUrl.includes("ufs.sh"))
+                                                    ) {
+                                                        await deleteUploadThingFile(prevUrl);
+                                                    }
                                                 }
                                             }}
                                             onUploadError={(error: Error) => {
@@ -709,6 +720,7 @@ export default function NewEventPage() {
                                 onClientUploadComplete={(res) => {
                                     if (res && res.length > 0) {
                                         const newUrls = res.map((r) => r.url);
+                                        sessionUploadedUrlsRef.current.push(...newUrls);
                                         setEventData({
                                             ...eventData,
                                             gallery: [
@@ -871,7 +883,14 @@ export default function NewEventPage() {
                                     type="button"
                                     variant="outline"
                                     className="bg-white"
-                                    render={<Link href="/admin/events" />}
+                                    onClick={async () => {
+                                        const urlsToDelete = [...sessionUploadedUrlsRef.current];
+                                        sessionUploadedUrlsRef.current = [];
+                                        if (urlsToDelete.length > 0) {
+                                            await deleteUploadThingFiles(urlsToDelete);
+                                        }
+                                        router.push("/admin/events");
+                                    }}
                                 >
                                     Cancel
                                 </Button>
