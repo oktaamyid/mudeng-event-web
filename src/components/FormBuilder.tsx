@@ -378,16 +378,69 @@ function SortableField({
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                {field.dependsOn && (
-                                    <div className="space-y-2">
-                                        <Label className="text-xs">Equals Value</Label>
-                                        <Input
-                                            value={field.dependsOnValue || ""}
-                                            onChange={(e) => updateField(field.id, "dependsOnValue", e.target.value)}
-                                            placeholder="e.g. Yes"
-                                        />
-                                    </div>
-                                )}
+                                {field.dependsOn && (() => {
+                                    const parentField = allFields.find(
+                                        (f) => f.id === field.dependsOn,
+                                    );
+                                    const parentOptions =
+                                        parentField?.options?.filter((o) =>
+                                            Boolean(o.trim()),
+                                        ) || [];
+
+                                    return (
+                                        <div className="space-y-2">
+                                            <Label className="text-xs">
+                                                Equals Value
+                                            </Label>
+                                            {parentOptions.length > 0 ? (
+                                                <Select
+                                                    value={
+                                                        field.dependsOnValue ||
+                                                        ""
+                                                    }
+                                                    onValueChange={(val) =>
+                                                        updateField(
+                                                            field.id,
+                                                            "dependsOnValue",
+                                                            val || "",
+                                                        )
+                                                    }
+                                                >
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Pilih nilai pemicu..." />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {parentOptions.map(
+                                                            (opt) => (
+                                                                <SelectItem
+                                                                    key={opt}
+                                                                    value={opt}
+                                                                >
+                                                                    {opt}
+                                                                </SelectItem>
+                                                            ),
+                                                        )}
+                                                    </SelectContent>
+                                                </Select>
+                                            ) : (
+                                                <Input
+                                                    value={
+                                                        field.dependsOnValue ||
+                                                        ""
+                                                    }
+                                                    onChange={(e) =>
+                                                        updateField(
+                                                            field.id,
+                                                            "dependsOnValue",
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    placeholder="e.g. Ya"
+                                                />
+                                            )}
+                                        </div>
+                                    );
+                                })()}
                             </div>
                         </div>
                     </div>

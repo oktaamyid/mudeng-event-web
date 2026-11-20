@@ -55,6 +55,11 @@ export default function EditEventPage({
     const [isDeleting, setIsDeleting] = useState(false);
     const [error, setError] = useState("");
     const [eventId, setEventId] = useState("");
+    const [eventVersion, setEventVersion] = useState<number>(1);
+    const [conflictState, setConflictState] = useState<{
+        message: string;
+        latestVersion?: number;
+    } | null>(null);
 
     const [eventData, setEventData] = useState({
         title: "",
@@ -95,6 +100,7 @@ export default function EditEventPage({
             const res = await getEventBySlug(resolvedParams.slug);
             if (res.success && res.data) {
                 setEventId(res.data.id);
+                setEventVersion(res.data.version ?? 1);
                 let initialData = {
                     title: res.data.title,
                     slug: res.data.slug,
@@ -198,23 +204,119 @@ export default function EditEventPage({
 
 
 
+    const reloadLatestEvent = async () => {
+        setConflictState(null);
+        setError("");
+        const res = await getEventBySlug(resolvedParams.slug);
+        if (res.success && res.data) {
+            setEventId(res.data.id);
+            setEventVersion(res.data.version ?? 1);
+            const refreshedData = {
+                title: res.data.title,
+                slug: res.data.slug,
+                kickoffDate: res.data.kickoffDate || "",
+                imageUrl: res.data.imageUrl || "",
+                description: res.data.description || "",
+                status: res.data.status,
+                subtitle: res.data.subtitle || "",
+                category: res.data.category || "",
+                instructor: res.data.instructor || "",
+                duration: res.data.duration || "",
+                overview: {
+                    title: (res.data.overview as any)?.title || "Program overview",
+                    description: (res.data.overview as any)?.description || "",
+                    infoItems:
+                        Array.isArray((res.data.overview as any)?.infoItems) &&
+                        (res.data.overview as any).infoItems.length > 0
+                            ? (res.data.overview as any).infoItems
+                            : createDefaultInfoItems({
+                                  title: res.data.title,
+                                  category: res.data.category || res.data.service || "",
+                                  duration: res.data.duration || "",
+                                  kickoffDate: res.data.kickoffDate || "",
+                                  focus: res.data.focus || "",
+                                  output: res.data.output || "",
+                              }),
+                },
+                process: (res.data.process as any) || {
+                    title: "Learning process",
+                    description: "",
+                },
+                result: (res.data.result as any) || {
+                    title: "Final result",
+                    description: "",
+                },
+                gallery: (res.data.gallery as any) || [],
+                faqs: (res.data.faqs as any) || [],
+                isFeatured: res.data.isFeatured || false,
+                confirmationMessage: res.data.confirmationMessage || "",
+                googleSheetId: res.data.googleSheetId || "",
+                isRegistrationOpen: res.data.isRegistrationOpen ?? true,
+                formDescription: res.data.formDescription || "",
+            };
+            const refreshedFields = (res.data.formFields as any[]) || [];
+            setEventData(refreshedData);
+            setFormFields(refreshedFields);
+            setBaselineState({
+                eventData: structuredClone(refreshedData),
+                formFields: structuredClone(refreshedFields),
+            });
+            localStorage.removeItem("mudeng_draft_edit_" + resolvedParams.slug);
+        }
+    };
+
+    // Listen for edits from other tabs on the same browser/account
+    useEffect(() => {
+        if (!eventId || typeof BroadcastChannel === "undefined") return;
+        const channel = new BroadcastChannel("mudeng_admin_sync");
+        channel.onmessage = (evt) => {
+            const msg = evt.data as {
+                type?: string;
+                eventId?: string;
+                version?: number;
+            };
+            if (msg?.type === "event_updated" && msg.eventId === eventId) {
+                if (!hasChanges) {
+                    reloadLatestEvent();
+                } else {
+                    setConflictState({
+                        latestVersion: msg.version,
+                        message:
+                            "Event ini baru saja disimpan di tab lain. Muat ulang data terbaru atau simpan untuk menimpa.",
+                    });
+                }
+            }
+        };
+        return () => channel.close();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [eventId, hasChanges]);
+
     const handleResetChanges = () => {
         if (!baselineState) return;
         setEventData(structuredClone(baselineState.eventData));
         setFormFields(structuredClone(baselineState.formFields));
         localStorage.removeItem("mudeng_draft_edit_" + resolvedParams.slug);
+        setConflictState(null);
         setError("");
     };
 
-    const onSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const submitSave = async (forceOverwrite = false) => {
         setIsSubmitting(true);
         setError("");
         setSaveSuccess(false);
 
-        const res = await updateEvent(eventId, { ...eventData, formFields });
+        const res = await updateEvent(eventId, {
+            ...eventData,
+            formFields,
+            expectedVersion: eventVersion,
+            forceOverwrite,
+        });
 
         if (res.success) {
+            const nextVersion =
+                typeof res.version === "number" ? res.version : eventVersion + 1;
+            setEventVersion(nextVersion);
+            setConflictState(null);
             localStorage.removeItem("mudeng_draft_edit_" + resolvedParams.slug);
             setBaselineState({
                 eventData: structuredClone(eventData),
@@ -223,15 +325,42 @@ export default function EditEventPage({
             setIsSubmitting(false);
             setSaveSuccess(true);
             setTimeout(() => setSaveSuccess(false), 4000);
+
+            if (typeof BroadcastChannel !== "undefined") {
+                const channel = new BroadcastChannel("mudeng_admin_sync");
+                channel.postMessage({
+                    type: "event_updated",
+                    eventId,
+                    version: nextVersion,
+                });
+                channel.close();
+            }
+
             if (eventData.slug !== resolvedParams.slug) {
                 router.replace(`/admin/events/${eventData.slug}/edit`);
             } else {
                 router.refresh();
             }
+        } else if ("conflict" in res && res.conflict) {
+            setConflictState({
+                latestVersion:
+                    "latestVersion" in res
+                        ? (res.latestVersion as number | undefined)
+                        : undefined,
+                message:
+                    res.error ||
+                    "Event ini sudah diubah di tab/sesi lain.",
+            });
+            setIsSubmitting(false);
         } else {
             setError(res.error || "Failed to update event");
             setIsSubmitting(false);
         }
+    };
+
+    const onSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        await submitSave(false);
     };
 
     const handleDelete = async () => {
@@ -299,6 +428,40 @@ export default function EditEventPage({
                     <div className="border-destructive/30 bg-destructive/10 text-destructive flex items-center gap-3 rounded-lg border p-4 text-sm">
                         <AlertCircle className="h-4 w-4 shrink-0" />
                         {error}
+                    </div>
+                )}
+
+                {/* Concurrent Edit Conflict Banner */}
+                {conflictState && (
+                    <div className="flex flex-col gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex items-start gap-2.5">
+                            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" />
+                            <span>{conflictState.message}</span>
+                        </div>
+                        <div className="flex shrink-0 items-center gap-2">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="bg-white"
+                                onClick={reloadLatestEvent}
+                                disabled={isSubmitting}
+                            >
+                                Muat Data Terbaru
+                            </Button>
+                            <Button
+                                type="button"
+                                size="sm"
+                                style={{
+                                    backgroundColor: "#6849E1",
+                                    color: "#ffffff",
+                                }}
+                                onClick={() => submitSave(true)}
+                                disabled={isSubmitting}
+                            >
+                                Timpa Perubahan Saya
+                            </Button>
+                        </div>
                     </div>
                 )}
 

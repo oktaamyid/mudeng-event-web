@@ -1,8 +1,7 @@
-/* eslint-disable react-hooks/incompatible-library */
 "use client";
 
-import { useState, useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useState, useEffect, useCallback } from "react";
+import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { registerEvent } from "@/lib/actions/events";
@@ -135,7 +134,6 @@ export default function RegistrationForm({ event }: { event: any }) {
         formState: { errors },
         trigger,
         control,
-        watch,
         reset,
         setValue,
         clearErrors,
@@ -144,25 +142,70 @@ export default function RegistrationForm({ event }: { event: any }) {
         defaultValues: {}, // Will be populated by localStorage
     });
 
-    const watchedValues = watch();
+    const watchedValues = useWatch({ control });
 
     // Is field visible based on Conditional Logic
-    const isFieldVisible = (field: FormField) => {
-        if (!field.dependsOn) return true;
-        const parentValue = watchedValues[field.dependsOn];
+    const isFieldVisible = useCallback(
+        (field: FormField) => {
+            if (!field.dependsOn) return true;
+            const parentValue = watchedValues?.[field.dependsOn];
 
-        if (!parentValue) return false;
-
-        if (field.dependsOnValue) {
-            // Handle arrays (checkboxes)
-            if (Array.isArray(parentValue)) {
-                return parentValue.includes(field.dependsOnValue);
+            if (
+                parentValue === undefined ||
+                parentValue === null ||
+                parentValue === ""
+            ) {
+                return false;
             }
-            return parentValue === field.dependsOnValue;
-        }
 
-        return !!parentValue;
-    };
+            const expected = field.dependsOnValue?.trim();
+            if (expected) {
+                if (Array.isArray(parentValue)) {
+                    return parentValue
+                        .map((v) => String(v).trim())
+                        .includes(expected);
+                }
+                return String(parentValue).trim() === expected;
+            }
+
+            if (Array.isArray(parentValue)) {
+                return parentValue.length > 0;
+            }
+
+            return Boolean(parentValue);
+        },
+        [watchedValues],
+    );
+
+    // Clear stale values & errors whenever a conditional field becomes hidden
+    useEffect(() => {
+        for (const field of sortedFields) {
+            if (!field.dependsOn) continue;
+            if (!isFieldVisible(field)) {
+                const currentVal = watchedValues?.[field.id];
+                const hasVal = Array.isArray(currentVal)
+                    ? currentVal.length > 0
+                    : currentVal !== undefined &&
+                      currentVal !== null &&
+                      currentVal !== "";
+                if (hasVal) {
+                    setValue(
+                        field.id,
+                        field.type === "checkbox" ? [] : "",
+                        { shouldValidate: false, shouldDirty: false },
+                    );
+                    clearErrors(field.id);
+                }
+                const otherKey = `${field.id}_other`;
+                if (watchedValues?.[otherKey]) {
+                    setValue(otherKey, "", {
+                        shouldValidate: false,
+                        shouldDirty: false,
+                    });
+                }
+            }
+        }
+    }, [sortedFields, watchedValues, isFieldVisible, setValue, clearErrors]);
 
     // Only render fields that belong to the current step AND are visible based on logic
     const fieldsToRender = sortedFields.filter(
@@ -171,7 +214,6 @@ export default function RegistrationForm({ event }: { event: any }) {
 
     // Auto-save Draft
     useEffect(() => {
-        setIsMounted(true);
         const draftKey = `event_draft_${event.id}`;
         const saved = localStorage.getItem(draftKey);
         if (saved) {
@@ -182,7 +224,11 @@ export default function RegistrationForm({ event }: { event: any }) {
             }
         }
         // Small timeout to ensure reset finishes before allowing auto-save to overwrite
-        setTimeout(() => setDraftLoaded(true), 100);
+        const timer = setTimeout(() => {
+            setIsMounted(true);
+            setDraftLoaded(true);
+        }, 100);
+        return () => clearTimeout(timer);
     }, [event.id, reset]);
 
     useEffect(() => {
@@ -417,15 +463,15 @@ export default function RegistrationForm({ event }: { event: any }) {
                             transition={{ duration: 0.3, ease: "easeOut" }}
                             className="flex flex-col gap-6 pb-8"
                         >
-                            {/* We render ALL fields so React Hook Form doesn't lose their values when unmounting,
-                                but we visually hide them if they don't belong to the current step or are hidden by logic. */}
                             {sortedFields.map((field) => {
-                                const isVisible = field.step === currentStep && isFieldVisible(field);
-                                        return (
-                                            <div 
-                                                key={field.id} 
-                                                className={`space-y-2 ${isVisible ? "block" : "hidden"}`}
-                                            >
+                                const isVisible =
+                                    field.step === currentStep &&
+                                    isFieldVisible(field) &&
+                                    field.type !== "step_break";
+                                if (!isVisible) return null;
+
+                                return (
+                                    <div key={field.id} className="space-y-2">
                                                 <Label className="flex items-center gap-1 text-sm font-semibold text-gray-900">
                                                     {field.label}
                                                     {field.required && (

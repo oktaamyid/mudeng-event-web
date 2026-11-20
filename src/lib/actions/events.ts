@@ -2,7 +2,7 @@
 
 import { db } from "../db";
 import { events, registrations } from "../../db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { getSession } from "../auth/session";
 import { revalidatePath } from "next/cache";
 
@@ -372,7 +372,18 @@ export async function updateEvent(id: string, data: any) {
             return { success: false, error: "Unauthorized" };
         }
 
-        await db
+        const expectedVersion =
+            typeof data.expectedVersion === "number"
+                ? data.expectedVersion
+                : undefined;
+        const forceOverwrite = Boolean(data.forceOverwrite);
+
+        const whereClause =
+            expectedVersion !== undefined && !forceOverwrite
+                ? and(eq(events.id, id), eq(events.version, expectedVersion))
+                : eq(events.id, id);
+
+        const updated = await db
             .update(events)
             .set({
                 title: data.title,
@@ -399,14 +410,39 @@ export async function updateEvent(id: string, data: any) {
                 isFeatured:
                     data.isFeatured !== undefined ? data.isFeatured : false,
                 status: data.status,
+                version: sql`${events.version} + 1`,
+                updatedAt: new Date(),
             })
-            .where(eq(events.id, id));
+            .where(whereClause)
+            .returning({ id: events.id, version: events.version });
+
+        if (updated.length === 0) {
+            const existing = await db
+                .select({ id: events.id, version: events.version })
+                .from(events)
+                .where(eq(events.id, id))
+                .limit(1);
+
+            if (existing.length === 0) {
+                return {
+                    success: false,
+                    error: "Event tidak ditemukan atau sudah dihapus di sesi lain.",
+                };
+            }
+
+            return {
+                success: false,
+                conflict: true,
+                latestVersion: existing[0].version,
+                error: "Event ini sudah diubah di tab atau sesi lain. Muat ulang data terbaru atau timpa dengan perubahan Anda.",
+            };
+        }
 
         revalidatePath("/");
         revalidatePath(`/${data.slug || id}`, "page");
         revalidatePath("/[slug]", "page");
 
-        return { success: true };
+        return { success: true, version: updated[0].version };
     } catch (error) {
         console.error("Failed to update event:", error);
         return { success: false, error: "Failed to update event" };
@@ -448,10 +484,21 @@ export async function updateRegistrationStatus(id: string, status: string) {
             return { success: false, error: "Unauthorized" };
         }
 
-        await db
+        const updated = await db
             .update(registrations)
-            .set({ status })
-            .where(eq(registrations.id, id));
+            .set({
+                status,
+                version: sql`${registrations.version} + 1`,
+            })
+            .where(eq(registrations.id, id))
+            .returning({ id: registrations.id });
+
+        if (updated.length === 0) {
+            return {
+                success: false,
+                error: "Data pendaftar sudah dihapus di sesi lain.",
+            };
+        }
 
         revalidatePath("/admin/events/[slug]/registrants", "page");
         revalidatePath("/admin", "page");
@@ -493,15 +540,24 @@ export async function updateRegistration(
             };
         }
 
-        await db
+        const updated = await db
             .update(registrations)
             .set({
                 fullName: trimmedName,
                 email: trimmedEmail,
                 status: payload.status,
                 answers: payload.answers,
+                version: sql`${registrations.version} + 1`,
             })
-            .where(eq(registrations.id, id));
+            .where(eq(registrations.id, id))
+            .returning({ id: registrations.id });
+
+        if (updated.length === 0) {
+            return {
+                success: false,
+                error: "Data pendaftar tidak ditemukan atau sudah dihapus di sesi lain.",
+            };
+        }
 
         revalidatePath("/admin/events/[slug]/registrants", "page");
         revalidatePath("/admin", "page");

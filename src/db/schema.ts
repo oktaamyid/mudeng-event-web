@@ -6,6 +6,7 @@ import {
     jsonb,
     boolean,
     uuid,
+    integer,
 } from "drizzle-orm/pg-core";
 
 export const events = pgTable("events", {
@@ -35,6 +36,8 @@ export const events = pgTable("events", {
     formDescription: text("form_description"), // Optional description shown above the form
     status: varchar("status", { length: 50 }).default("PUBLISHED").notNull(),
     isFeatured: boolean("is_featured").default(false).notNull(),
+    version: integer("version").default(1).notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -54,6 +57,7 @@ export const registrations = pgTable("registrations", {
 
     // Meta
     status: varchar("status", { length: 50 }).default("PENDING").notNull(),
+    version: integer("version").default(1).notNull(),
     registeredAt: timestamp("registered_at").defaultNow().notNull(),
 });
 
