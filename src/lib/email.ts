@@ -244,10 +244,14 @@ export async function sendBatchEmails(
     }
 }
 
+const MUDENG_LOGO_CDN_URL =
+    "https://cdn.mudeng.oktaa.my.id/logo/logo-element.png";
+
 function wrapBrandedEmailLayout(params: {
     previewBadge: string;
     heading: string;
     bodyHtml: string;
+    preheader?: string;
     ctaLabel?: string;
     ctaUrl?: string;
 }): string {
@@ -269,6 +273,9 @@ function wrapBrandedEmailLayout(params: {
   <title>${escapeHtml(params.heading)}</title>
 </head>
 <body style="margin:0;padding:0;background-color:#F5F3FF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#18181B;">
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;">
+    ${escapeHtml(params.preheader || params.heading)}
+  </div>
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:32px 16px;">
     <tr>
       <td align="center">
@@ -277,10 +284,21 @@ function wrapBrandedEmailLayout(params: {
             <td style="height:6px;background-color:#6849E1;"></td>
           </tr>
           <tr>
-            <td style="padding:28px 28px 24px 28px;">
-              <div style="display:inline-block;background-color:#F0EDFA;color:#6849E1;font-size:12px;font-weight:600;padding:4px 12px;border-radius:9999px;margin-bottom:14px;">
-                ${escapeHtml(params.previewBadge)}
-              </div>
+            <td style="padding:26px 28px 24px 28px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:20px;">
+                <tr>
+                  <td align="left" valign="middle">
+                    <a href="https://mudeng.oktaa.my.id" style="text-decoration:none;display:inline-block;">
+                      <img src="${MUDENG_LOGO_CDN_URL}" alt="MUDENG" height="18" style="display:block;height:18px;width:auto;border:0;" />
+                    </a>
+                  </td>
+                  <td align="right" valign="middle">
+                    <span style="display:inline-block;background-color:#F0EDFA;color:#6849E1;font-size:12px;font-weight:600;padding:4px 12px;border-radius:9999px;">
+                      ${escapeHtml(params.previewBadge)}
+                    </span>
+                  </td>
+                </tr>
+              </table>
               <h1 style="margin:0 0 16px 0;font-size:22px;line-height:1.3;font-weight:700;color:#18181B;">
                 ${escapeHtml(params.heading)}
               </h1>
@@ -291,8 +309,18 @@ function wrapBrandedEmailLayout(params: {
             </td>
           </tr>
           <tr>
-            <td style="padding:16px 28px;background-color:#FAFAFA;border-top:1px solid #F4F4F5;font-size:12px;line-height:1.5;color:#71717A;">
-              Email ini dikirim otomatis oleh sistem event <strong>MUDENG</strong>. Jika ada pertanyaan, silakan balas email ini.
+            <td align="center" style="padding:20px 28px;background-color:#FAFAFA;border-top:1px solid #F4F4F5;font-size:12px;line-height:1.6;color:#71717A;text-align:center;">
+              <p style="margin:0 0 10px 0;color:#71717A;">
+                Have any questions? Reach out to us directly on <a href="https://www.instagram.com/mudengsttnf/" style="color:#6849E1;text-decoration:none;font-weight:500;">Instagram</a>.
+              </p>
+              <p style="margin:0 0 8px 0;color:#71717A;">
+                Copyright &copy; ${new Date().getFullYear()} MUDENG.
+              </p>
+              <p style="margin:0;color:#A1A1AA;">
+                <a href="https://www.instagram.com/mudengsttnf/" style="color:#6849E1;text-decoration:none;font-weight:500;">Instagram</a>
+                &nbsp;&bull;&nbsp;
+                <a href="https://mudeng.oktaa.my.id" style="color:#6849E1;text-decoration:none;font-weight:500;">Website</a>
+              </p>
             </td>
           </tr>
         </table>
@@ -325,9 +353,31 @@ export function buildApprovalEmailTemplate(params: {
           ? normalizeRichHtml(params.confirmationMessage)
           : "";
 
-    const kickoffBlock = params.kickoffDate?.trim()
-        ? `<p style="margin:0 0 14px 0;"><strong>Jadwal / Kickoff:</strong> ${escapeHtml(params.kickoffDate.trim())}</p>`
+    const kickoffRow = params.kickoffDate?.trim()
+        ? `<tr>
+            <td style="color:#71717A;padding:3px 0;width:120px;">Jadwal / Kickoff</td>
+            <td style="color:#18181B;font-weight:600;padding:3px 0;">${escapeHtml(params.kickoffDate.trim())}</td>
+          </tr>`
         : "";
+
+    const summaryBox = `
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:16px 0;background-color:#FAFAFA;border:1px solid #E4E4E7;border-radius:12px;">
+          <tr>
+            <td style="padding:14px 16px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="font-size:13px;line-height:1.5;">
+                <tr>
+                  <td style="color:#71717A;padding:3px 0;width:120px;">Kegiatan</td>
+                  <td style="color:#18181B;font-weight:600;padding:3px 0;">${escapeHtml(params.eventTitle)}</td>
+                </tr>
+                <tr>
+                  <td style="color:#71717A;padding:3px 0;">Status</td>
+                  <td style="color:#15803D;font-weight:600;padding:3px 0;">Disetujui</td>
+                </tr>
+                ${kickoffRow}
+              </table>
+            </td>
+          </tr>
+        </table>`;
 
     const extraSection = extraRich
         ? `<div style="margin-top:16px;padding:14px 16px;background-color:#F8F7FF;border:1px solid #E9E4FC;border-radius:12px;font-size:14px;line-height:1.6;color:#27272A;">${extraRich}</div>`
@@ -335,14 +385,15 @@ export function buildApprovalEmailTemplate(params: {
 
     const bodyHtml = `
         <p style="margin:0 0 12px 0;">Halo <strong>${escapeHtml(params.fullName)}</strong>,</p>
-        <p style="margin:0 0 14px 0;">Kabar baik! Pendaftaran kamu untuk kegiatan <strong>${escapeHtml(params.eventTitle)}</strong> telah <strong>disetujui</strong> oleh panitia.</p>
-        ${kickoffBlock}
+        <p style="margin:0 0 12px 0;">Kabar baik! Pendaftaran kamu untuk kegiatan <strong>${escapeHtml(params.eventTitle)}</strong> telah <strong>disetujui</strong> oleh panitia.</p>
+        ${summaryBox}
         ${extraSection}
     `;
 
     const html = wrapBrandedEmailLayout({
         previewBadge: "Pendaftaran Disetujui",
         heading: params.eventTitle,
+        preheader: `Pendaftaran ${params.eventTitle} kamu telah disetujui oleh panitia MUDENG.`,
         bodyHtml,
         ctaLabel: params.eventUrl ? "Lihat Detail Event" : undefined,
         ctaUrl: params.eventUrl,
