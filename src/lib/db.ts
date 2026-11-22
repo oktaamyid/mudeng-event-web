@@ -33,7 +33,13 @@ export async function ensureSchema(): Promise<void> {
             try {
                 await sql`ALTER TABLE "events" ADD COLUMN IF NOT EXISTS "version" integer NOT NULL DEFAULT 1`;
                 await sql`ALTER TABLE "events" ADD COLUMN IF NOT EXISTS "updated_at" timestamp NOT NULL DEFAULT now()`;
+                await sql`ALTER TABLE "events" ADD COLUMN IF NOT EXISTS "email_subject" varchar(255)`;
+                await sql`ALTER TABLE "events" ADD COLUMN IF NOT EXISTS "email_body" text`;
                 await sql`ALTER TABLE "registrations" ADD COLUMN IF NOT EXISTS "version" integer NOT NULL DEFAULT 1`;
+                await sql`ALTER TABLE "registrations" ADD COLUMN IF NOT EXISTS "email_status" varchar(30) NOT NULL DEFAULT 'NOT_SENT'`;
+                await sql`ALTER TABLE "registrations" ADD COLUMN IF NOT EXISTS "email_sent_at" timestamp`;
+                await sql`ALTER TABLE "registrations" ADD COLUMN IF NOT EXISTS "email_error" text`;
+                await sql`ALTER TABLE "registrations" ADD COLUMN IF NOT EXISTS "resend_email_id" varchar(255)`;
                 await sql`CREATE TABLE IF NOT EXISTS "site_content" ("key" varchar(100) PRIMARY KEY NOT NULL, "data" jsonb NOT NULL, "updated_at" timestamp DEFAULT now() NOT NULL)`;
             } catch (err) {
                 globalForSchema.__mudengSchemaReady = undefined;

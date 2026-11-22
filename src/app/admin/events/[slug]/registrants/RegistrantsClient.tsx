@@ -48,6 +48,9 @@ import {
     FileText,
     Search,
     Loader2,
+    Send,
+    AlertCircle,
+    Megaphone,
 } from "lucide-react";
 import { FilePreview } from "@/components/ui/file-preview";
 import {
@@ -55,6 +58,11 @@ import {
     updateRegistration,
     deleteRegistration,
 } from "@/lib/actions/events";
+import {
+    sendApprovalEmailForRegistration,
+    sendEventBroadcastEmail,
+    sendPendingApprovalEmails,
+} from "@/lib/actions/email";
 
 interface FormFieldDef {
     id: string;
@@ -67,6 +75,9 @@ interface Registrant {
     fullName: string;
     email: string;
     status: string;
+    emailStatus?: string;
+    emailSentAt?: string | null;
+    emailError?: string | null;
     registeredAt: string | Date;
     answers: Record<string, unknown>;
 }
@@ -167,12 +178,65 @@ function StatusBadge({ status }: { status: string }) {
     );
 }
 
+function EmailStatusBadge({
+    emailStatus,
+    emailError,
+}: {
+    emailStatus?: string;
+    emailError?: string | null;
+}) {
+    if (emailStatus === "DELIVERED") {
+        return (
+            <Badge className="border-0 bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/20">
+                Delivered
+            </Badge>
+        );
+    }
+    if (emailStatus === "SENT") {
+        return (
+            <Badge className="border-0 bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/15">
+                Terkirim
+            </Badge>
+        );
+    }
+    if (emailStatus === "BOUNCED") {
+        return (
+            <Badge
+                title={emailError || "Email bounce (alamat tidak valid/ditolak)"}
+                className="border-0 bg-red-500/15 text-red-700 hover:bg-red-500/20"
+            >
+                Bounced
+            </Badge>
+        );
+    }
+    if (emailStatus === "FAILED") {
+        return (
+            <Badge
+                title={emailError || "Gagal mengirim email"}
+                className="border-0 bg-red-500/10 text-red-700 hover:bg-red-500/15"
+            >
+                Gagal
+            </Badge>
+        );
+    }
+    return (
+        <Badge
+            variant="secondary"
+            className="text-muted-foreground border-0 font-normal"
+        >
+            Belum Dikirim
+        </Badge>
+    );
+}
+
 export function RegistrantsClient({
     event,
     registrants,
+    dailyQuota,
 }: {
     event: EventInfo;
     registrants: Registrant[];
+    dailyQuota: { used: number; limit: number; remaining: number };
 }) {
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState("");
@@ -189,13 +253,27 @@ export function RegistrantsClient({
     const [editAnswers, setEditAnswers] = useState<Record<string, string>>({});
     const [isSaving, setIsSaving] = useState(false);
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+    const [isSendingEmail, setIsSendingEmail] = useState(false);
+    const [isSendingPendingBatch, setIsSendingPendingBatch] = useState(false);
+    const [isBroadcastOpen, setIsBroadcastOpen] = useState(false);
+    const [broadcastTarget, setBroadcastTarget] = useState<"APPROVED" | "ALL">("APPROVED");
+    const [broadcastSubject, setBroadcastSubject] = useState("");
+    const [broadcastMessage, setBroadcastMessage] = useState("");
+    const [isSendingBroadcast, setIsSendingBroadcast] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [actionError, setActionError] = useState<string | null>(null);
+    const [actionMessage, setActionMessage] = useState<string | null>(null);
 
     const counts = useMemo(() => {
         const approved = registrants.filter((r) => r.status === "APPROVED").length;
         const pending = registrants.length - approved;
-        return { all: registrants.length, approved, pending };
+        const unsentApproved = registrants.filter(
+            (r) =>
+                r.status === "APPROVED" &&
+                r.emailStatus !== "SENT" &&
+                r.emailStatus !== "DELIVERED",
+        ).length;
+        return { all: registrants.length, approved, pending, unsentApproved };
     }, [registrants]);
 
     const filteredRegistrants = useMemo(() => {
@@ -229,16 +307,109 @@ export function RegistrantsClient({
     const handleStatusChange = async (id: string, status: "PENDING" | "APPROVED") => {
         setIsUpdatingStatus(true);
         setActionError(null);
+        setActionMessage(null);
         const res = await updateRegistrationStatus(id, status);
         setIsUpdatingStatus(false);
 
         if (res.success) {
             if (viewingReg && viewingReg.id === id) {
-                setViewingReg({ ...viewingReg, status });
+                const nextEmailStatus =
+                    res.emailResult?.sent
+                        ? "SENT"
+                        : res.emailResult && !res.emailResult.sent && !res.emailResult.skipped
+                          ? "FAILED"
+                          : viewingReg.emailStatus;
+                setViewingReg({
+                    ...viewingReg,
+                    status,
+                    emailStatus: nextEmailStatus,
+                    emailError: res.emailResult?.error || null,
+                });
+            }
+            if (res.emailResult?.sent) {
+                setActionMessage("Status diperbarui & email approval terkirim.");
+            } else if (res.emailResult && !res.emailResult.sent && !res.emailResult.skipped) {
+                setActionError(
+                    `Status berubah ke APPROVED, tetapi email gagal dikirim: ${res.emailResult.error || "Unknown error"}`,
+                );
             }
             router.refresh();
         } else {
             setActionError(res.error || "Gagal mengubah status.");
+        }
+    };
+
+    const handleResendApprovalEmail = async (id: string) => {
+        setIsSendingEmail(true);
+        setActionError(null);
+        setActionMessage(null);
+        const res = await sendApprovalEmailForRegistration(id, { force: true });
+        setIsSendingEmail(false);
+
+        if (res.success) {
+            if (viewingReg && viewingReg.id === id) {
+                setViewingReg({
+                    ...viewingReg,
+                    emailStatus: "SENT",
+                    emailError: null,
+                });
+            }
+            setActionMessage("Email konfirmasi approval berhasil dikirim ulang.");
+            router.refresh();
+        } else {
+            setActionError(res.error || "Gagal mengirim ulang email.");
+            router.refresh();
+        }
+    };
+
+    const handleSendPendingBatch = async () => {
+        setIsSendingPendingBatch(true);
+        setActionError(null);
+        setActionMessage(null);
+        const res = await sendPendingApprovalEmails(event.id);
+        setIsSendingPendingBatch(false);
+
+        if (res.success) {
+            setActionMessage(
+                `Berhasil mengirim ${res.sentCount ?? 0} email tertunda.${
+                    res.remainingPendingCount
+                        ? ` Tersisa ${res.remainingPendingCount} email untuk besok.`
+                        : ""
+                }`,
+            );
+            router.refresh();
+        } else {
+            setActionError(res.error || "Gagal mengirim email tertunda.");
+            router.refresh();
+        }
+    };
+
+    const handleSendBroadcast = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSendingBroadcast(true);
+        setActionError(null);
+        setActionMessage(null);
+
+        const res = await sendEventBroadcastEmail({
+            eventId: event.id,
+            target: broadcastTarget,
+            subject: broadcastSubject,
+            message: broadcastMessage,
+        });
+
+        setIsSendingBroadcast(false);
+        if (res.success) {
+            setIsBroadcastOpen(false);
+            setBroadcastSubject("");
+            setBroadcastMessage("");
+            setActionMessage(
+                `Broadcast terkirim ke ${res.sentCount ?? 0} peserta${
+                    res.failedCount ? ` (${res.failedCount} gagal)` : ""
+                }.`,
+            );
+            router.refresh();
+        } else {
+            setActionError(res.error || "Gagal mengirim broadcast.");
         }
     };
 
@@ -332,18 +503,82 @@ export function RegistrantsClient({
     return (
         <>
             <Card className="border-border/60 shadow-xs">
-                <CardHeader className="gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <CardTitle className="text-base font-semibold">
-                            Registrants List
-                        </CardTitle>
-                        <CardDescription>
-                            Kelola, tinjau, edit, atau hapus data pendaftar event.
-                        </CardDescription>
+                <CardHeader className="gap-4">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <CardTitle className="text-base font-semibold">
+                                Registrants List
+                            </CardTitle>
+                            <CardDescription>
+                                Kelola, tinjau, edit, atau hapus data pendaftar event.
+                            </CardDescription>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2">
+                            <Badge
+                                variant="secondary"
+                                className={`font-normal ${
+                                    dailyQuota.used >= 85
+                                        ? "bg-amber-500/15 text-amber-800"
+                                        : ""
+                                }`}
+                            >
+                                <Mail className="mr-1.5 h-3.5 w-3.5" />
+                                Kuota Email Hari Ini: {dailyQuota.used} / {dailyQuota.limit}
+                            </Badge>
+                            {counts.unsentApproved > 0 && (
+                                <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="outline"
+                                    disabled={isSendingPendingBatch || dailyQuota.remaining <= 0}
+                                    onClick={handleSendPendingBatch}
+                                    className="h-8 text-xs"
+                                >
+                                    {isSendingPendingBatch ? (
+                                        <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                                    ) : (
+                                        <Send className="mr-1.5 h-3.5 w-3.5" />
+                                    )}
+                                    Kirim Email Tertunda ({counts.unsentApproved})
+                                </Button>
+                            )}
+                            <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                disabled={registrants.length === 0 || dailyQuota.remaining <= 0}
+                                onClick={() => {
+                                    setActionError(null);
+                                    setIsBroadcastOpen(true);
+                                }}
+                                className="h-8 text-xs"
+                            >
+                                <Megaphone className="mr-1.5 h-3.5 w-3.5" />
+                                Broadcast Email
+                            </Button>
+                        </div>
                     </div>
 
+                    {(actionMessage || actionError) && (
+                        <div
+                            className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs ${
+                                actionError
+                                    ? "border-destructive/30 bg-destructive/10 text-destructive"
+                                    : "border-emerald-500/30 bg-emerald-500/10 text-emerald-700"
+                            }`}
+                        >
+                            {actionError ? (
+                                <AlertCircle className="h-4 w-4 shrink-0" />
+                            ) : (
+                                <CheckCircle2 className="h-4 w-4 shrink-0" />
+                            )}
+                            <span>{actionError || actionMessage}</span>
+                        </div>
+                    )}
+
                     {/* Search & Filter */}
-                    <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center">
+                    <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
                         <div className="relative w-full sm:w-64">
                             <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                             <Input
@@ -404,6 +639,7 @@ export function RegistrantsClient({
                                         <TableHead>Email</TableHead>
                                         <TableHead>Tanggal Daftar</TableHead>
                                         <TableHead>Status</TableHead>
+                                        <TableHead>Email Notif</TableHead>
                                         <TableHead className="text-right">
                                             Actions
                                         </TableHead>
@@ -432,6 +668,12 @@ export function RegistrantsClient({
                                             </TableCell>
                                             <TableCell>
                                                 <StatusBadge status={reg.status} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <EmailStatusBadge
+                                                    emailStatus={reg.emailStatus}
+                                                    emailError={reg.emailError}
+                                                />
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="inline-flex items-center justify-end gap-1">
@@ -502,6 +744,10 @@ export function RegistrantsClient({
                                             {viewingReg.fullName}
                                         </DialogTitle>
                                         <StatusBadge status={viewingReg.status} />
+                                        <EmailStatusBadge
+                                            emailStatus={viewingReg.emailStatus}
+                                            emailError={viewingReg.emailError}
+                                        />
                                     </div>
                                     <div className="text-muted-foreground flex flex-col gap-1.5 text-sm">
                                         <div className="flex items-center gap-2 min-w-0">
@@ -567,7 +813,25 @@ export function RegistrantsClient({
 
                             {/* Fixed Footer */}
                             <div className="bg-muted/20 flex flex-wrap items-center justify-between gap-2 border-t px-6 py-4 sm:px-7">
-                                <div className="flex items-center gap-2">
+                                <div className="flex flex-wrap items-center gap-2">
+                                    {viewingReg.status === "APPROVED" && (
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            disabled={isSendingEmail}
+                                            onClick={() =>
+                                                handleResendApprovalEmail(viewingReg.id)
+                                            }
+                                        >
+                                            {isSendingEmail ? (
+                                                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                                            ) : (
+                                                <Send className="mr-1.5 h-3.5 w-3.5" />
+                                            )}
+                                            Kirim Ulang Email
+                                        </Button>
+                                    )}
                                     <Button
                                         type="button"
                                         variant="outline"
@@ -593,7 +857,25 @@ export function RegistrantsClient({
                                     </Button>
                                 </div>
 
-                                <div className="flex items-center gap-2">
+                                <div className="flex flex-wrap items-center gap-2">
+                                    {viewingReg.status === "APPROVED" && (
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            disabled={isSendingEmail}
+                                            onClick={() =>
+                                                handleResendApprovalEmail(viewingReg.id)
+                                            }
+                                        >
+                                            {isSendingEmail ? (
+                                                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                                            ) : (
+                                                <Send className="mr-1.5 h-3.5 w-3.5" />
+                                            )}
+                                            Kirim Ulang Email
+                                        </Button>
+                                    )}
                                     <Button
                                         type="button"
                                         variant="outline"
@@ -830,6 +1112,106 @@ export function RegistrantsClient({
                             Ya, Hapus
                         </Button>
                     </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* BROADCAST EMAIL DIALOG */}
+            <Dialog
+                open={isBroadcastOpen}
+                onOpenChange={(open) => {
+                    if (!open && !isSendingBroadcast) setIsBroadcastOpen(false);
+                }}
+            >
+                <DialogContent className="sm:max-w-[520px]">
+                    <form onSubmit={handleSendBroadcast} className="space-y-4">
+                        <DialogHeader>
+                            <DialogTitle>Broadcast Email Peserta</DialogTitle>
+                            <DialogDescription>
+                                Kirim pengumuman atau reminder (H-1, lokasi, link sertifikat) via Resend Batch API. Sisa kuota hari ini:{" "}
+                                <strong>{dailyQuota.remaining} email</strong>.
+                            </DialogDescription>
+                        </DialogHeader>
+
+                        <div className="space-y-2">
+                            <Label>Target Penerima</Label>
+                            <Select
+                                value={broadcastTarget}
+                                onValueChange={(v) =>
+                                    setBroadcastTarget(
+                                        (v === "ALL" ? "ALL" : "APPROVED") as
+                                            | "APPROVED"
+                                            | "ALL",
+                                    )
+                                }
+                            >
+                                <SelectTrigger>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="APPROVED">
+                                        Hanya Peserta Approved ({counts.approved} orang)
+                                    </SelectItem>
+                                    <SelectItem value="ALL">
+                                        Semua Pendaftar ({counts.all} orang)
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="broadcast-subject">Subject Email</Label>
+                            <Input
+                                id="broadcast-subject"
+                                required
+                                placeholder={`e.g. Reminder H-1 ${event.title}`}
+                                value={broadcastSubject}
+                                onChange={(e) => setBroadcastSubject(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="broadcast-message">Isi Pengumuman</Label>
+                            <Textarea
+                                id="broadcast-message"
+                                required
+                                rows={5}
+                                placeholder="Tulis pesan pengumuman untuk peserta..."
+                                value={broadcastMessage}
+                                onChange={(e) => setBroadcastMessage(e.target.value)}
+                            />
+                        </div>
+
+                        {actionError && (
+                            <div className="border-destructive/30 bg-destructive/10 text-destructive rounded-lg border px-3 py-2 text-xs">
+                                {actionError}
+                            </div>
+                        )}
+
+                        <DialogFooter className="gap-2 sm:gap-2">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                disabled={isSendingBroadcast}
+                                onClick={() => setIsBroadcastOpen(false)}
+                            >
+                                Batal
+                            </Button>
+                            <Button
+                                type="submit"
+                                size="sm"
+                                disabled={isSendingBroadcast}
+                                className="bg-[#6849E1] text-white hover:bg-[#5738CC]"
+                            >
+                                {isSendingBroadcast ? (
+                                    <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                                ) : (
+                                    <Megaphone className="mr-1.5 h-3.5 w-3.5" />
+                                )}
+                                Kirim Broadcast
+                            </Button>
+                        </DialogFooter>
+                    </form>
                 </DialogContent>
             </Dialog>
         </>

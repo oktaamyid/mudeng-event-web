@@ -6,6 +6,16 @@ import { eq, and, sql } from "drizzle-orm";
 import { getSession } from "../auth/session";
 import { revalidatePath } from "next/cache";
 import { deleteUploadThingFiles } from "./upload";
+import {
+    getEmailSettings,
+    recordDailyEmailUsage,
+    sendApprovalEmailForRegistration,
+} from "./email";
+import {
+    buildAdminNotificationTemplate,
+    buildPendingEmailTemplate,
+    sendEmail,
+} from "../email";
 
 // Fallback data removed as part of course legacy cleanup
 
@@ -104,6 +114,60 @@ export async function registerEvent(
             status: "PENDING",
         });
 
+        try {
+            const settings = await getEmailSettings();
+            if (settings.sendOnPending || (settings.notifyAdminOnRegister && settings.adminNotifyEmail)) {
+                const evtRows = await db
+                    .select({ title: events.title, slug: events.slug })
+                    .from(events)
+                    .where(eq(events.id, eventId))
+                    .limit(1);
+                const evt = evtRows[0];
+                if (evt) {
+                    const baseUrl =
+                        process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+                        "https://mudeng.oktaa.my.id/event";
+
+                    if (settings.sendOnPending) {
+                        const tpl = buildPendingEmailTemplate({
+                            fullName,
+                            eventTitle: evt.title,
+                            eventUrl: `${baseUrl}/${evt.slug}`,
+                        });
+                        const pendingRes = await sendEmail({
+                            to: email,
+                            subject: tpl.subject,
+                            html: tpl.html,
+                            text: tpl.text,
+                        });
+                        if (pendingRes.success) {
+                            await recordDailyEmailUsage(1);
+                        }
+                    }
+
+                    if (settings.notifyAdminOnRegister && settings.adminNotifyEmail) {
+                        const adminTpl = buildAdminNotificationTemplate({
+                            fullName,
+                            email,
+                            eventTitle: evt.title,
+                            registrantsUrl: `${baseUrl}/admin/events/${evt.slug}/registrants`,
+                        });
+                        const adminRes = await sendEmail({
+                            to: settings.adminNotifyEmail,
+                            subject: adminTpl.subject,
+                            html: adminTpl.html,
+                            text: adminTpl.text,
+                        });
+                        if (adminRes.success) {
+                            await recordDailyEmailUsage(1);
+                        }
+                    }
+                }
+            }
+        } catch (emailErr) {
+            console.warn("Non-blocking registration email error:", emailErr);
+        }
+
         return { success: true };
     } catch (error) {
         console.error("Failed to register for event:", error);
@@ -172,6 +236,8 @@ export async function createEvent(data: any) {
             faqs: data.faqs,
             formFields: data.formFields,
             confirmationMessage: data.confirmationMessage || "",
+            emailSubject: data.emailSubject || "",
+            emailBody: data.emailBody || "",
             googleSheetId: data.googleSheetId || "",
             isRegistrationOpen: data.isRegistrationOpen ?? true,
             formDescription: data.formDescription || "",
@@ -412,6 +478,8 @@ export async function updateEvent(id: string, data: any) {
                 faqs: data.faqs,
                 formFields: data.formFields,
                 confirmationMessage: data.confirmationMessage || "",
+                emailSubject: data.emailSubject || "",
+                emailBody: data.emailBody || "",
                 googleSheetId: data.googleSheetId || "",
                 isRegistrationOpen: data.isRegistrationOpen ?? true,
                 formDescription: data.formDescription || "",
@@ -533,6 +601,22 @@ export async function updateRegistrationStatus(id: string, status: string) {
             return { success: false, error: "Unauthorized" };
         }
 
+        const existing = await db
+            .select({
+                id: registrations.id,
+                emailStatus: registrations.emailStatus,
+            })
+            .from(registrations)
+            .where(eq(registrations.id, id))
+            .limit(1);
+
+        if (existing.length === 0) {
+            return {
+                success: false,
+                error: "Data pendaftar sudah dihapus di sesi lain.",
+            };
+        }
+
         const updated = await db
             .update(registrations)
             .set({
@@ -549,10 +633,41 @@ export async function updateRegistrationStatus(id: string, status: string) {
             };
         }
 
+        let emailResult:
+            | {
+                  sent: boolean;
+                  skipped?: boolean;
+                  error?: string;
+                  isRateLimited?: boolean;
+              }
+            | undefined;
+
+        if (
+            status === "APPROVED" &&
+            existing[0].emailStatus !== "SENT" &&
+            existing[0].emailStatus !== "DELIVERED"
+        ) {
+            try {
+                const res = await sendApprovalEmailForRegistration(id);
+                emailResult = {
+                    sent: res.success && !res.skipped,
+                    skipped: res.skipped,
+                    error: res.error,
+                    isRateLimited: res.isRateLimited,
+                };
+            } catch (emailErr) {
+                console.warn("Non-blocking approval email error:", emailErr);
+                emailResult = {
+                    sent: false,
+                    error: "Gagal mengirim email approval.",
+                };
+            }
+        }
+
         revalidatePath("/admin/events/[slug]/registrants", "page");
         revalidatePath("/admin", "page");
 
-        return { success: true };
+        return { success: true, emailResult };
     } catch (error) {
         console.error("Failed to update registration status:", error);
         return {
@@ -589,6 +704,22 @@ export async function updateRegistration(
             };
         }
 
+        const existing = await db
+            .select({
+                id: registrations.id,
+                emailStatus: registrations.emailStatus,
+            })
+            .from(registrations)
+            .where(eq(registrations.id, id))
+            .limit(1);
+
+        if (existing.length === 0) {
+            return {
+                success: false,
+                error: "Data pendaftar tidak ditemukan atau sudah dihapus di sesi lain.",
+            };
+        }
+
         const updated = await db
             .update(registrations)
             .set({
@@ -606,6 +737,18 @@ export async function updateRegistration(
                 success: false,
                 error: "Data pendaftar tidak ditemukan atau sudah dihapus di sesi lain.",
             };
+        }
+
+        if (
+            payload.status === "APPROVED" &&
+            existing[0].emailStatus !== "SENT" &&
+            existing[0].emailStatus !== "DELIVERED"
+        ) {
+            try {
+                await sendApprovalEmailForRegistration(id);
+            } catch (emailErr) {
+                console.warn("Non-blocking approval email error on edit:", emailErr);
+            }
         }
 
         revalidatePath("/admin/events/[slug]/registrants", "page");

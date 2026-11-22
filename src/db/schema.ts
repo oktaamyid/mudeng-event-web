@@ -31,6 +31,8 @@ export const events = pgTable("events", {
     faqs: jsonb("faqs"), // { question, answer }[]
     formFields: jsonb("form_fields"), // Dynamic form configuration
     confirmationMessage: text("confirmation_message"), // Custom success message
+    emailSubject: varchar("email_subject", { length: 255 }), // Optional custom approval email subject
+    emailBody: text("email_body"), // Optional custom approval email body
     googleSheetId: varchar("google_sheet_id", { length: 255 }), // Google Sheet ID for sync
     isRegistrationOpen: boolean("is_registration_open").default(true).notNull(), // Registration open/close toggle
     formDescription: text("form_description"), // Optional description shown above the form
@@ -57,6 +59,10 @@ export const registrations = pgTable("registrations", {
 
     // Meta
     status: varchar("status", { length: 50 }).default("PENDING").notNull(),
+    emailStatus: varchar("email_status", { length: 30 }).default("NOT_SENT").notNull(),
+    emailSentAt: timestamp("email_sent_at"),
+    emailError: text("email_error"),
+    resendEmailId: varchar("resend_email_id", { length: 255 }),
     version: integer("version").default(1).notNull(),
     registeredAt: timestamp("registered_at").defaultNow().notNull(),
 });

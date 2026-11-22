@@ -1,5 +1,6 @@
 import { ExportButton } from "./ExportButton";
 import { getEventRegistrants } from "@/lib/actions/events";
+import { getDailyEmailQuotaInternal } from "@/lib/actions/email";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +15,10 @@ export default async function RegistrantsPage({
     params: Promise<{ slug: string }>;
 }) {
     const resolvedParams = await params;
-    const { data, success } = await getEventRegistrants(resolvedParams.slug);
+    const [{ data, success }, dailyQuota] = await Promise.all([
+        getEventRegistrants(resolvedParams.slug),
+        getDailyEmailQuotaInternal(),
+    ]);
 
     if (!success || !data || !data.event) {
         notFound();
@@ -121,9 +125,13 @@ export default async function RegistrantsPage({
                     fullName: r.fullName,
                     email: r.email,
                     status: r.status,
+                    emailStatus: r.emailStatus,
+                    emailSentAt: r.emailSentAt ? r.emailSentAt.toISOString() : null,
+                    emailError: r.emailError,
                     registeredAt: r.registeredAt.toISOString(),
                     answers: (r.answers as Record<string, unknown>) || {},
                 }))}
+                dailyQuota={dailyQuota}
             />
         </div>
     );

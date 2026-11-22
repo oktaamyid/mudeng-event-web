@@ -77,6 +77,8 @@ export default function NewEventPage() {
         faqs: [] as { question: string; answer: string }[],
         isFeatured: false,
         confirmationMessage: "",
+        emailSubject: "",
+        emailBody: "",
         googleSheetId: "",
         isRegistrationOpen: true,
         formDescription: "",
@@ -550,6 +552,49 @@ export default function NewEventPage() {
                                             confirmationMessage: val,
                                         });
                                     }}
+                                />
+                            </div>
+                        </div>
+                        <div className="pt-6 border-t space-y-4">
+                            <div className="space-y-1">
+                                <Label className="text-base font-semibold">
+                                    Pengaturan Email Approval (Opsional)
+                                </Label>
+                                <CardDescription>
+                                    Kosongkan jika ingin memakai subject default dan pesan dari Custom Confirmation Message di atas.
+                                </CardDescription>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="email-subject">
+                                    Email Subject
+                                </Label>
+                                <Input
+                                    id="email-subject"
+                                    placeholder="e.g. Pendaftaran MUVISIT Disetujui!"
+                                    value={eventData.emailSubject}
+                                    onChange={(e) =>
+                                        setEventData({
+                                            ...eventData,
+                                            emailSubject: e.target.value,
+                                        })
+                                    }
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="email-body">
+                                    Catatan Khusus Email
+                                </Label>
+                                <Textarea
+                                    id="email-body"
+                                    rows={3}
+                                    placeholder="Opsional: instruksi tambahan khusus di email approval (misal link grup WA atau rundown)..."
+                                    value={eventData.emailBody}
+                                    onChange={(e) =>
+                                        setEventData({
+                                            ...eventData,
+                                            emailBody: e.target.value,
+                                        })
+                                    }
                                 />
                             </div>
                         </div>

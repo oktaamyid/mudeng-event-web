@@ -5,11 +5,29 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getEmailDiagnostics } from "@/lib/actions/email";
+import { EmailSettingsCard } from "./EmailSettingsCard";
 
-export default function AdminSettingsPage() {
+export default async function AdminSettingsPage() {
+    const diagnosticsRes = await getEmailDiagnostics();
+    const diagnostics = diagnosticsRes.success
+        ? diagnosticsRes.data
+        : {
+              config: {
+                  hasApiKey: false,
+                  hasFromEmail: false,
+                  fromEmail: "",
+                  replyTo: "",
+              },
+              settings: {
+                  sendOnPending: false,
+                  notifyAdminOnRegister: false,
+                  adminNotifyEmail: "",
+              },
+              quota: { used: 0, limit: 100, remaining: 100 },
+          };
     return (
         <div className="max-w-3xl space-y-6">
             <div>
@@ -47,28 +65,11 @@ export default function AdminSettingsPage() {
                 </CardContent>
             </Card>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>Preferences</CardTitle>
-                    <CardDescription>
-                        Manage your dashboard preferences.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                            <Label>Email Notifications</Label>
-                            <p className="text-muted-foreground text-sm">
-                                Receive emails when someone registers for an
-                                event.
-                            </p>
-                        </div>
-                        <Button variant="outline" disabled>
-                            Coming Soon
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
+            <EmailSettingsCard
+                initialConfig={diagnostics.config}
+                initialSettings={diagnostics.settings}
+                initialQuota={diagnostics.quota}
+            />
         </div>
     );
 }
