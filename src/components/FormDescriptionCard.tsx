@@ -20,7 +20,10 @@ export function FormDescriptionCard({
     const [isOverflowing, setIsOverflowing] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
 
-    const hasHtml = Boolean(html && html.replace(/<[^>]*>/g, "").trim() !== "");
+    const normalizedHtml = (html || "").replace(/&nbsp;|\u00A0/g, " ");
+    const hasHtml = Boolean(
+        normalizedHtml && normalizedHtml.replace(/<[^>]*>/g, "").trim() !== "",
+    );
 
     useEffect(() => {
         if (!hasHtml) return;
@@ -52,13 +55,13 @@ export function FormDescriptionCard({
                             <div className="relative">
                                 <div
                                     ref={contentRef}
-                                    className={`overflow-hidden text-[13.5px] leading-relaxed text-gray-600 break-words transition-[max-height] duration-300 sm:text-[15px] [&_a]:font-medium [&_a]:text-[#6849E1] [&_a]:underline hover:[&_a]:text-[#5738CC] [&_b]:font-semibold [&_b]:text-gray-900 [&_em]:italic [&_i]:italic [&_li]:mb-1 [&_ol]:my-2 [&_ol]:ml-5 [&_ol]:list-decimal [&_p]:mb-2.5 last:[&_p]:mb-0 [&_strong]:font-semibold [&_strong]:text-gray-900 [&_ul]:my-2 [&_ul]:ml-5 [&_ul]:list-disc ${
+                                    className={`overflow-hidden text-[13.5px] leading-relaxed text-gray-600 [word-break:normal] break-words transition-[max-height] duration-300 sm:text-[15px] [&_a]:font-medium [&_a]:text-[#6849E1] [&_a]:underline hover:[&_a]:text-[#5738CC] [&_b]:font-semibold [&_b]:text-gray-900 [&_em]:italic [&_i]:italic [&_li]:mb-1 [&_ol]:my-2 [&_ol]:ml-5 [&_ol]:list-decimal [&_p]:mb-2.5 last:[&_p]:mb-0 [&_strong]:font-semibold [&_strong]:text-gray-900 [&_ul]:my-2 [&_ul]:ml-5 [&_ul]:list-disc ${
                                         isOverflowing && !isExpanded
                                             ? "max-h-[160px] sm:max-h-[180px]"
                                             : "max-h-[2000px]"
                                     }`}
                                     dangerouslySetInnerHTML={{
-                                        __html: html || "",
+                                        __html: normalizedHtml,
                                     }}
                                 />
 

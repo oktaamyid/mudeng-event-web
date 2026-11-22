@@ -50,8 +50,8 @@ export default function Footer() {
     return (
         <footer className="border-divider border-t pt-[40px] sm:pt-[60px] md:pt-[80px]" id="footer">
             <div className="mx-auto max-w-360 px-6 lg:px-[120px] xl:px-[240px]">
-                <div className="mb-10 flex flex-col justify-between gap-10 md:flex-row">
-                    <div className="flex max-w-[270px] flex-col gap-4">
+                <div className="mb-8 flex flex-col justify-between gap-8 sm:mb-10 sm:gap-10 md:flex-row">
+                    <div className="flex max-w-[300px] flex-col gap-3 sm:max-w-[270px] sm:gap-4">
                         <div className="flex items-center gap-2">
                             <img
                                 src="/event/assets/Navbar-logo.png"
@@ -67,19 +67,32 @@ export default function Footer() {
                                 className="h-[14px] w-auto"
                             />
                         </div>
-                        <p className="font-body text-text-muted text-sm sm:text-base leading-[20.42px] font-medium">
+                        <p className="font-body text-text-muted text-sm leading-[20.42px] font-medium sm:text-base">
                             MUDENG membantu kreator membangun konten dengan
                             kejelasan, konsistensi, dan tujuan.
                         </p>
                     </div>
 
-                    <div className="flex flex-wrap gap-8 sm:gap-10 md:gap-[120px]">
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-8 md:flex md:flex-wrap md:gap-[120px]">
                         {footerLinks.map((column, i) => (
-                            <div key={i} className="flex flex-col">
-                                <div className="font-body text-text-main mb-4 text-base font-semibold">
+                            <div
+                                key={i}
+                                className={`flex flex-col ${
+                                    i === footerLinks.length - 1
+                                        ? "col-span-2 md:col-span-1"
+                                        : ""
+                                }`}
+                            >
+                                <div className="font-body text-text-main mb-3 text-[15px] font-semibold sm:text-base md:mb-4">
                                     {column.title}
                                 </div>
-                                <div className="flex flex-col gap-2.5">
+                                <div
+                                    className={
+                                        i === footerLinks.length - 1
+                                            ? "grid grid-cols-2 gap-x-6 gap-y-1.5 md:flex md:flex-col md:gap-2.5"
+                                            : "flex flex-col gap-1.5 md:gap-2.5"
+                                    }
+                                >
                                     {column.items.map((item, j) => (
                                         <a
                                             key={j}
@@ -94,7 +107,7 @@ export default function Footer() {
                                                     ? "noopener noreferrer"
                                                     : undefined
                                             }
-                                            className="font-body text-text-muted hover:text-brand text-base font-medium transition-colors duration-200"
+                                            className="font-body text-text-muted hover:text-brand inline-flex min-h-[36px] items-center text-sm font-medium transition-colors duration-200 md:min-h-0 md:text-base"
                                         >
                                             {item.label}
                                         </a>
@@ -105,14 +118,14 @@ export default function Footer() {
                     </div>
                 </div>
 
-                <div className="border-divider mt-10 flex flex-col items-center justify-between gap-4 border-t py-5 text-center sm:flex-row sm:gap-0 sm:text-left">
-                    <span className="font-body text-text-muted text-base font-medium">
+                <div className="border-divider mt-8 flex flex-row items-center justify-between gap-4 border-t pt-5 pb-7 text-xs sm:mt-10 sm:py-5 sm:text-base">
+                    <span className="font-body text-text-muted font-medium">
                         © {new Date().getFullYear()}, All Rights Reserved
                     </span>
                     <div className="flex items-center gap-3">
                         <Link
                             href="/#hero"
-                            className="font-body text-text-muted hover:text-brand text-base font-medium transition-colors duration-200"
+                            className="font-body text-text-muted hover:text-brand inline-flex min-h-[36px] items-center font-medium transition-colors duration-200 md:min-h-0"
                         >
                             Back To Top
                         </Link>
