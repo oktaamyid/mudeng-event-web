@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
     Table,
@@ -51,8 +51,16 @@ import {
     Send,
     AlertCircle,
     Megaphone,
+    ArrowDown,
+    ArrowUp,
+    X,
 } from "lucide-react";
 import { FilePreview } from "@/components/ui/file-preview";
+import { UploadButton } from "@/lib/uploadthing";
+import {
+    deleteUploadThingFile,
+    deleteUploadThingFiles,
+} from "@/lib/actions/upload";
 import {
     updateRegistrationStatus,
     updateRegistration,
@@ -241,6 +249,9 @@ export function RegistrantsClient({
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState<"ALL" | "PENDING" | "APPROVED">("ALL");
+    const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
+    const sessionUploadedFileUrlsRef = useRef<string[]>([]);
+    const baselineFileUrlsRef = useRef<Record<string, string>>({});
 
     const [viewingReg, setViewingReg] = useState<Registrant | null>(null);
     const [editingReg, setEditingReg] = useState<Registrant | null>(null);
@@ -278,16 +289,22 @@ export function RegistrantsClient({
 
     const filteredRegistrants = useMemo(() => {
         const q = searchQuery.trim().toLowerCase();
-        return registrants.filter((reg) => {
-            const matchesStatus =
-                statusFilter === "ALL" || reg.status === statusFilter;
-            const matchesSearch =
-                !q ||
-                reg.fullName.toLowerCase().includes(q) ||
-                reg.email.toLowerCase().includes(q);
-            return matchesStatus && matchesSearch;
-        });
-    }, [registrants, searchQuery, statusFilter]);
+        return registrants
+            .filter((reg) => {
+                const matchesStatus =
+                    statusFilter === "ALL" || reg.status === statusFilter;
+                const matchesSearch =
+                    !q ||
+                    reg.fullName.toLowerCase().includes(q) ||
+                    reg.email.toLowerCase().includes(q);
+                return matchesStatus && matchesSearch;
+            })
+            .sort((a, b) => {
+                const aTime = new Date(a.registeredAt).getTime();
+                const bTime = new Date(b.registeredAt).getTime();
+                return sortOrder === "desc" ? bTime - aTime : aTime - bTime;
+            });
+    }, [registrants, searchQuery, statusFilter, sortOrder]);
 
     const openEditDialog = (reg: Registrant) => {
         setActionError(null);
@@ -297,11 +314,27 @@ export function RegistrantsClient({
 
         const extracted = extractAnswers(reg.answers, event.formFields);
         const initialMap: Record<string, string> = {};
+        const baselineFiles: Record<string, string> = {};
         for (const item of extracted) {
-            initialMap[item.key] = item.displayValue === "—" ? "" : item.displayValue;
+            const val = item.displayValue === "—" ? "" : item.displayValue;
+            initialMap[item.key] = val;
+            if (item.type === "file" && val) {
+                baselineFiles[item.key] = val;
+            }
         }
+        baselineFileUrlsRef.current = baselineFiles;
+        sessionUploadedFileUrlsRef.current = [];
         setEditAnswers(initialMap);
         setEditingReg(reg);
+    };
+
+    const handleCancelEditDialog = async () => {
+        const orphanedUrls = [...sessionUploadedFileUrlsRef.current];
+        sessionUploadedFileUrlsRef.current = [];
+        if (orphanedUrls.length > 0) {
+            await deleteUploadThingFiles(orphanedUrls);
+        }
+        setEditingReg(null);
     };
 
     const handleStatusChange = async (id: string, status: "PENDING" | "APPROVED") => {
@@ -466,6 +499,14 @@ export function RegistrantsClient({
 
         setIsSaving(false);
         if (res.success) {
+            const removedBaselineFiles = Object.entries(baselineFileUrlsRef.current)
+                .filter(([key, oldUrl]) => oldUrl && editAnswers[key] !== oldUrl)
+                .map(([, oldUrl]) => oldUrl);
+            sessionUploadedFileUrlsRef.current = [];
+            baselineFileUrlsRef.current = {};
+            if (removedBaselineFiles.length > 0) {
+                await deleteUploadThingFiles(removedBaselineFiles);
+            }
             setEditingReg(null);
             router.refresh();
         } else {
@@ -637,7 +678,29 @@ export function RegistrantsClient({
                                     <TableRow>
                                         <TableHead>Nama</TableHead>
                                         <TableHead>Email</TableHead>
-                                        <TableHead>Tanggal Daftar</TableHead>
+                                        <TableHead>
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setSortOrder((prev) =>
+                                                        prev === "desc" ? "asc" : "desc",
+                                                    )
+                                                }
+                                                className="hover:text-foreground inline-flex cursor-pointer items-center gap-1 font-medium transition-colors"
+                                                title={
+                                                    sortOrder === "desc"
+                                                        ? "Urutan: Terbaru ke Terlama"
+                                                        : "Urutan: Terlama ke Terbaru"
+                                                }
+                                            >
+                                                <span>Tanggal Daftar</span>
+                                                {sortOrder === "desc" ? (
+                                                    <ArrowDown className="h-3.5 w-3.5" />
+                                                ) : (
+                                                    <ArrowUp className="h-3.5 w-3.5" />
+                                                )}
+                                            </button>
+                                        </TableHead>
                                         <TableHead>Status</TableHead>
                                         <TableHead>Email Notif</TableHead>
                                         <TableHead className="text-right">
@@ -925,7 +988,9 @@ export function RegistrantsClient({
             <Dialog
                 open={!!editingReg}
                 onOpenChange={(open) => {
-                    if (!open && !isSaving) setEditingReg(null);
+                    if (!open && !isSaving) {
+                        void handleCancelEditDialog();
+                    }
                 }}
             >
                 <DialogContent className="flex max-h-[85vh] w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-[600px] sm:rounded-2xl">
@@ -1007,7 +1072,90 @@ export function RegistrantsClient({
                                                         </span>
                                                     )}
                                                 </Label>
-                                                {item.type === "textarea" ||
+                                                {item.type === "file" ? (
+                                                    <div className="space-y-2.5">
+                                                        {editAnswers[item.key] ? (
+                                                            <div className="space-y-2">
+                                                                <FilePreview
+                                                                    url={editAnswers[item.key]}
+                                                                    label={item.label}
+                                                                />
+                                                                <div className="flex justify-end">
+                                                                    <Button
+                                                                        type="button"
+                                                                        variant="ghost"
+                                                                        size="sm"
+                                                                        onClick={async () => {
+                                                                            const prevUrl = editAnswers[item.key];
+                                                                            setEditAnswers((prev) => ({
+                                                                                ...prev,
+                                                                                [item.key]: "",
+                                                                            }));
+                                                                            if (
+                                                                                prevUrl &&
+                                                                                prevUrl !== baselineFileUrlsRef.current[item.key] &&
+                                                                                (prevUrl.includes("utfs.io") || prevUrl.includes("ufs.sh"))
+                                                                            ) {
+                                                                                sessionUploadedFileUrlsRef.current =
+                                                                                    sessionUploadedFileUrlsRef.current.filter(
+                                                                                        (u) => u !== prevUrl,
+                                                                                    );
+                                                                                await deleteUploadThingFile(prevUrl);
+                                                                            }
+                                                                        }}
+                                                                        className="text-destructive hover:bg-destructive/10 hover:text-destructive h-7 px-2 text-xs"
+                                                                    >
+                                                                        <X className="mr-1 h-3.5 w-3.5" />
+                                                                        Hapus File
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <p className="text-muted-foreground text-xs">
+                                                                Belum ada file terunggah.
+                                                            </p>
+                                                        )}
+
+                                                        <div className="bg-muted/30 rounded-lg border border-dashed p-3 text-center">
+                                                            <p className="text-muted-foreground mb-1.5 text-xs">
+                                                                {editAnswers[item.key]
+                                                                    ? "Ganti file (Gambar / PDF / ZIP)"
+                                                                    : "Unggah file (Gambar / PDF / ZIP)"}
+                                                            </p>
+                                                            <UploadButton
+                                                                endpoint="publicUploader"
+                                                                onClientUploadComplete={async (res) => {
+                                                                    if (res && res.length > 0) {
+                                                                        const newUrl = res[0].url;
+                                                                        const prevUrl = editAnswers[item.key];
+                                                                        sessionUploadedFileUrlsRef.current.push(newUrl);
+                                                                        setEditAnswers((prev) => ({
+                                                                            ...prev,
+                                                                            [item.key]: newUrl,
+                                                                        }));
+                                                                        if (
+                                                                            prevUrl &&
+                                                                            prevUrl !== newUrl &&
+                                                                            prevUrl !== baselineFileUrlsRef.current[item.key] &&
+                                                                            (prevUrl.includes("utfs.io") || prevUrl.includes("ufs.sh"))
+                                                                        ) {
+                                                                            sessionUploadedFileUrlsRef.current =
+                                                                                sessionUploadedFileUrlsRef.current.filter(
+                                                                                    (u) => u !== prevUrl,
+                                                                                );
+                                                                            await deleteUploadThingFile(prevUrl);
+                                                                        }
+                                                                    }
+                                                                }}
+                                                                onUploadError={(err: Error) => {
+                                                                    setActionError(
+                                                                        `Gagal upload file: ${err.message}`,
+                                                                    );
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                ) : item.type === "textarea" ||
                                                 (editAnswers[item.key]?.length ?? 0) > 80 ? (
                                                     <Textarea
                                                         id={`ans-${item.key}`}
@@ -1044,7 +1192,9 @@ export function RegistrantsClient({
                                     variant="outline"
                                     size="sm"
                                     disabled={isSaving}
-                                    onClick={() => setEditingReg(null)}
+                                    onClick={() => {
+                                        void handleCancelEditDialog();
+                                    }}
                                 >
                                     Batal
                                 </Button>
